@@ -74,3 +74,6 @@ dialog{border:1px solid #d7cfbf;border-radius:12px;padding:0;width:min(740px,cal
 .ribbon-list>div{display:flex;justify-content:space-between;margin:10px 0}.ribbon-list{margin-bottom:20px}
 @media(max-width:650px){.backup-providers{grid-template-columns:1fr}.named-ribbons{margin:14px 0}.field-write-tools button{font-size:10px}}
 @media(prefers-reduced-motion:reduce){.cover-book{transform:none}}
+
+input[data-writing-key],textarea[data-writing-key]{font-family:var(--hand)}
+#ribbon-form input[type=text]{width:100%;font-size:24px;padding:9px;border:1px solid #d7d8c8;border-radius:5px;background:#fffef9}
