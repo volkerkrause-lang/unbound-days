@@ -32,7 +32,7 @@ Open `http://localhost:4173`. Use `npm run check` and `npm test` for syntax and 
 3. In repository Settings → Pages, choose **GitHub Actions** as the source.
 4. Push to the `main` branch or run **Publish Unbound Days** manually.
 
-All asset/module paths are relative so deployment works under `/unbound-days/`. The workflow uploads only app assets, not project docs or private data. Repo creation and Pages deployment have not been performed by this source package.
+All asset/module paths are relative so deployment works under `/unbound-days/`. The workflow uploads only app assets, not project docs or private data. Source and all assets are stored in `volkerkrause-lang/unbound-days`. The repository is private. Pages deployment awaits a hosting decision because the current GitHub plan requires an upgrade or a public repository.
 
 ## Google Calendar setup
 
