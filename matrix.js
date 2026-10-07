@@ -1,4 +1,4 @@
-import {monday,addDays,formatDate} from './calendar.js?v=0.3.4';
+import {monday,addDays,formatDate} from './calendar.js?v=0.3.5';
 export const quadrant=t=>t.importance==='high'?(t.effort==='high'?'anchor':'wins'):(t.effort==='high'?'drains':'sparks');
 export function activeAnchor(tasks,week){return tasks.find(t=>t.matrixWeek===week&&!t.deleted&&!t.done&&quadrant(t)==='anchor'&&t.anchorActive);}
 export function activateAnchor(tasks,t){if(activeAnchor(tasks,t.matrixWeek)&&activeAnchor(tasks,t.matrixWeek)!==t)return false;t.anchorActive=true;return true;}
