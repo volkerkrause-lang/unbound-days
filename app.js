@@ -1,10 +1,10 @@
-import {createMatrix} from './matrix.js?v=0.3.12';
-import {dateKey,parseDate,addDays,monday,isoWeek,monthCells,eventOnDate,formatDate,pad,toICS} from './calendar.js?v=0.3.12';
-import * as Google from './google.js?v=0.3.12';
-import * as Dropbox from './dropbox.js?v=0.3.12';
-import {cloudConfig} from './cloud-config.js?v=0.3.12';
-import {notebookContent,mergeNotebook,resolveConflict,unwrapBackup} from './sync.js?v=0.3.12';
-import {chooseRecovery,readMirror,writeMirror} from './storage.js?v=0.3.12';
+import {createMatrix} from './matrix.js?v=0.3.13';
+import {dateKey,parseDate,addDays,monday,isoWeek,monthCells,eventOnDate,formatDate,pad,toICS} from './calendar.js?v=0.3.13';
+import * as Google from './google.js?v=0.3.13';
+import * as Dropbox from './dropbox.js?v=0.3.13';
+import {cloudConfig} from './cloud-config.js?v=0.3.13';
+import {notebookContent,mergeNotebook,resolveConflict,unwrapBackup} from './sync.js?v=0.3.13';
+import {chooseRecovery,readMirror,writeMirror} from './storage.js?v=0.3.13';
 
 const KEY='unbound-days-v1', HISTORY=KEY+'-history';
 const TODAY=dateKey(new Date()),months=Array.from({length:12},(_,i)=>new Date(2026,i,1).toLocaleDateString('en-GB',{month:'long'}));
@@ -78,7 +78,7 @@ if(departing&&!matchMedia('(prefers-reduced-motion: reduce)').matches){const boo
 
 if(section==='notes'||section==='launchpad')setupInk();attachWritingTools(app);attachQuickDelete(app);renderRibbons();updateSaveStatus();rememberPage();
 }
-function renderCover(){const c=state.settings.cover;app.innerHTML=`<div class="cover-scene"><div class="cover-controls"><button class="quiet-button" data-action="gallery">Choose cover</button><button class="quiet-button" data-action="personalize">Personalise</button></div><div data-material="${coverMaterial()}" data-cover="${c}" class="cover-book ${lightCovers.includes(Number(c))||c==='custom'?'light':''}" ${state.settings.coverInk?`style="--cover-ink:${state.settings.coverInk}"`:''}><div class="cover-art" style="${coverStyle()}"></div><div class="page-block" aria-hidden="true"></div><div class="cover-light" aria-hidden="true"></div><div class="spine"></div><button class="cover-open" data-action="open" aria-label="Open ${year()} planner"><span class="cover-year">${year()}</span>${state.settings.title?`<span class="cover-title">${esc(state.settings.title)}</span>`:''}${state.settings.owner?`<span class="cover-owner">${esc(state.settings.owner)}</span>`:''}<span class="emboss-logo"><span class="brand-symbol">u</span>unbound days</span></button><button class="cover-tab" data-section="calendar">Calendar</button><button class="cover-tab" data-section="goals">Goals</button><button class="cover-tab" data-section="notes">Notes</button><button class="ribbon" data-action="today" aria-label="Open today"></button></div><div class="cover-hint">Your days, between these pages. <button data-action="open">Tap to open</button></div></div>`;}
+function renderCover(){const c=state.settings.cover;app.innerHTML=`<div class="cover-scene"><div class="cover-controls"><button class="quiet-button" data-action="gallery">Choose cover</button><button class="quiet-button" data-action="personalize">Personalise</button></div><div data-material="${coverMaterial()}" data-cover="${c}" class="cover-book ${lightCovers.includes(Number(c))||c==='custom'?'light':''}" ${state.settings.coverInk?`style="--cover-ink:${state.settings.coverInk}"`:''}><div class="cover-art" style="${coverStyle()}"></div><div class="page-block" aria-hidden="true"></div><div class="cover-light" aria-hidden="true"></div><div class="spine"></div><button class="cover-open" data-action="open" aria-label="Open ${year()} planner"><span class="cover-year">${year()}</span>${state.settings.title?`<span class="cover-title">${esc(state.settings.title)}</span>`:''}${state.settings.owner?`<span class="cover-owner">${esc(state.settings.owner)}</span>`:''}<span class="emboss-logo"><span class="brand-symbol">u</span>unbound days</span></button><button class="cover-tab" data-section="calendar">Calendar</button><button class="cover-tab" data-section="goals">Goals</button><button class="cover-tab" data-section="notes">Notes</button><button class="ribbon" data-action="today" aria-label="Open today"></button></div></div>`;}
 function eventsFor(d){return [...state.events,...state.cachedGoogle.filter(e=>state.settings.selectedCalendars.includes(e.google.calendar))].filter(e=>eventOnDate(e,d)).sort((a,b)=>(a.time||'').localeCompare(b.time||''));}
 function ruled(key,placeholder='Write here…',extra=''){return `<textarea class="ruled" data-entry="${esc(key)}" aria-label="${esc(placeholder)}" placeholder="${esc(placeholder)}" ${extra}>${esc(entry(key))}</textarea>`;}
 function tools(){return `<div class="write-tools"><button data-action="pencil" title="Write with Apple Pencil using iPad Scribble">✎ Pencil</button><button data-action="dictate">● Dictate</button></div>`;}
