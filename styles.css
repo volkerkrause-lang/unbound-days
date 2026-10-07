@@ -9,3 +9,26 @@ dialog{border:1px solid #d7cfbf;border-radius:12px;padding:0;width:min(740px,cal
 @media print{.app-bar,.section-tabs,.month-tabs,.bookmark-today,.date-controls,.primary,.write-tools,.page-footer{display:none!important}body,#app{background:white;padding:0}.book-shell{padding:0;margin:0}.book{box-shadow:none;border:0;min-height:0}.book:before{display:none}}
 
 @media(max-width:760px){.week-day:nth-child(1){order:0}.week-day:nth-child(2){order:3}.week-day:nth-child(3){order:1}.week-day:nth-child(4){order:4}.week-day:nth-child(5){order:2}.week-day:nth-child(6){order:5}.week-day:nth-child(7){order:6}.week-notes{order:7}}
+/* Light catches the raised cover; offset paper edges give the book depth. */
+.cover-scene{perspective:1800px}
+.cover-book{transform:rotateX(5deg) rotateY(-5deg) rotateZ(-1deg);transform-style:preserve-3d;box-shadow:3px 4px 3px #25170a55,12px 18px 15px #2f211348,25px 36px 40px #3b2a1b30,48px 65px 85px #35231320;border:1px solid #35221770}
+.cover-book:hover{transform:rotateX(2deg) rotateY(-2deg) rotateZ(-.4deg)}
+.cover-art{box-shadow:inset 2px 2px 3px #fff8,inset -3px -3px 4px #170d0eaa,inset 12px 0 15px #10070340}
+.cover-light{position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:linear-gradient(125deg,#fff3,transparent 32%,#0001 72%,#0004);box-shadow:inset 0 0 0 1px #fff3,inset 0 0 0 5px #15090010}
+.page-block{position:absolute;inset:9px -9px -12px 19px;z-index:-3;border-radius:6px 13px 13px 4px;background:repeating-linear-gradient(0deg,#cfc4ad 0 1px,#f8f1df 1px 3px);box-shadow:inset -5px 0 8px #85765955,3px 4px 0 #452d22,5px 9px 12px #34201355}
+.spine{width:35px;background:linear-gradient(90deg,#110704a0,#fff2 36%,#1a0a0a66 82%,#fff2 87%,transparent 100%);border-right:1px solid #0003}
+.cover-year{font-weight:400;text-shadow:0 2px 1px #fff5,0 -2px 1px #1a0e0ac0,1px 0 1px #fff2}
+.cover-book.light{--cover-ink:#414744;--cover-emboss:#414744}
+.cover-tab{background-image:linear-gradient(90deg,#0003,transparent 30%,#fff2);border:1px solid #fff3;box-shadow:3px 5px 6px #261b1740}
+.swatch{box-shadow:inset 1px 1px 2px #fff6,inset -2px -2px 3px #0006,2px 4px 5px #24150e40;transform:perspective(700px) rotateY(-7deg);border-radius:3px 7px 7px 3px}
+.book{box-shadow:0 2px 0 #cfc5b0,2px 5px 0 #f8f3e8,3px 8px 0 #c1b69f,4px 11px 0 #eee7d5,6px 14px 1px #5d453338,8px 22px 30px #30201525;perspective:1800px}
+.book.turning{animation:none}
+.turn-leaf{position:absolute!important;inset:0;z-index:10;pointer-events:none;overflow:hidden;transform-origin:left center;backface-visibility:hidden;background:var(--paper);box-shadow:18px 0 36px #30201555;animation:turn-forward .8s cubic-bezier(.3,.05,.25,1) both;}
+.turn-leaf:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#34261750,transparent 14%,transparent 70%,#fff9 88%,#70593866);animation:leaf-light .8s ease both}
+.turn-leaf.backwards{transform-origin:right center;animation-name:turn-backward}
+.departing-page{padding:26px 34px 22px;background:var(--paper);height:100%;overflow:hidden;border-radius:5px;pointer-events:none}
+@keyframes turn-forward{0%{transform:rotateY(0);opacity:1}72%{opacity:1}100%{transform:rotateY(-155deg);opacity:0}}
+@keyframes turn-backward{0%{transform:rotateY(0);opacity:1}72%{opacity:1}100%{transform:rotateY(155deg);opacity:0}}
+@keyframes leaf-light{from{opacity:0}50%{opacity:1}to{opacity:.65}}
+@media(max-width:650px){.cover-book{transform:rotateY(-3deg);width:78vw}.departing-page{padding:20px 15px}.cover-scene{min-height:450px}}
+@media(prefers-reduced-motion:reduce){.cover-book,.cover-book:hover,.swatch{transform:none}.turn-leaf{display:none}.cover-book{transition:none}}
