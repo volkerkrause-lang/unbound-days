@@ -85,3 +85,9 @@ Google Drive and Dropbox backup adapters use immutable snapshots and conflict-aw
 - Box: automatic connection is not implemented in this static release. Box requires a secure token-exchange service; never publish a client secret in this repository. The onboarding card accurately remains unavailable. A JSON export can be saved manually to a Box folder through iPad Files.
 
 Cloud configuration is intentionally empty rather than inventing a working connection. Reconnect after reload/session expiry. All providers also support manual backup through iPad Files when their apps are installed. Files stored only on the iPad are not protection against losing it.
+
+### Dropbox registration — 7 October 2026
+
+Unbound Days is registered as a scoped App Folder application. The production web callback is `https://volkerkrause-lang.github.io/unbound-days/`, public PKCE clients are enabled, and backup permissions are `files.metadata.read`, `files.content.read`, and `files.content.write` (plus Dropbox's default account information scope). The public app key is configured; no app secret or user token is committed.
+
+The Dropbox application remains in development mode for its owner's account. Registration does not itself connect an account or prove backup/recovery succeeded. Users connect through Settings and approve Dropbox's consent screen. Backups run while the planner is open and its short-lived connection is valid; reconnect when requested. Public rollout requires Dropbox production review. Google registration and Box server hosting are still pending.

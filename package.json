@@ -1,6 +1,6 @@
 {
   "name": "unbound-days",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "private": true,
   "type": "module",
   "scripts": {"start": "node server.mjs", "test": "node --test tests/*.test.mjs", "check": "node --check app.js && node --check calendar.js && node --check google.js && node --check sw.js && node --check storage.js && node --check sync.js && node --check dropbox.js && node --check cloud-config.js"}
