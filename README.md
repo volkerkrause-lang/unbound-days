@@ -1,5 +1,7 @@
 # Unbound Days
 
+Open the app: https://volkerkrause-lang.github.io/unbound-days/
+
 A tactile notebook planner designed first for iPad in landscape, with responsive mobile and desktop layouts. This is a working first edition, not yet a production commercial service.
 
 ## Run
@@ -27,12 +29,9 @@ Open `http://localhost:4173`. Use `npm run check` and `npm test` for syntax and 
 
 ## GitHub Pages
 
-1. Create a new repository named `unbound-days` in your account. Prefer private source if your GitHub plan supports Pages for private repositories; otherwise publishing the source publicly is a separate choice. The static planner itself has no login wall.
-2. Upload this folder's contents, including `.github/workflows/pages.yml`. Keep all planner data out of the source repository.
-3. In repository Settings → Pages, choose **GitHub Actions** as the source.
-4. Push to the `main` branch or run **Publish Unbound Days** manually.
+Source and all artwork are stored in the public repository `volkerkrause-lang/unbound-days`. GitHub Pages is configured to use **GitHub Actions**. Every push to `main` validates the JavaScript, runs the tests, packages the web assets, and publishes after those checks pass. You can also run **Check and publish Unbound Days** manually in Actions.
 
-All asset/module paths are relative so deployment works under `/unbound-days/`. The workflow uploads only app assets, not project docs or private data. Source and all assets are stored in `volkerkrause-lang/unbound-days`. The repository is private. Pages deployment awaits a hosting decision because the current GitHub plan requires an upgrade or a public repository.
+All asset/module paths are relative so deployment works under `/unbound-days/`. The publishing package contains app assets only. Personal planner entries stay in the browser and are never committed to this repository.
 
 ## Google Calendar setup
 
