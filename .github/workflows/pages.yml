@@ -1,17 +1,16 @@
-name: Publish Unbound Days
+name: Check and publish Unbound Days
 on:
   push:
     branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
-  pages: write
-  id-token: write
 concurrency:
   group: pages
   cancel-in-progress: false
 jobs:
   check:
+    name: Validate and package app
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,23 +19,41 @@ jobs:
           node-version: '22'
       - run: npm run check
       - run: npm test
-      - name: Prepare public files
+      - name: Prepare app files
         run: |
           mkdir -p _site/assets
           cp index.html app.js calendar.js google.js styles.css sw.js manifest.webmanifest _site/
           cp -r assets/* _site/assets/
           touch _site/.nojekyll
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
-          path: _site
+          name: unbound-days-web
+          path: _site/
+          include-hidden-files: true
+      - name: Explain publishing status
+        if: vars.PAGES_ENABLED != 'true'
+        run: echo 'App checks passed and web package saved. Publishing is paused until GitHub Pages is enabled and PAGES_ENABLED is set to true.' >> "$GITHUB_STEP_SUMMARY"
   deploy:
+    name: Publish to GitHub Pages
     needs: check
+    if: vars.PAGES_ENABLED == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: unbound-days-web
+          path: _site
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
