@@ -1,15 +1,15 @@
-import {createMatrix} from './matrix.js?v=0.3.7';
-import {dateKey,parseDate,addDays,monday,isoWeek,monthCells,eventOnDate,formatDate,pad,toICS} from './calendar.js?v=0.3.7';
-import * as Google from './google.js?v=0.3.7';
-import * as Dropbox from './dropbox.js?v=0.3.7';
-import {cloudConfig} from './cloud-config.js?v=0.3.7';
-import {notebookContent,mergeNotebook,resolveConflict,unwrapBackup} from './sync.js?v=0.3.7';
-import {chooseRecovery,readMirror,writeMirror} from './storage.js?v=0.3.7';
+import {createMatrix} from './matrix.js?v=0.3.8';
+import {dateKey,parseDate,addDays,monday,isoWeek,monthCells,eventOnDate,formatDate,pad,toICS} from './calendar.js?v=0.3.8';
+import * as Google from './google.js?v=0.3.8';
+import * as Dropbox from './dropbox.js?v=0.3.8';
+import {cloudConfig} from './cloud-config.js?v=0.3.8';
+import {notebookContent,mergeNotebook,resolveConflict,unwrapBackup} from './sync.js?v=0.3.8';
+import {chooseRecovery,readMirror,writeMirror} from './storage.js?v=0.3.8';
 
 const KEY='unbound-days-v1', HISTORY=KEY+'-history';
 const TODAY=dateKey(new Date()),months=Array.from({length:12},(_,i)=>new Date(2026,i,1).toLocaleDateString('en-GB',{month:'long'}));
-const coverNames=['Cognac leather','Forest leather','Kintsugi','Stained glass','Pressed botanicals','Retro futurism','Topographic relief','Mother of pearl','Embroidered tapestry','Liquid chrome','Navy linen','Ivory leather','Burgundy leather','Ocean suede','Terracotta linen','Walnut wood','Art Deco','Watercolour landscape','Celestial','Botanical linen','Saddle stitched leather','Oxblood tooled leather','Midnight leather','Ivory quilted leather','Heritage leather','Steampunk brass','Rococo gilded sage','Brushed titanium','Indigo sashiko','Wood marquetry','Moonstone silver','Plum velvet'];
-const coverFiles=['leather-saddle','leather-oxblood','leather-black','leather-ivory','leather-vintage','steampunk','rococo','titanium','japanese','marquetry','moonstone','velvet'];
+const coverNames=['Cognac leather','Forest leather','Kintsugi','Stained glass','Pressed botanicals','Retro futurism','Topographic relief','Mother of pearl','Embroidered tapestry','Liquid chrome','Navy linen','Ivory leather','Burgundy leather','Ocean suede','Terracotta linen','Walnut wood','Art Deco','Watercolour landscape','Celestial','Botanical linen','Saddle stitched leather','Oxblood tooled leather','Midnight leather','Ivory quilted leather','Heritage leather','Steampunk brass','Rococo gilded sage','Brushed titanium','Indigo sashiko','Wood marquetry','Moonstone silver','Plum velvet','Clockwork brass leather','Gilded filigree','Navy heirloom leather','Oxblood heirloom leather'];
+const coverFiles=['leather-saddle','leather-oxblood','leather-black','leather-ivory','leather-vintage','steampunk','rococo','titanium','japanese','marquetry','moonstone','velvet','steampunk-luxe','gold-filigree-luxe','navy-leather-luxe','oxblood-leather-luxe'];
 const lightCovers=[4,5,6,7,9,11,17,19,23,26,30];
 const emptyState=()=>({version:1,events:[],tasks:[],notes:[],habits:[],entries:{},ink:{},trash:[],bookmarks:[],settings:{cover:0,owner:'',title:'',font:'Caveat',ink:'#313a41',googleClientId:cloudConfig.googleClientId,backupProvider:'google',selectedCalendars:[],defaultCalendar:'primary',favorites:[],coverPosition:50,coverInk:''},cachedGoogle:[],googleCalendars:[]});
 let state=emptyState(),storageError=false,storageCorrupt=false,externalChange=false,mirrorQueue=Promise.resolve(),cloudTimer,cloudBusy=false,cloudDirty=false,lastCloud=0,cloudStatus='Not connected',saveGeneration=0;
@@ -69,7 +69,7 @@ async function cloudCopies(){const copies=await cloudProvider().listBackups();op
 function openModal(title,body){formDirty=false;document.querySelector('#modal-content').innerHTML=`<div class="modal-head"><h2 id="modal-title">${title}</h2><button class="icon-button" data-action="close-modal" aria-label="Close">×</button></div><div class="modal-body">${body}</div>`;attachWritingTools(document.querySelector('#modal-content'));if(!modal.open)modal.showModal();}
 function closeModal(){if(speech)speech.stop();syncConflict=false;formDirty=false;modal.close();updateSaveStatus();}
 function coverStyle(c=state.settings.cover){if(c!=='custom'&&Number(c)<=20)return `background-image:url('assets/cover-${String(c).padStart(2,'0')}-premium-v3.webp');background-size:cover;background-position:center;`;if(c==='custom')return `background-image:url('${state.settings.customCover}');background-size:cover;background-position:${state.settings.coverPosition??50}% center;`;if(Number(c)>=20)return `background-image:url('assets/${coverFiles[Number(c)-20]}.webp');background-size:100% 100%;background-position:center;`;const index=Number(c)%10;return `${Number(c)>=10?"--atlas:url('assets/cover-atlas-classic-realistic-v2.webp');background-image:url('assets/cover-atlas-classic-realistic-v2.webp');":''}--cover-position:${index%2?100:0}% ${Math.floor(index/2)*25}%;`;}
-function coverMaterial(c=state.settings.cover){const n=Number(c);if([0,1,11,12,20,21,22,23,24,25,26].includes(n))return 'leather';if([5,8,10,13,14,19,28,31].includes(n))return 'cloth';if([16,18].includes(n))return 'foil';if([3,4,7,9,27,30].includes(n))return 'gloss';if([2,6,15,29].includes(n))return 'relief';return 'printed';}
+function coverMaterial(c=state.settings.cover){const n=Number(c);if([0,1,11,12,20,21,22,23,24,25,26,32,33,34,35].includes(n))return 'leather';if([5,8,10,13,14,19,28,31].includes(n))return 'cloth';if([16,18].includes(n))return 'foil';if([3,4,7,9,27,30].includes(n))return 'gloss';if([2,6,15,29].includes(n))return 'relief';return 'printed';}
 function applyTheme(){document.documentElement.style.setProperty('--ink',state.settings.ink);document.documentElement.style.setProperty('--hand',`'${state.settings.font}', 'Segoe Print', 'Bradley Hand', cursive`);}
 function render(){applyTheme();if(closed){previousView='';renderCover();updateSaveStatus();return;}const navigationKey=section+':'+view+':'+date+':'+(['notes','launchpad'].includes(section)?noteId:'');const turn=previousView&&previousView!==navigationKey;const oldDate=previousView.split(':')[2];const backwards=oldDate&&date<oldDate;const departing=turn?document.querySelector('.book')?.cloneNode(true):null;const titles={calendar:view==='year'?`${year()} at a glance`:view==='month'?`${months[month()]} ${year()}`:view==='week'?`${formatDate(monday(date),{day:'numeric',month:'short'})} — ${formatDate(addDays(monday(date),6),{day:'numeric',month:'short',year:'numeric'})}`:formatDate(date,{weekday:'long',day:'numeric',month:'long'}),goals:`Goals for ${year()}`,tasks:'Things to do',notes:'Notes & ideas',habits:`${months[month()]} habits`,reflection:`${months[month()]} reflection`,launchpad:'Bright Ideas'};
 const tabNames={calendar:'Calendar',goals:'Goals',tasks:'To do',notes:'Notes',habits:'Habits',reflection:'Reflection',launchpad:'Bright Ideas'};
@@ -167,7 +167,7 @@ window.addEventListener('storage',e=>{if(e.key===KEY){externalChange=true;docume
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&cloudDirty&&cloudConnected())runCloudBackup(true).catch(()=>{});});
 try{const last=JSON.parse(localStorage.getItem(KEY+'-last-page')||'null');if(last&&/^\d{4}-\d{2}-\d{2}$/.test(last.date)&&['calendar','goals','tasks','notes','habits','reflection','launchpad'].includes(last.section)&&['day','week','month','year'].includes(last.view)){({date,section,view,noteId}=last);}}catch{}
 const matrix=createMatrix({getState:()=>state,getDate:()=>date,save,render,esc,id,openModal,closeModal,toast});
-closed=false;section='calendar';view='week';date=TODAY;
+closed=true;section='calendar';view='week';date=TODAY;
 render();Dropbox.finishAuth().then(async done=>{if(done){state.settings.backupProvider='dropbox';save();await runCloudBackup(true);settings();}}).catch(e=>toast(e.message));if(storageError)document.querySelector('#save-status').textContent='Recovery needed · restore a backup';if(storageError)toast('Saved notebook could not be read. Restore a backup before adding new entries.');
 if('serviceWorker' in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('./sw.js').catch(()=>{});
 
