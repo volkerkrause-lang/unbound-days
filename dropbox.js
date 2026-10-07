@@ -1,4 +1,4 @@
-import {cloudConfig} from './cloud-config.js';
+import {cloudConfig} from './cloud-config.js?v=0.3.1';
 let token='',expiry=0;
 const redirect=()=>location.origin+location.pathname;
 export const connected=()=>!!token&&Date.now()<expiry;

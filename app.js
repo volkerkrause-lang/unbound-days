@@ -1,9 +1,9 @@
-import {dateKey,parseDate,addDays,monday,isoWeek,monthCells,eventOnDate,formatDate,pad,toICS} from './calendar.js';
-import * as Google from './google.js';
-import * as Dropbox from './dropbox.js';
-import {cloudConfig} from './cloud-config.js';
-import {notebookContent,mergeNotebook,resolveConflict,unwrapBackup} from './sync.js';
-import {chooseRecovery,readMirror,writeMirror} from './storage.js';
+import {dateKey,parseDate,addDays,monday,isoWeek,monthCells,eventOnDate,formatDate,pad,toICS} from './calendar.js?v=0.3.1';
+import * as Google from './google.js?v=0.3.1';
+import * as Dropbox from './dropbox.js?v=0.3.1';
+import {cloudConfig} from './cloud-config.js?v=0.3.1';
+import {notebookContent,mergeNotebook,resolveConflict,unwrapBackup} from './sync.js?v=0.3.1';
+import {chooseRecovery,readMirror,writeMirror} from './storage.js?v=0.3.1';
 
 const KEY='unbound-days-v1', HISTORY=KEY+'-history';
 const TODAY=dateKey(new Date()),months=Array.from({length:12},(_,i)=>new Date(2026,i,1).toLocaleDateString('en-GB',{month:'long'}));
