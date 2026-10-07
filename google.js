@@ -23,8 +23,8 @@ async function drive(path,options={}){
   return r.json();
 }
 export async function listBackups(){
-  const p=new URLSearchParams({spaces:'appDataFolder',q:"trashed = false and name contains 'unbound-days-'",pageSize:'100',orderBy:'createdTime desc',fields:'files(id,name,createdTime,description)'});
-  const r=await drive('drive/v3/files?'+p);return r.files||[];
+  const p=new URLSearchParams({spaces:'appDataFolder',q:"trashed = false and name contains 'unbound-days-'",pageSize:'100',orderBy:'createdTime desc',fields:'nextPageToken,files(id,name,createdTime,description)'});
+  let result=[],token='';do{if(token)p.set('pageToken',token);const r=await drive('drive/v3/files?'+p);result.push(...(r.files||[]));token=r.nextPageToken||'';}while(token);return result;
 }
 // Immutable snapshots avoid one device silently replacing another's notebook.
 export async function backupNotebook(state,device){

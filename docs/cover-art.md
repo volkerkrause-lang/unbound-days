@@ -30,3 +30,31 @@ Use case: style-transfer. Input image: edit target, existing cover-texture atlas
 
 Use case: style-transfer. Input image: edit target, existing cover-texture atlas. Improve photorealism ONLY while preserving the identity, palette, subject and recognisable composition of every original design. This is ONE production atlas asset: EXACTLY two equal-width columns and five equal-height rows, ten full-bleed landscape 3:2 panels, no gaps, no labels, no book objects, no desk, no perspective. Keep row/column locations identical. Output a high-resolution 2048 x 3416 atlas if possible so each panel has fine detail. Rows: navy linen / ivory leather; burgundy leather / blue ocean suede; terracotta linen / walnut wood; emerald Art Deco gold arches / watercolor mountain lake landscape; navy celestial gold stars / botanical magnolias on sage linen. Finer linen weave at believable notebook scale, fine natural leather grain, suede light-direction nap, walnut satin polished wood grain, Art Deco real slightly raised gold foil lines on emerald cloth, watercolor pigment on textured paper under thin satin protective finish, celestial real gold foil stamping on navy cloth, botanical artwork as printed ink on fine sage linen. Preserve every illustration and pattern. Real luxury-book material photography, subtle natural imperfections, directional soft upper-left light, micro-shadows and physical texture, balanced highlights. No added ornate borders, gears, decorations, text, numbers or branding. Preserve original artwork; improve its material rendering, not its design. Straight crisp grid boundaries.
 
+
+
+## First 21 individual materials — v3
+Built-in image generation, one reference-guided render per original cover, keeping colour and identity. Prompt set: single fullbleed overhead 3:2 notebook surface; microscopic realistic material detail at full notebook scale; soft upper-left studio light, subtle material shadows and restrained reflections; no text, desk or props. Default cognac received an extra fine smooth calfskin pass with tiny pores, satin finish and an inset border. Physical book edges and shadows are applied in CSS.
+
+- Cover 0: assets/cover-00-premium-v3.webp
+- Cover 1: assets/cover-01-premium-v3.webp
+- Cover 2: assets/cover-02-premium-v3.webp
+- Cover 3: assets/cover-03-premium-v3.webp
+- Cover 4: assets/cover-04-premium-v3.webp
+- Cover 5: assets/cover-05-premium-v3.webp
+- Cover 6: assets/cover-06-premium-v3.webp
+- Cover 7: assets/cover-07-premium-v3.webp
+- Cover 8: assets/cover-08-premium-v3.webp
+- Cover 9: assets/cover-09-premium-v3.webp
+- Cover 10: assets/cover-10-premium-v3.webp
+- Cover 11: assets/cover-11-premium-v3.webp
+- Cover 12: assets/cover-12-premium-v3.webp
+- Cover 13: assets/cover-13-premium-v3.webp
+- Cover 14: assets/cover-14-premium-v3.webp
+- Cover 15: assets/cover-15-premium-v3.webp
+- Cover 16: assets/cover-16-premium-v3.webp
+- Cover 17: assets/cover-17-premium-v3.webp
+- Cover 18: assets/cover-18-premium-v3.webp
+- Cover 19: assets/cover-19-premium-v3.webp
+- Cover 20: assets/cover-20-premium-v3.webp
+
+Forest, ivory and burgundy leather plus navy and terracotta linen received a second material-scale pass: reduce grain/weave tenfold, preserve colour, tiny pores or fine threads, subtle padded edge shading, no text or props.

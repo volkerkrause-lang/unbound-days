@@ -48,3 +48,29 @@ dialog{border:1px solid #d7cfbf;border-radius:12px;padding:0;width:min(740px,cal
 .swatch:after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(120deg,#fff2,transparent 36%,#0002);box-shadow:inset 2px 0 3px #24140a50,inset -1px -2px 2px #110a0750}
 .swatch[data-material="gloss"]:after{background:linear-gradient(120deg,transparent 8%,#fff3 25%,transparent 36%,#0002)}
 .swatch[data-material="cloth"]:after{background:linear-gradient(120deg,#fff1,transparent 36%,#0002)}
+/* Physical book geometry: contact shadows, a padded board and directional sheen. */
+.cover-book{border-radius:5px 14px 14px 5px;isolation:isolate;box-shadow:1px 2px 2px #26140f66,3px 6px 4px #26140f50,9px 15px 15px #26140f35,24px 38px 46px #26140f32,42px 65px 85px #26140f18;transform:perspective(1800px) rotateX(6deg) rotateY(-7deg) rotateZ(-1deg)}
+.cover-art{border-radius:inherit;background-size:cover;box-shadow:inset 1px 2px 2px #ffedcf6b,inset 6px 0 8px #160b0840,inset -3px -4px 5px #170b0870}
+.cover-book .cover-light{border-radius:inherit;box-shadow:inset 2px 3px 3px #fff5,inset -4px -5px 6px #160b0866;pointer-events:none}
+.cover-book[data-material="leather"] .cover-light{background:radial-gradient(ellipse at 24% 15%,#fff3,transparent 58%),linear-gradient(105deg,#12080520,transparent 11%,#fff1 16%,transparent 38%,#16080525 100%);box-shadow:inset 2px 2px 3px #ffebc666,inset 0 0 12px #12060415,inset -4px -5px 6px #16090588}
+.cover-book[data-cover="0"]:before{border:1px solid #60341766;box-shadow:0 1px 1px #ffe3b440,inset 0 1px 2px #2d160d66;inset:19px 20px 19px 44px;border-radius:3px 8px 8px 3px}
+.cover-book[data-cover="0"] .cover-year{color:#d9b77d;text-shadow:0 -1px 1px #2b1309,0 1px 0 #ffdf9c99,1px 2px 2px #321b1340;filter:drop-shadow(0 .5px .3px #fff2)}
+.cover-book[data-cover="0"] .emboss-logo{color:#452918;text-shadow:0 1px 1px #ffddb05c,0 -1px 1px #230d0b60;opacity:.8}
+.cover-book[data-material="gloss"] .cover-light{background:linear-gradient(115deg,#fff2,transparent 12%,#fff3 31%,#ffffff08 48%,transparent 63%,#0002);box-shadow:inset 1px 2px 3px #fffb,inset -3px -4px 5px #120c0980}
+.spine{border-radius:5px 0 0 5px;background:linear-gradient(90deg,#15070470,#ffffff08 25%,#ffffff22 43%,#14070466 79%,#fff2 87%,transparent);box-shadow:2px 0 3px #1c0b0638}
+.page-block{box-shadow:1px 1px 1px #fff8,3px 6px 0 #452818,4px 8px 2px #1e0c0a77,8px 13px 10px #160b0833;border-radius:3px 10px 10px 3px}
+.field-write-tools{justify-content:flex-end;gap:5px;margin:3px 0 7px;position:relative;z-index:2}
+.field-write-tools button{font-family:var(--ui);font-size:10px;min-height:30px;padding:4px 9px;background:#eee9dfc9;border:1px solid #c9beac6b;border-radius:5px;color:#65574b;white-space:nowrap}
+.field-write-tools button.recording{color:#9b3541;background:#f2dce1}
+.ruled+.field-write-tools{margin-top:-4px}
+.named-ribbons{display:flex;gap:8px;position:relative;align-items:flex-start;margin:14px 45px 0;flex-wrap:wrap}
+.named-ribbons button{border:0;background:var(--ribbon-colour,#725142);color:#fff5e3;padding:7px 13px 14px;min-height:38px;clip-path:polygon(0 0,100% 0,100% 100%,50% 85%,0 100%);font:12px var(--ui);box-shadow:inset 1px 0 #fff4,inset -1px 0 #0003}
+.named-ribbons .ribbon-add{clip-path:none;background:transparent;color:#66564a;padding-bottom:7px;box-shadow:none;border:1px dashed #b1a494;border-radius:5px}
+.backup-providers{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0}
+.backup-providers button{padding:20px 12px;display:flex;flex-direction:column;gap:8px;text-align:left}
+.backup-providers strong{font-size:15px}.backup-providers span{font-size:11px;line-height:1.5}
+.backup-steps{padding:10px 16px;background:#f5f0e7;border-radius:8px;margin:12px 0}.backup-steps p{margin:8px 0}
+.sync-conflict{border:1px solid #d8cbb7;border-radius:8px;margin:14px 0;padding:12px}.sync-conflict pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;max-height:180px;overflow:auto}.sync-conflict label{display:block;margin:10px 0}
+.ribbon-list>div{display:flex;justify-content:space-between;margin:10px 0}.ribbon-list{margin-bottom:20px}
+@media(max-width:650px){.backup-providers{grid-template-columns:1fr}.named-ribbons{margin:14px 0}.field-write-tools button{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.cover-book{transform:none}}

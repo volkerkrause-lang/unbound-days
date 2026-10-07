@@ -49,7 +49,7 @@ Official references:
 
 ## Limits to understand
 
-- Notes, habits, goals, tasks and uploaded covers save locally and can be backed up automatically to the private Google Drive app data folder after consent. Backups are immutable snapshots, not automatic cross-device merging; restore a chosen copy or transfer an exported file. Google events can be fetched on another device after connecting there.
+- Notes, habits, goals, tasks and uploaded covers save locally and can be backed up automatically to the private Google Drive app data folder after consent. Backups are immutable journal snapshots. Nonconflicting edits merge across connected devices; conflicting fields require explicit review. Full-file restores remain explicit. Google events can be fetched on another device after connecting there.
 - Google integration is implemented but cannot be verified against a live account until an OAuth client ID and consent are supplied. It refreshes on request/year change, not in the background. Offline Google edits are blocked rather than queued.
 - iPad handwriting-to-text depends on Apple's Scribble, available in compatible text fields and supported languages. Original sketch strokes are separate; there is no custom handwriting OCR. Browser dictation varies by browser, may use a provider's speech service, and requires permission; the iPad keyboard microphone is the fallback. Test both on physical iPad hardware.
 - Notebook reminders are in-app and require the app to remain open. Google reminders are sent by Google. No background web-push reminder service exists yet.
@@ -70,4 +70,18 @@ Follow `AGENTS.md` for each future update. Main pushes run tests and deploy auto
 
 New cover art was generated with the built-in image tool. The prompt set and asset destinations are recorded in `docs/cover-art.md`. New covers have fine material texture and lit relief; CSS adds layered page edges, bevels, binding depth and cast shadows. Page turns use a perspective leaf with a moving shadow; reduced-motion preferences suppress the effect.
 
-The original twenty cover designs now use a refined material rendering, accurately aligned atlas panels, and material-specific highlights. Their IDs, favourites and saved notebooks are preserved. The two versioned WebP atlases and full edit prompts are recorded in `docs/cover-art.md`.
+The first 21 covers use individual 1536×1024 WebP material panels, with fine-grain premium cognac leather, binding depth, material-specific reflections and layered cast shadows. IDs, favourites and existing notebooks remain compatible. Asset destinations and built-in prompts are recorded in `docs/cover-art.md`.
+
+## Release 0.3.0
+
+Every text-writing field has adjacent Pencil and Dictate controls. Named ribbons bookmark exact pages. First-use backup onboarding explains local protection, complete JSON export to iPad Files, and cloud setup. Saving status distinguishes offline, disconnected, pending, completed and failed cloud copies.
+
+Google Drive and Dropbox backup adapters use immutable snapshots and conflict-aware three-way merging. Local journal metadata is device-specific. Automatic checks run while visible and connected; no background sync is promised when the app is closed. A check that races with new writing is postponed, preserving the new writing. Legacy backup files still import.
+
+### Deployment configuration still required
+
+- Google: register a Web OAuth client for the Pages origin; set its public client ID in `cloud-config.js` or Settings. Calendar and Drive APIs and consent must be enabled. Live-account consent is not yet validated.
+- Dropbox: register an **App folder** app, enable files.metadata.read and files.content.read/write, and register the exact redirect `https://volkerkrause-lang.github.io/unbound-days/`. Set only the public app key in `cloud-config.js`. Sign-in uses authorization-code PKCE, a short-lived memory-only access token, and sessionStorage only for the one-time verifier.
+- Box: automatic connection is not implemented in this static release. Box requires a secure token-exchange service; never publish a client secret in this repository. The onboarding card accurately remains unavailable. A JSON export can be saved manually to a Box folder through iPad Files.
+
+Cloud configuration is intentionally empty rather than inventing a working connection. Reconnect after reload/session expiry. All providers also support manual backup through iPad Files when their apps are installed. Files stored only on the iPad are not protection against losing it.
