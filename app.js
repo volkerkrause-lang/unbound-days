@@ -1,10 +1,10 @@
-import {createMatrix} from './matrix.js?v=0.3.11';
-import {dateKey,parseDate,addDays,monday,isoWeek,monthCells,eventOnDate,formatDate,pad,toICS} from './calendar.js?v=0.3.11';
-import * as Google from './google.js?v=0.3.11';
-import * as Dropbox from './dropbox.js?v=0.3.11';
-import {cloudConfig} from './cloud-config.js?v=0.3.11';
-import {notebookContent,mergeNotebook,resolveConflict,unwrapBackup} from './sync.js?v=0.3.11';
-import {chooseRecovery,readMirror,writeMirror} from './storage.js?v=0.3.11';
+import {createMatrix} from './matrix.js?v=0.3.12';
+import {dateKey,parseDate,addDays,monday,isoWeek,monthCells,eventOnDate,formatDate,pad,toICS} from './calendar.js?v=0.3.12';
+import * as Google from './google.js?v=0.3.12';
+import * as Dropbox from './dropbox.js?v=0.3.12';
+import {cloudConfig} from './cloud-config.js?v=0.3.12';
+import {notebookContent,mergeNotebook,resolveConflict,unwrapBackup} from './sync.js?v=0.3.12';
+import {chooseRecovery,readMirror,writeMirror} from './storage.js?v=0.3.12';
 
 const KEY='unbound-days-v1', HISTORY=KEY+'-history';
 const TODAY=dateKey(new Date()),months=Array.from({length:12},(_,i)=>new Date(2026,i,1).toLocaleDateString('en-GB',{month:'long'}));
