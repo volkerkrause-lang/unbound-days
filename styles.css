@@ -114,3 +114,5 @@ input[data-writing-key],textarea[data-writing-key]{font-family:var(--hand)}
 .bookmark-today{top:-6px;height:68px;padding:12px 3px 20px;clip-path:polygon(0 0,50% 12%,100% 0,100% 100%,0 100%);background:linear-gradient(0deg,#0007,transparent 32%,#fff1 70%,#0001),linear-gradient(90deg,#572d29,#a76359 12%,#83433c 48%,#aa665b 82%,#512a25)}
 .book-shell>.book{z-index:3}
 @media(max-width:760px){.bookmark-today{height:68px}}
+
+.day-writing-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px}.day-writing-head .small-heading{margin:0;flex:1;min-width:180px}.day-writing-head .write-tools{flex-shrink:0;margin:0;position:static}
