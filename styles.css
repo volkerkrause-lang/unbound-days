@@ -230,3 +230,14 @@ body:has(dialog[open]) #app .shared-write-tools{visibility:hidden}
 .turn-shadow.backwards{inset:0 50% 0 0;transform-origin:right center;background:linear-gradient(270deg,#38291566,transparent 80%)}
 @media(prefers-reduced-motion:reduce){.turn-shadow,.turn-leaf{display:none!important}}
 @media print{body,#app{height:auto;overflow:visible}.book-shell,.book-shell>.book{height:auto;display:block}.page-content{overflow:visible}.shared-write-tools{display:none!important}.reflection-grid{height:auto}}
+@media(min-width:768px){
+ .weekly-grid{min-height:100%;grid-template-rows:repeat(4,minmax(min-content,1fr));gap:0 30px}
+ .weekly-grid .week-day{min-height:100px;padding:8px 2px;gap:5px}
+ .weekly-grid .week-day .ruled,.weekly-grid .week-notes .ruled{min-height:48px;height:48px;flex:1}
+ .weekly-grid .week-notes{display:flex;flex-direction:column;min-height:100px;margin:0;padding:8px 2px}
+ .weekly-grid .week-notes h2{font-size:19px;margin-bottom:8px}
+}
+@media(min-width:1024px) and (max-height:1000px){
+ .year-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 16px}
+ .mini-month td button{width:20px;height:22px}.mini-month h2{font-size:18px}
+}
