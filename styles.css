@@ -116,3 +116,6 @@ input[data-writing-key],textarea[data-writing-key]{font-family:var(--hand)}
 @media(max-width:760px){.bookmark-today{height:68px}}
 
 .day-writing-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px}.day-writing-head .small-heading{margin:0;flex:1;min-width:180px}.day-writing-head .write-tools{flex-shrink:0;margin:0;position:static}
+
+/* A single outward-facing tip, rather than an inward ribbon notch. */
+.bookmark-today{clip-path:polygon(50% 0,100% 14%,100% 100%,0 100%,0 14%);padding-top:16px;padding-bottom:16px}
