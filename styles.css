@@ -108,3 +108,9 @@ input[data-writing-key],textarea[data-writing-key]{font-family:var(--hand)}
 .section-tabs{padding-left:46px;height:52px;align-items:flex-end}
 .bookmark-today{top:-6px;left:9px;width:28px;height:53px;padding:8px 3px 10px;justify-content:center;writing-mode:vertical-rl;font:12px/1 var(--serif);letter-spacing:.04em;color:#f1d58d;background:linear-gradient(180deg,#0005,transparent 24%,#fff1 65%,#0002),linear-gradient(90deg,#572d29,#a76359 12%,#83433c 48%,#aa665b 82%,#512a25);box-shadow:inset 1px 0 #fff3,inset -1px 0 #0004;filter:drop-shadow(2px 3px 2px #35261940);clip-path:polygon(0 0,100% 0,100% 100%,50% 88%,0 100%)}
 @media(max-width:760px){.section-tabs{height:52px;padding-left:40px}.bookmark-today{left:5px;width:25px;height:53px;font-size:12px}.month-tabs{top:65px}}
+
+/* Today ribbon rises from between the pages; its lower end sits behind the paper. */
+.section-tabs{overflow-y:hidden}
+.bookmark-today{top:-6px;height:68px;padding:12px 3px 20px;clip-path:polygon(0 0,50% 12%,100% 0,100% 100%,0 100%);background:linear-gradient(0deg,#0007,transparent 32%,#fff1 70%,#0001),linear-gradient(90deg,#572d29,#a76359 12%,#83433c 48%,#aa665b 82%,#512a25)}
+.book-shell>.book{z-index:3}
+@media(max-width:760px){.bookmark-today{height:68px}}
