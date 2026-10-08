@@ -145,3 +145,88 @@ input[data-writing-key],textarea[data-writing-key]{font-family:var(--hand)}
 .planner-table th:first-child,.planner-table td:first-child{min-width:54px;width:54px}
 .planner-register .planner-table th:not(:first-child){min-width:160px}
 .planner-section{margin:20px 0}.planner-register{margin-top:24px}
+
+/* One writing toolbar for the current page or editor. */
+.shared-write-tools{justify-content:flex-end;flex-wrap:wrap;gap:8px;margin:0 0 12px;flex:none}
+.shared-write-tools button,.writing-target{font:14px var(--ui);min-height:38px;padding:7px 10px;border:1px solid #d7d6c6;border-radius:4px;background:#f0efe4;color:var(--ink)}
+.writing-target{max-width:240px;min-width:150px;text-overflow:ellipsis}
+.shared-write-tools button[aria-pressed=true]{background:#dce7d1;border-color:#7a997b}
+.pencil-mode .ruled,.pencil-mode input[type=text]{outline:none}
+.pencil-mode textarea:focus,.pencil-mode input[type=text]:focus{outline:2px solid #7a997b}
+#modal-content>.shared-write-tools{position:sticky;top:74px;z-index:5;background:var(--paper);padding:10px 26px;margin:0;border-bottom:1px solid var(--line)}
+body:has(dialog[open]) #app .shared-write-tools{visibility:hidden}
+.page-content{min-width:0}
+
+/* A screen-sized spread: the paper stays still, extra content scrolls within it. */
+@media(min-width:768px){
+ body{height:100dvh;min-height:0;overflow:hidden;padding-top:env(safe-area-inset-top)}
+ .app-bar{height:60px;padding:0 3vw}
+ #app{height:calc(100dvh - 60px - env(safe-area-inset-top));min-height:0;padding:0 3vw calc(20px + env(safe-area-inset-bottom))}
+ .book-shell{height:100%;margin:0 auto;padding-bottom:0;display:flex;flex-direction:column}
+ .section-tabs{height:46px;flex:none;align-items:flex-end;padding-left:42px}
+ .section-tab{font-size:14px;white-space:nowrap}
+ .book-shell>.book{min-height:0;height:auto;flex:1;display:flex;flex-direction:column;padding:18px 24px 14px;overflow:hidden}
+ .book-head{flex:none;margin-bottom:10px;padding-bottom:12px;min-height:55px}
+ .book-head h1{font-size:clamp(22px,2.4vw,30px);margin-bottom:0}
+ .date-controls{gap:7px}.date-controls .primary,.date-controls .today-button{padding:10px 14px}
+ .shared-write-tools{margin-bottom:10px}
+ .page-content{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-gutter:stable;-webkit-overflow-scrolling:touch}
+ .page-footer{flex:none;margin-top:10px;min-height:32px}
+ .page-footer:empty{display:none}
+ .month-tabs{top:52px;bottom:8px}
+ .month-tab{min-height:0;flex:1;font-size:12px;padding:3px}
+ .bookmark-today{top:0;height:47px}
+ .book .named-ribbons{display:none}
+ .book-shell>.named-ribbons{position:absolute;bottom:0;left:60px;right:50px;margin:0;transform:translateY(65%);pointer-events:none;padding:0;max-height:25px;overflow:hidden}
+ .book-shell>.named-ribbons button{pointer-events:auto}
+ .book-shell>.named-ribbons .ribbon-add{margin:0;font-size:14px;padding:1px 8px;min-height:20px;align-self:start}
+ .book-shell>.named-ribbons .fabric-ribbon{width:55px;transform:translateY(-70%)}
+ .day-spread{gap:30px;min-height:100%}
+ .day-spread .empty-note{padding:10px 0;margin-bottom:12px}
+ .day-spread h2{margin-bottom:10px;font-size:21px}
+ .day-spread .side-section{margin-bottom:16px}
+ .day-spread .ruled{height:clamp(128px,25dvh,320px);min-height:128px}
+ .reflection-grid{height:100%;grid-template-rows:repeat(3,minmax(120px,1fr));gap:14px 32px}
+ .reflection-grid section{min-height:0;display:flex;flex-direction:column}
+ .reflection-grid h2{flex:none;font-size:21px;margin:0 0 8px}
+ .reflection-grid .ruled{min-height:64px;height:auto;flex:1;resize:none}
+ .section-reflection .page-content>div:first-child:has(>.write-tools){display:none}
+ .calendar-table td{height:clamp(55px,8dvh,105px)}
+ .calendar-sidebar .side-section{margin-bottom:12px}
+ .calendar-sidebar .ruled{min-height:96px;height:96px}
+ .year-grid{gap:14px 22px}
+ .year-grid .mini-month h2{margin-bottom:7px}
+ .planner-toolbar{margin-bottom:12px;gap:8px}
+ .planner-meta{gap:18px;margin-bottom:12px}
+ .planner-section{margin:12px 0}
+ .planner-guide{margin-bottom:8px;line-height:1.4}
+ .planner-section .ruled{height:64px;min-height:64px}
+ .planner-register{margin-top:16px}
+ .planner-table .ruled{height:64px;min-height:64px}
+ .planner-extra{margin:12px 0;padding:10px 0}
+ .planner-hub .planner-group-tabs{margin-bottom:14px;padding-bottom:10px}
+ .planner-card{min-height:92px;padding:12px 4px}
+ .cover-scene{height:100%;min-height:0}
+}
+@media(min-width:768px) and (max-height:850px){
+ .app-bar{height:48px}#app{height:calc(100dvh - 48px - env(safe-area-inset-top))}
+ .book-shell>.book{padding:12px 20px 10px}.book-head{min-height:42px;padding-bottom:8px;margin-bottom:8px}
+ .shared-write-tools{margin-bottom:6px}.reflection-grid{grid-template-rows:repeat(3,minmax(100px,1fr));gap:10px 28px}
+ .reflection-grid h2{font-size:19px}.page-footer{margin-top:6px}
+ .day-spread .ruled{height:128px}.day-spread .priorities{margin-bottom:16px}
+}
+@media(max-width:767px){.page-content{overflow:visible}.shared-write-tools{justify-content:flex-start}.writing-target{flex:1;max-width:100%}.month-tabs{top:65px}#modal-content>.shared-write-tools{top:65px;padding:8px 18px}}
+
+/* Each half-sheet turns around the spine, with paper on both sides. */
+.book{perspective:1800px}
+.turn-leaf{inset:0 0 0 50%;width:50%;height:100%;animation:none!important;transform-origin:left center;transform-style:preserve-3d;backface-visibility:visible;overflow:visible;z-index:12;pointer-events:none}
+.turn-leaf.backwards{inset:0 50% 0 0;transform-origin:right center}
+.leaf-face{position:absolute;inset:0;overflow:hidden;backface-visibility:hidden;transform:translateZ(.5px);border-radius:0 8px 16px 0;background:var(--paper);box-shadow:8px 4px 22px #30201535}
+.turn-leaf .departing-page{position:absolute;top:0;left:-100%;display:flex;flex-direction:column;margin:0;border:0;border-radius:0;background:var(--paper);box-shadow:none;transform:none;backface-visibility:visible;overflow:hidden}
+.turn-leaf.backwards .departing-page{left:0}
+.turn-leaf:before{background:linear-gradient(90deg,#ddd3bd,var(--paper) 12%,#fffef8 74%,#e9e0ce);border-radius:8px 0 0 16px;box-shadow:inset 8px 0 16px #70593822, -6px 3px 18px #30201525}
+.turn-leaf:after{animation:none!important;transform:translateZ(1px);background:linear-gradient(90deg,#4f39262a,transparent 16%,transparent 72%,#fff8 88%,#60462630);border-radius:0 8px 16px 0}
+.turn-shadow{animation:none!important;z-index:11;inset:0 0 0 50%;transform-origin:left center;opacity:0;background:linear-gradient(90deg,#38291566,transparent 80%)}
+.turn-shadow.backwards{inset:0 50% 0 0;transform-origin:right center;background:linear-gradient(270deg,#38291566,transparent 80%)}
+@media(prefers-reduced-motion:reduce){.turn-shadow,.turn-leaf{display:none!important}}
+@media print{body,#app{height:auto;overflow:visible}.book-shell,.book-shell>.book{height:auto;display:block}.page-content{overflow:visible}.shared-write-tools{display:none!important}.reflection-grid{height:auto}}
