@@ -200,11 +200,11 @@ function attachQuickDelete(root){
 }
 
 /* Day gestures ignore writing fields, controls, selection and vertical scrolling. */
-let daySwipe=null,lastDaySwipe=0;
+let daySwipe=null,lastDaySwipe=-Infinity;
 app.addEventListener('pointerdown',e=>{
  if(e.pointerType!=='touch'||!e.isPrimary||closed||section!=='calendar'||view!=='day'||modal.open)return;
  if(e.target.closest('button,input,textarea,select,a,canvas,[contenteditable],.month-tabs,.section-tabs,.named-ribbons')||window.getSelection()?.toString())return;
- const book=e.target.closest('[data-day-swipe]');if(!book||book.querySelector('.turn-leaf'))return;
+ const book=e.target.closest('[data-day-swipe]');if(!book)return;
  daySwipe={id:e.pointerId,x:e.clientX,y:e.clientY,time:performance.now(),date};
  book.setPointerCapture(e.pointerId);
 });
@@ -217,6 +217,6 @@ app.addEventListener('pointerup',e=>{
  const s=daySwipe;daySwipe=null;
  if(!s||s.id!==e.pointerId||closed||section!=='calendar'||view!=='day'||s.date!==date||modal.open)return;
  const dx=e.clientX-s.x,dy=e.clientY-s.y,now=performance.now();
- if(now-s.time>900||now-lastDaySwipe<650||Math.abs(dx)<60||Math.abs(dx)<Math.abs(dy)*1.8||window.getSelection()?.toString())return;
+ if(now-s.time>1600||now-lastDaySwipe<180||Math.abs(dx)<30||Math.abs(dx)<Math.abs(dy)*1.25||window.getSelection()?.toString())return;
  lastDaySwipe=now;navigate(dx<0?1:-1);
 });
