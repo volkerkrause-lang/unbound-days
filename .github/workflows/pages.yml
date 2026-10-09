@@ -22,7 +22,7 @@ jobs:
       - name: Prepare app files
         run: |
           mkdir -p _site/assets
-          cp index.html app.js pack-go.js matrix.js calendar.js google.js storage.js sync.js dropbox.js cloud-config.js styles.css sw.js manifest.webmanifest _site/
+          cp index.html app.js gym.js pack-go.js matrix.js calendar.js google.js storage.js sync.js dropbox.js cloud-config.js styles.css sw.js manifest.webmanifest _site/
           cp -r assets/* _site/assets/
           touch _site/.nojekyll
       - uses: actions/upload-artifact@v4
