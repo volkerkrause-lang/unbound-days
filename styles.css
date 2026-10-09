@@ -282,3 +282,12 @@ body:has(dialog[open]) #app .shared-write-tools{visibility:hidden}
 
 /* Searchable exercise library and compact set details. */
 .gym-picker{display:grid;gap:14px}.gym-picker>label,.gym-picker form>label{display:grid;gap:5px}.gym-picker input,.gym-picker select{width:100%;font:inherit;padding:10px;border:1px solid #a28f7359;border-radius:5px;background:transparent;color:inherit}.gym-picker-help{margin:0;font-size:.9rem;opacity:.75}.gym-picker-results{max-height:42vh;overflow-y:auto;display:grid;gap:6px;overscroll-behavior:contain}.gym-picker-option{display:grid;gap:4px;text-align:left;padding:12px;border:1px solid #a28f7359;border-radius:5px;background:#a28f7309;color:inherit;font:inherit;min-height:56px}.gym-picker-option:hover,.gym-picker-option:focus-visible{background:#75836b22;border-color:#53654f}.gym-picker-option span{font-size:.85rem;opacity:.8}.gym-picker form{display:grid;gap:12px;margin-top:12px}.gym-picker summary,.gym-set-extra summary{cursor:pointer}.gym-set-extra summary{font-size:.85rem}.gym-set-extra>div{display:grid;gap:8px;min-width:115px;margin-top:10px}.gym-set-extra label{font-size:.8rem}.gym-table .gym-set-extra input{font-size:1rem;min-width:65px}.gym-table .gym-previous{min-width:75px;max-width:140px}.gym-table input{max-width:110px}.gym-table .gym-set-extra{max-width:135px}
+
+/* Keep input controls reachable while the notebook or tables scroll. */
+#app .shared-write-tools{position:sticky;top:0;z-index:20;background:var(--paper);padding:8px 0;border-bottom:1px solid var(--line)}
+.task-board{grid-template-columns:repeat(3,minmax(0,1fr))}
+.launchpad-layout .note-editor>input[data-note-title]{height:36px;min-height:36px;padding:3px 0;font-size:21px;margin:0 0 8px;width:100%}
+.launchpad-layout .note-editor{min-width:0}
+.launchpad-layout .note-controls{margin:4px 0 10px}
+.launchpad-layout .note-editor>.ruled{margin-top:0;padding-top:0;text-indent:0}
+@media(max-width:767px){.task-board{grid-template-columns:1fr}.launchpad-layout{display:flex;flex-direction:column;gap:12px}.launchpad-layout>aside{display:contents}.launchpad-layout .note-editor{order:1}.launchpad-layout .note-list{order:2}.launchpad-layout>aside>.primary{align-self:flex-start}.shared-write-tools{flex-wrap:nowrap!important}.writing-target{min-width:0;width:40%;}.shared-write-tools button{white-space:nowrap}}
