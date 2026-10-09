@@ -29,7 +29,7 @@ export async function listBackups(){
 // Immutable snapshots avoid one device silently replacing another's notebook.
 export async function backupNotebook(state,device){
   const boundary='unbound_'+crypto.randomUUID(),time=new Date().toISOString();
-  const metadata={name:`unbound-days-${time}-${device}.json`,parents:['appDataFolder'],mimeType:'application/json',description:`Unbound Days notebook saved ${time}`};
+  const metadata={name:`unbound-days-${time}-${device}.json`,parents:['appDataFolder'],mimeType:'application/json',description:`Unbound notebook saved ${time}`};
   const body=`--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(metadata)}\r\n--${boundary}\r\nContent-Type: application/json\r\n\r\n${JSON.stringify(state)}\r\n--${boundary}--`;
   return drive('upload/drive/v3/files?uploadType=multipart&fields=id,createdTime',{method:'POST',headers:{'Content-Type':`multipart/related; boundary=${boundary}`},body});
 }

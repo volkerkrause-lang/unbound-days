@@ -1,4 +1,4 @@
-# Unbound Days
+# Unbound
 
 Open the app: https://volkerkrause-lang.github.io/unbound-days/
 
@@ -16,7 +16,7 @@ Open `http://localhost:4173`. Use `npm run check` and `npm test` for syntax and 
 
 ## Features
 
-- Landscape notebook layout, warm paper, embossed Unbound Days wordmark, current planner year and optional cover name/title.
+- Landscape notebook layout, warm paper, embossed Unbound wordmark, current planner year and optional cover name/title.
 - Thirty-two generated cover designs, including Steampunk, Rococo, titanium and five additional leather bindings, favourites, switching without changing entries, and uploaded image covers with crop positioning and lettering choices.
 - Year, month, week and day calendar views with clickable dates and ISO week numbers. Today ribbon, year selection and monthly side tabs.
 - Appointments, all-day/multi-day entries, local daily/weekly/monthly/yearly repetition, categories, locations, notes and calendar export.
@@ -29,7 +29,7 @@ Open `http://localhost:4173`. Use `npm run check` and `npm test` for syntax and 
 
 ## GitHub Pages
 
-Source and all artwork are stored in the public repository `volkerkrause-lang/unbound-days`. GitHub Pages is configured to use **GitHub Actions**. Every push to `main` validates the JavaScript, runs the tests, packages the web assets, and publishes after those checks pass. You can also run **Check and publish Unbound Days** manually in Actions.
+Source and all artwork are stored in the public repository `volkerkrause-lang/unbound-days`. GitHub Pages is configured to use **GitHub Actions**. Every push to `main` validates the JavaScript, runs the tests, packages the web assets, and publishes after those checks pass. You can also run **Check and publish Unbound** manually in Actions.
 
 All asset/module paths are relative so deployment works under `/unbound-days/`. The publishing package contains app assets only. Personal planner entries stay in the browser and are never committed to this repository.
 
@@ -88,6 +88,10 @@ Cloud configuration is intentionally empty rather than inventing a working conne
 
 ### Dropbox registration — 7 October 2026
 
-Unbound Days is registered as a scoped App Folder application. The production web callback is `https://volkerkrause-lang.github.io/unbound-days/`, public PKCE clients are enabled, and backup permissions are `files.metadata.read`, `files.content.read`, and `files.content.write` (plus Dropbox's default account information scope). The public app key is configured; no app secret or user token is committed.
+Unbound is registered as a scoped App Folder application. The production web callback is `https://volkerkrause-lang.github.io/unbound-days/`, public PKCE clients are enabled, and backup permissions are `files.metadata.read`, `files.content.read`, and `files.content.write` (plus Dropbox's default account information scope). The public app key is configured; no app secret or user token is committed.
 
 The Dropbox application remains in development mode for its owner's account. Registration does not itself connect an account or prove backup/recovery succeeded. Users connect through Settings and approve Dropbox's consent screen. Backups run while the planner is open and its short-lived connection is valid; reconnect when requested. Public rollout requires Dropbox production review. Google registration and Box server hosting are still pending.
+
+## Release 0.3.29
+
+The app is now called Unbound, including the cover, header and installable app name. Planning Tools brings all 41 form templates into nine subject sections. Search spans every section and saved form names. Related sections link to the same template, and pinned forms appear first in My forms. Existing form IDs, original answers, notebook storage, backup locations and the Pages address remain compatible.
