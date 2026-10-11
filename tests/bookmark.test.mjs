@@ -22,4 +22,15 @@ test('cover bookmark ribbon uses red velvet gradient and text shadow instead of 
     css.includes('text-shadow:0 -1px 0 #fff5,0 1px 1px #38050a'),
     'styles.css should contain red velvet ribbon text shadow'
   );
+
+  // Check that inside bookmark ribbon (.bookmark-today) uses two peaks (inward notch polygon) matching the outer ribbon
+  assert.equal(
+    css.includes('clip-path:polygon(50% 0,100% 14%,100% 100%,0 100%,0 14%)'),
+    false,
+    'styles.css should not use single-peak clip-path for .bookmark-today'
+  );
+  assert.ok(
+    css.includes('.bookmark-today{clip-path:polygon(0 0,100% 0,100% 100%,50% 88%,0 100%)'),
+    'styles.css should use two-peak clip-path with bottom notch for .bookmark-today'
+  );
 });
