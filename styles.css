@@ -111,14 +111,14 @@ input[data-writing-key],textarea[data-writing-key]{font-family:var(--hand)}
 
 /* Today ribbon rises from between the pages; its lower end sits behind the paper. */
 .section-tabs{overflow-y:hidden}
-.bookmark-today{top:-6px;height:68px;padding:12px 3px 20px;clip-path:polygon(0 0,50% 12%,100% 0,100% 100%,0 100%);background:linear-gradient(0deg,#0007,transparent 32%,#fff1 70%,#0001),linear-gradient(90deg,#3e070c,#a82231 12%,#78121f 48%,#b82939 82%,#38050a)}
+.bookmark-today{top:-6px;height:68px;padding:12px 3px 20px;clip-path:polygon(0 0,100% 0,100% 100%,50% 88%,0 100%);background:linear-gradient(0deg,#0007,transparent 32%,#fff1 70%,#0001),linear-gradient(90deg,#3e070c,#a82231 12%,#78121f 48%,#b82939 82%,#38050a)}
 .book-shell>.book{z-index:3}
 @media(max-width:760px){.bookmark-today{height:68px}}
 
 .day-writing-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px}.day-writing-head .small-heading{margin:0;flex:1;min-width:180px}.day-writing-head .write-tools{flex-shrink:0;margin:0;position:static}
 
-/* A single outward-facing tip, rather than an inward ribbon notch. */
-.bookmark-today{clip-path:polygon(50% 0,100% 14%,100% 100%,0 100%,0 14%);padding-top:16px;padding-bottom:16px}
+/* Two peaks with an inward ribbon notch, matching the ribbon outside the calendar. */
+.bookmark-today{clip-path:polygon(0 0,100% 0,100% 100%,50% 88%,0 100%);padding-top:12px;padding-bottom:16px}
 
 /* Lift a paper sheet with a curved edge, a shaded reverse and a moving cast shadow. */
 .book[data-day-swipe]{touch-action:pan-y pinch-zoom}
