@@ -18,5 +18,32 @@ export function mergeNotebook(base,local,remote){
  }
  return {data:merge(base,local,remote,[]),conflicts};
 }
-export function resolveConflict(data,conflict,choice){let node=data;for(const k of conflict.path.slice(0,-1)){node=Array.isArray(node)?node.find(x=>x.id===k):node[k];}const key=conflict.path.at(-1),value=copy(conflict[choice]);if(Array.isArray(node)){const i=node.findIndex(x=>x.id===key);if(value===undefined){if(i>=0)node.splice(i,1);}else if(i<0)node.push(value);else node[i]=value;}else if(value===undefined)delete node[key];else node[key]=value;}
+export function resolveConflict(data,conflict,choice){
+ let node=data;
+ const path=conflict.path,len=path.length-1;
+ for(let i=0;i<len;i++){
+  const k=path[i];
+  if(Array.isArray(node)){
+   let found=undefined;
+   for(let j=0;j<node.length;j++){
+    if(node[j]?.id===k){found=node[j];break;}
+   }
+   node=found;
+  }else node=node?.[k];
+ }
+ const key=path[len],value=copy(conflict[choice]);
+ if(Array.isArray(node)){
+  let idx=-1;
+  for(let j=0;j<node.length;j++){
+   if(node[j]?.id===key){idx=j;break;}
+  }
+  if(value===undefined){
+   if(idx>=0)node.splice(idx,1);
+  }else if(idx<0)node.push(value);
+  else node[idx]=value;
+ }else if(node!==undefined&&node!==null){
+  if(value===undefined)delete node[key];
+  else node[key]=value;
+ }
+}
 export const unwrapBackup=x=>x?.format==='unbound-days-snapshot-v2'?x.data:x;
