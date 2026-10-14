@@ -1,12 +1,12 @@
 import * as Accounts from './accounts.js';
 import {accountConfig} from './account-config.js';
-import {scopeKey,cloudContent,fingerprint,createSync} from './account-sync.js';
+import {scopeKey,cloudContent,fingerprint,createSync,validationNotebook} from './account-sync.js';
 import {resolveConflict} from './sync.js';
 export function mountAccounts({getState,empty,apply,persist,render,openModal,closeModal,toast,exportNotebook,snapshot,validateBackup,lock,finishLocal,onStatus=()=>{},blocked=()=>false}){
  let stopped=false,conflicts=null,cloudText=Accounts.user?'Cloud not checked':'Local notebook',timer;
  const bootId=Accounts.user?.id||null;
  const active=()=>!stopped&&!!bootId&&!blocked();
- const sync=Accounts.client&&bootId?createSync({client:Accounts.client,getState,empty,apply,persist,active,validate:content=>validateBackup({...empty(),...structuredClone(content)}),conflict:r=>{conflicts=r;},status:text=>{cloudText=text;const el=document.querySelector('#account-cloud-status');if(el)el.textContent=text;onStatus();}}):null;
+ const sync=Accounts.client&&bootId?createSync({client:Accounts.client,getState,empty,apply,persist,active,validate:content=>validateBackup(validationNotebook(content,empty())),conflict:r=>{conflicts=r;},status:text=>{cloudText=text;const el=document.querySelector('#account-cloud-status');if(el)el.textContent=text;onStatus();}}):null;
  const buttons=document.createElement('span');buttons.className='account-buttons';document.querySelector('.bar-actions').prepend(buttons);
  buttons.innerHTML=`<button class="text-action" id="account-open">${bootId?'My Account':'Log In'}</button>${bootId?'<button class="text-action" id="account-logout">Log Out</button>':''}`;
  buttons.querySelector('#account-open').onclick=()=>show().catch(e=>toast(e.message));buttons.querySelector('#account-logout')?.addEventListener('click',logout);

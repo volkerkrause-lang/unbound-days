@@ -106,3 +106,34 @@ Owner supplied development URL and public publishable key; committed only on dev
 
 ## Hosted schema verified — 2026-10-14
 Owner ran the full migration after correcting Run selected. SQL catalogue check shows profiles, notebooks, notebook_imports and has_unrestricted_access exist. Read-only anonymous API checks now return 401/42501 for profiles/notebooks SELECT and administrator-check execution, confirming logged-out access is denied. Hosted per-user RLS, write RPC and Auth flows still require signed-in staging tests. Next: configure a separate development frontend and exact Auth callback URL, then owner/signup and hosted authorization verification. No production deployment.
+
+## Task redesign — 14 October 2026
+- Isolated branch: `development/tasks-view`, based on development head b6c6564; production unchanged.
+- Implemented: short coloured bookmark list ribbons, contained horizontal scrolling, one task list, All/Today/Upcoming/Overdue/Completed filters; long-press arrangement mode, mouse/touch reordering and accessible arrows, pins, undo/reset; quick entry, date shortcuts, bulk completion/date/priority, duplicate editor; saved opening/list/filter/scroll preferences; gold side Today bookmark above month tabs.
+- Legacy tasks retain IDs and default to My tasks. Existing notes/goals/idea links are preserved; duplicates receive fresh IDs and no remote mapping. Optional list/view metadata lives in existing private notebook settings. No destructive migration or production deployment.
+- Fixed cloud validation of omitted device-only preferences (the reported Invalid preferences error); task-list preferences survive cloud snapshot validation. Cross-device and real-device behaviour still require hosted testing.
+- Google Tasks sync NOT implemented or enabled. The existing browser Google token flow has no server-side refresh-token broker. The UI explicitly reports secure setup pending; local lists are not presented as Google imports.
+- Required next setup: enable Google Tasks API in the existing Google Cloud project; prepare backend OAuth client-secret configuration in Supabase secrets (never chat/git), backend token-encryption key and callback/origin allowlist. Implement and test OAuth state/PKCE, encrypted private token storage, durable mappings/outbox, duplicate-safe sync and conflicts before connecting real tasks. Exact callback URL must match the eventual broker function.
+- Checks: new task data/workflow tests pass, account/RLS tests pass, JS syntax and production build pass. Updated the existing Drive test to match the already implemented visible-folder drive.file design. Browser installation failed with truncated Chromium archives; no visual/live-Google/offline-device claims.
+- Next: review this branch's task interface in a development preview, then implement secure Google authorization and sync. No alarms; existing search/sorting unchanged.
+
+## Google Tasks integration draft — 14 October 2026
+
+Baseline `development/account-foundation` at `b6c656441b84d548ed6cfb114a51439ab5c79630` is an ancestor of `development/tasks-view` at `f8197ac5cd655a0a594a27450c928331e0366892` (one additional interface commit, no divergent history). The separate `development/google-tasks-integration` branch preserves both; neither source branch nor main is changed.
+
+- Reuses the browser Google connection with full Tasks scope plus OpenID identity verification. Access tokens remain in module memory; reconnection is explicit after expiry/reload. Google account identity namespaces lists and tasks and prevents writes into another connected account.
+- Discovers paginated task lists as existing bookmark tabs; imports active, completed, hidden, deleted and assigned records. The existing Today view and list preferences remain intact. Calendar-day task chips reuse notebook tasks; Tasks synchronisation never creates Calendar events.
+- Two-way title, notes, date and completion synchronisation; explicit deletion tombstones; imports subtask relationships and creates new subtasks beneath existing or newly synchronised parents. Priorities, times, planner links and ink remain notebook metadata.
+- Three-way conflict review and conditional ETag writes; missing remote records are retained for review. Unknown POST outcomes persist before sending and pause automatic creation retries. The originating device performs initial creation; other devices wait to reduce duplicate creation. Linking an uncertain creation requires explicitly checking its Google task ID.
+- Parent deletion pauses while subtasks remain; assigned-source deletion must be reviewed in Google. Undo restores a pending deletion in place; a confirmed remote deletion restores only a local recovery copy.
+
+Validation: the consolidated existing/new suite passed 67 tests after adapting the backup OAuth mock for identity verification. Subsequent focused validation passed 25 tests, including added OAuth-expiry and deletion-restore tests. Syntax and build passed. Browser smoke was blocked by a missing Playwright Chromium executable; browser download failed, and no further attempts were made.
+
+Deployment verification: HTTP 200 from `https://unbound-development.pages.dev`; served app.js and google.js SHA-256 hashes match the account-foundation branch. Its configured deployment branch was recorded earlier as account-foundation; Cloudflare dashboard/API configuration was not re-read because no Cloudflare administrative connection is available here. No deployment setting was changed. The integration code is not claimed deployed.
+
+Remaining validation and limitations:
+1. Review/merge the draft PR into account-foundation to update the existing development deployment, without changing its configured branch. Never merge this work into main as part of this task.
+2. Reconnect Google on the authorised development origin, grant Tasks/OpenID identity access, and verify list discovery; create/edit/complete/reopen/delete a disposable task; create and edit a disposable subtask; verify changes made in Google import back; verify Calendar and Drive still work. No live OAuth session was available in this execution environment, so no live Tasks round-trip was performed.
+3. Run browser smoke when Chromium is available. Check account/login, cover, navigation, task form, Today and reload persistence before removing draft status.
+4. Existing Google task list transfers and existing subtask-parent changes are deliberately blocked in Unbound; perform those changes in Google and refresh, or explicitly duplicate a task. New lists created by the existing Unbound list button remain local. Synchronisation runs on connection, after notebook edits, Calendar refresh or the Tasks sync button; it is not a background service.
+5. Unknown creation outcomes require explicit review rather than automatic duplicate-prone retries. Initial creation on another device waits for the original device. Browser-only tokens do not provide unattended refresh.
