@@ -1,2 +1,2 @@
-// Public identifiers only. Configure an isolated development project first.
-export const accountConfig = {supabaseUrl:'',supabasePublishableKey:'',captchaSiteKey:''};
+// Public identifiers only. Isolated Unbound Development project; not production.
+export const accountConfig = {supabaseUrl:'https://msgitgnzgfrsaxgklohy.supabase.co',supabasePublishableKey:'sb_publishable_aaFz7OnkXGvEoOik-w92Gg_egURPBdf',captchaSiteKey:''};
