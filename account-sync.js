@@ -45,3 +45,6 @@ export function createSync({client,getState,apply,persist,empty,conflict,status,
  function queue(){status('Saved locally · cloud pending');clearTimeout(timer);timer=setTimeout(sync,1500);}
  return {sync,queue,stop(){clearTimeout(timer);},get busy(){return busy;}};
 }
+
+// Restore device-only defaults before validating a cloud snapshot.
+export const validationNotebook=(content,empty)=>({...empty,...structuredClone(content),settings:{...empty.settings,...structuredClone(content.settings)}});

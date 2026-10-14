@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {PGlite} from '@electric-sql/pglite';
-import {scopeKey,reconcile,createSync,fingerprint} from '../account-sync.js';
+import {scopeKey,reconcile,createSync,fingerprint,cloudContent,validationNotebook} from '../account-sync.js';
 const empty=()=>({version:1,events:[],tasks:[],notes:[],habits:[],entries:{},ink:{},trash:[],bookmarks:[],settings:{}});
 const A='00000000-0000-4000-8000-000000000001',B='00000000-0000-4000-8000-000000000002';
 test('database denies cross-account access and self-appointed admin; CAS/imports stay atomic',async()=>{
@@ -72,3 +72,5 @@ test('fresh empty accounts remain available for explicit legacy import',async()=
  const client={from:()=>({select:()=>({limit:async()=>({data:[]})})}),rpc:async()=>{writes++;}};
  const sync=createSync({client,getState:empty,empty,apply:()=>assert.fail('empty account should remain untouched'),persist:()=>{},status:()=>{},conflict:()=>{}});await sync.sync();assert.equal(writes,0);delete globalThis.navigator;
 });
+
+test('cloud validation restores omitted device preferences and retains task-list settings',()=>{const defaults={...empty(),settings:{favorites:[],selectedCalendars:[],ink:'#313a41',cover:0}};const content=cloudContent({...defaults,settings:{...defaults.settings,taskListOrder:['local','work']}});assert.equal(content.settings.selectedCalendars,undefined);const restored=validationNotebook(content,defaults);assert.deepEqual(restored.settings.selectedCalendars,[]);assert.deepEqual(restored.settings.taskListOrder,['local','work']);assert.equal(content.settings.selectedCalendars,undefined);});
