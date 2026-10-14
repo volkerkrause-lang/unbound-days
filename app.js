@@ -334,7 +334,12 @@ accountManager=mountAccounts({getState:()=>state,empty:emptyState,
  apply:(content,cloud)=>{applyCloudContent(content);state._cloud=cloud;noteId=state.notes[0]?.id||null;},
  persist:async()=>{if(accountLocked||externalChange||storageCorrupt)throw Error('Local notebook needs reload/recovery');state.savedAt=new Date().toISOString();const copy=structuredClone(state);let localOK=false;try{localStorage.setItem(KEY,JSON.stringify(copy));localOK=true;}catch{}mirrorQueue=mirrorQueue.catch(()=>{}).then(()=>writeMirror(copy,KEY));try{await mirrorQueue;storageError=false;}catch{storageError=!localOK;if(!localOK)throw Error('Local recovery storage unavailable. Export immediately.');}updateSaveStatus();},
  finishLocal:()=>mirrorQueue.catch(()=>{}),
- blocked:()=>externalChange||accountLocked||storageCorrupt,onStatus:updateSaveStatus,render,openModal,closeModal,toast,snapshot,validateBackup,
+ blocked:()=>externalChange||accountLocked||storageCorrupt,onStatus:updateSaveStatus,render,openModal,closeModal,toast,snapshot,
  exportNotebook:()=>{const {_cloud,...copy}=state;download('unbound-account-export.json',JSON.stringify(copy,null,2),'application/json');},
  lock:()=>{accountLocked=true;Google.disconnect();Dropbox.disconnect();document.querySelector('#app').inert=true;document.querySelector('#modal').inert=true;},
+ // Cloud snapshots omit device-only preferences and Google caches by design.
+ // Validate a hydrated copy without modifying the stored cloud payload.
+ validateBackup:(data)=>validateBackup({...emptyState(),...data,
+   settings:{...emptyState().settings,...data.settings},
+   cachedGoogle:[],googleCalendars:[]}),
 });
