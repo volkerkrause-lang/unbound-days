@@ -6,7 +6,7 @@ A tactile notebook planner designed first for iPad in landscape, with responsive
 
 ## Run
 
-Requires Node.js 22 or later. No package installation or build step is needed.
+Requires Node.js 22 or later. Install locked dependencies with `npm ci`. `npm start` builds the static frontend, then serves `_site`. Account development setup is in [docs/account-setup.md](docs/account-setup.md).
 
 ```sh
 npm start

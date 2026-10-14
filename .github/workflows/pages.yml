@@ -17,14 +17,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - run: npm ci
       - run: npm run check
       - run: npm test
-      - name: Prepare app files
-        run: |
-          mkdir -p _site/assets
-          cp index.html app.js gym.js pack-go.js matrix.js calendar.js google.js storage.js sync.js dropbox.js cloud-config.js styles.css sw.js manifest.webmanifest _site/
-          cp -r assets/* _site/assets/
-          touch _site/.nojekyll
+      - run: npm run build
       - uses: actions/upload-artifact@v4
         with:
           name: unbound-days-web

@@ -2,7 +2,8 @@
 Audit date: 2026-10-14. Audit only; no features, service settings or production deployment changed.
 Repository: volkerkrause-lang/unbound-days (not unbound).
 Audited main: c007985841e2cb3423d1f3c13c26baa8e3360cd1. Version 0.3.34.
-Development branch: audit/commercial-readiness-2026-10-14.
+Audit branch: audit/commercial-readiness-2026-10-14.
+Group A development branch: development/account-foundation. Approved 2026-10-14; not merged/deployed.
 
 ## Findings and reusable code
 - Plain JavaScript ES modules, HTML/CSS, no installed dependencies/build requirement. Node static development server is not an API backend.
@@ -59,7 +60,7 @@ https://developers.google.com/workspace/drive/api/guides/appdata
 ## Implementation checklist
 - [x] Repository verified and targeted audit completed.
 - [x] Syntax validation and baseline tests.
-- [ ] Approval for Group A and proposed architecture.
+- [x] Approval for Group A and proposed architecture.
 - [ ] A: Auth pages/session/verification/reset/account settings/export/delete; UUID admin bootstrap; RLS and private assets; safe account-scoped local migration; revision-aware live cloud save/load and persistent offline operations. Tests: cross-user denial, role escalation denial, admin planner privacy, duplicate import, conflict/retry/logout/reload; staging two-device/offline verification.
 - [ ] B (separate approval after A): backend OAuth and separate permissions; repair Calendar with durable mappings, idempotent writes, incremental pulls/deletions, timezone/recurrence/reminder fidelity; Tasks list/task mappings, completion/due dates/local times; bounded retries/conflict review; versioned Drive backup/checksums/retention/manual restore with pre-restore snapshot. Tests: duplicates/deletion/conflicts/expiry/revocation/DST/recurrence/due dates/corrupt recovery + authorized live-account roundtrip.
 - [ ] C (separate approval after B): Stripe test Checkout/Billing/Portal, idempotent verified raw-body webhooks and server entitlements; admin bypass; preserve expired accounts' data; metadata-only dashboard and protected audited controls. Tests: forged/replayed/out-of-order webhooks, cancellation/renewal/failed payment/access controls. Premium features/prices remain undecided.
@@ -76,3 +77,26 @@ No need to activate services during audit. Configured external dashboards and pr
 npm run check: passed. npm test: 38 passed, 0 failed.
 No code changed; browser checks omitted for documentation-only audit. AGENTS.md publish requirement superseded by explicit audit-only/no-production instructions.
 Next: obtain Group A approval, implement on development branch and isolated configuration; do not merge, deploy, change production settings or buy upgrades.
+
+## Group A implementation — 2026-10-14
+Implemented on development/account-foundation; Group A is NOT yet accepted as complete because hosted configuration/live verification remain pending.
+- Official Supabase JS client bundled/pinned, PKCE email signup/login/Google login, verification/reset callbacks, persistent sessions, account settings, logout controls and optional Turnstile.
+- Postgres migration: private user notebook/profile/import tables, RLS, UUID-based privileged admin bootstrap, server-side unrestricted-admin check. No admin SELECT on another planner. Regular users cannot modify role metadata/tables. One authoritative notebook JSON row per user retains current UI schema and entity IDs; optimistic revisions/merge baselines avoid a risky UI rewrite. Large uploaded covers remain embedded for compatibility; extract into private assets only if needed.
+- Account-scoped localStorage/IndexedDB, guest preservation, explicit validated/exported/fingerprinted legacy import into an empty cloud account, transactional duplicate rejection. Durable local draft/base survives network failures; active checks/reconnect retry, same-field conflict review, bounded contention retries, auth-switch/in-flight guards and other-tab lock preservation.
+- Database cloud loading/saving adapters implemented. Cross-device and offline behavior is covered by deterministic synchronization tests but NOT verified on real devices/hosted service.
+- Authenticated notebooks disable legacy Drive journal merging so Drive is no longer their live source. Existing Calendar and optional provider backup adapters retained; secure backend Google authorization/account-binding still Group B. Guest behavior retained.
+- Password-reauthenticated own-account deletion Edge Function; cascade deletes planner/profile/import state; confirmed deletion removes that account's local notebook/recovery. Separate provider backups remain. Account export included; hosted backup/log retention/legal deletion policy still release work.
+- Build/development server now serves _site; security headers prepared for proposed Cloudflare host; development CI validates/packages only and never deploys. Production main/settings untouched.
+- Setup: docs/account-setup.md. Public account-config.js intentionally empty. No secrets introduced or paid services activated.
+
+### Group A remaining gates
+1. Owner creates isolated Supabase Free development project and supplies URL/public publishable key. Apply migration there; enable confirmation and appropriate rate limits/custom SMTP; configure Google login callback and optional Turnstile.
+2. Deploy own-account deletion function to development, set APP_ORIGINS; verify owner's UUID and privileged admin assignment. This is not production configuration.
+3. Run actual signup/verify/reset/Google/logout, two-user RLS via hosted API, two-device/offline/reload/conflict/migration and disposable-account deletion tests. Credentials/account configuration are not available in this session.
+4. Browser visual/persistence smoke prepared at scripts/browser-smoke.mjs. Chromium download failed (truncated/non-ZIP response) in this environment; no browser visual verification claimed. Run after installing Chromium in a working environment. No repeat download attempts required here.
+5. Only after these gates and review, consider Group A accepted and request Group B approval. No Group B/C implementation started.
+
+### Validation
+Syntax checks and static bundle build passed. Full regression: 45 tests, 0 failures (38 existing + 7 focused account/database/sync tests). PGlite runs real PostgreSQL row policies, privileges, transaction/CAS and cascade behavior with a simulated auth.uid/session; it does not validate hosted Auth/Edge Function runtime. Production dependency audit: zero known vulnerabilities. Browser/live account tests pending as above.
+
+Next recommended action: configure the isolated development Supabase project using docs/account-setup.md, then complete Group A live verification. Do not merge or deploy to production.

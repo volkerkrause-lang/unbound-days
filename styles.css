@@ -291,3 +291,5 @@ body:has(dialog[open]) #app .shared-write-tools{visibility:hidden}
 .launchpad-layout .note-controls{margin:4px 0 10px}
 .launchpad-layout .note-editor>.ruled{margin-top:0;padding-top:0;text-indent:0}
 @media(max-width:767px){.task-board{grid-template-columns:1fr}.launchpad-layout{display:flex;flex-direction:column;gap:12px}.launchpad-layout>aside{display:contents}.launchpad-layout .note-editor{order:1}.launchpad-layout .note-list{order:2}.launchpad-layout>aside>.primary{align-self:flex-start}.shared-write-tools{flex-wrap:nowrap!important}.writing-target{min-width:0;width:40%;}.shared-write-tools button{white-space:nowrap}}
+
+.account-buttons,.account-controls{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}.account-controls{margin:1rem 0}#account-form{display:grid;gap:.7rem}#account-form label{display:grid;gap:.3rem}#account-role,#account-cloud-status,#account-message{font-family:system-ui,sans-serif;font-size:.9rem}#account-review pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:12rem;overflow:auto}

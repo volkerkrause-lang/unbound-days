@@ -1,0 +1,6 @@
+project_id = "unbound-development"
+
+# JWTs are verified explicitly with auth.getUser inside this function, allowing
+# the current publishable-key client and Supabase signing-key configurations.
+[functions.delete-account]
+verify_jwt = false
