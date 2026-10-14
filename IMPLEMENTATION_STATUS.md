@@ -103,3 +103,6 @@ Next recommended action: configure the isolated development Supabase project usi
 
 ## Development connection check — 2026-10-14
 Owner supplied development URL and public publishable key; committed only on development/account-foundation. Read-only Auth settings check returned 200: email enabled, verification required, Google login disabled. Read-only notebooks schema check returned PGRST205 (table absent from schema cache): database migration still needs applying. No signup, service setting, database change or production deployment performed. Next: owner opens SQL Editor in Unbound Development and runs the checked-in account migration; then verify hosted table/API policies.
+
+## Hosted schema verified — 2026-10-14
+Owner ran the full migration after correcting Run selected. SQL catalogue check shows profiles, notebooks, notebook_imports and has_unrestricted_access exist. Read-only anonymous API checks now return 401/42501 for profiles/notebooks SELECT and administrator-check execution, confirming logged-out access is denied. Hosted per-user RLS, write RPC and Auth flows still require signed-in staging tests. Next: configure a separate development frontend and exact Auth callback URL, then owner/signup and hosted authorization verification. No production deployment.
