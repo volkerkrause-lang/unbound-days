@@ -12,6 +12,6 @@ try{
  await page.evaluate(()=>{const data={version:1,events:[],tasks:[{id:'smoke-task',title:'Smoke notebook',date:'2026-10-14',done:false}],notes:[],habits:[],entries:{'smoke-note':'Writing retained'},settings:{cover:0,favorites:[],selectedCalendars:[],ink:'#313a41'},ink:{},trash:[],bookmarks:[]};localStorage.setItem('unbound-days-v1',JSON.stringify(data));});
  await page.reload();await page.locator('#account-open').waitFor();
  const data=await page.evaluate(()=>JSON.parse(localStorage.getItem('unbound-days-v1')));assert.equal(data.tasks[0].title,'Smoke notebook');assert.equal(data.entries['smoke-note'],'Writing retained');
- await page.getByRole('button',{name:'Open notebook'}).click();await page.locator('#app').waitFor();
+ await page.locator('[data-action="open"]').click();await page.locator('#app').waitFor();
  assert.deepEqual(errors,[]);console.log('Notebook/account setup browser smoke passed');
 }finally{await browser.close();}
