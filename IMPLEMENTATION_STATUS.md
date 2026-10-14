@@ -87,7 +87,7 @@ Implemented on development/account-foundation; Group A is NOT yet accepted as co
 - Authenticated notebooks disable legacy Drive journal merging so Drive is no longer their live source. Existing Calendar and optional provider backup adapters retained; secure backend Google authorization/account-binding still Group B. Guest behavior retained.
 - Password-reauthenticated own-account deletion Edge Function; cascade deletes planner/profile/import state; confirmed deletion removes that account's local notebook/recovery. Separate provider backups remain. Account export included; hosted backup/log retention/legal deletion policy still release work.
 - Build/development server now serves _site; security headers prepared for proposed Cloudflare host; development CI validates/packages only and never deploys. Production main/settings untouched.
-- Setup: docs/account-setup.md. Public account-config.js intentionally empty. No secrets introduced or paid services activated.
+- Setup: docs/account-setup.md. Public account-config.js now points to the isolated development project (configured 2026-10-14). No secrets introduced or paid services activated.
 
 ### Group A remaining gates
 1. Owner creates isolated Supabase Free development project and supplies URL/public publishable key. Apply migration there; enable confirmation and appropriate rate limits/custom SMTP; configure Google login callback and optional Turnstile.
@@ -100,3 +100,6 @@ Implemented on development/account-foundation; Group A is NOT yet accepted as co
 Syntax checks and static bundle build passed. Full regression: 45 tests, 0 failures (38 existing + 7 focused account/database/sync tests). PGlite runs real PostgreSQL row policies, privileges, transaction/CAS and cascade behavior with a simulated auth.uid/session; it does not validate hosted Auth/Edge Function runtime. Production dependency audit: zero known vulnerabilities. Browser/live account tests pending as above.
 
 Next recommended action: configure the isolated development Supabase project using docs/account-setup.md, then complete Group A live verification. Do not merge or deploy to production.
+
+## Development connection check — 2026-10-14
+Owner supplied development URL and public publishable key; committed only on development/account-foundation. Read-only Auth settings check returned 200: email enabled, verification required, Google login disabled. Read-only notebooks schema check returned PGRST205 (table absent from schema cache): database migration still needs applying. No signup, service setting, database change or production deployment performed. Next: owner opens SQL Editor in Unbound Development and runs the checked-in account migration; then verify hosted table/API policies.
