@@ -3,7 +3,7 @@ export const connected=()=>!!accessToken&&Date.now()<expires;
 export async function connect(clientId,withBackup=false){
   if(!clientId)throw new Error('Add a Google OAuth client ID in Settings first.');
   if(!window.google?.accounts?.oauth2){await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='https://accounts.google.com/gsi/client';script.onload=resolve;script.onerror=()=>reject(new Error('Google sign-in could not load. Check your connection.'));document.head.append(script);});}
-  return new Promise((resolve,reject)=>{client=google.accounts.oauth2.initTokenClient({client_id:clientId,scope:'https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.calendarlist.readonly'+(withBackup?' https://www.googleapis.com/auth/drive.appdata':''),callback:r=>{if(r.error)return reject(new Error(r.error_description||r.error));backupGranted=google.accounts.oauth2.hasGrantedAllScopes(r,'https://www.googleapis.com/auth/drive.appdata');accessToken=r.access_token;expires=Date.now()+Number(r.expires_in)*1000;resolve();},error_callback:e=>reject(new Error(e.type==='popup_closed'?'Sign-in cancelled.':'Google sign-in was blocked. Allow pop-ups and try again.'))});client.requestAccessToken({prompt:'select_account'});});
+  return new Promise((resolve,reject)=>{client=google.accounts.oauth2.initTokenClient({client_id:clientId,scope:'https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.calendarlist.readonly'+(withBackup?' https://www.googleapis.com/auth/drive.file':''),callback:r=>{if(r.error)return reject(new Error(r.error_description||r.error));backupGranted=google.accounts.oauth2.hasGrantedAllScopes(r,'https://www.googleapis.com/auth/drive.file');accessToken=r.access_token;expires=Date.now()+Number(r.expires_in)*1000;resolve();},error_callback:e=>reject(new Error(e.type==='popup_closed'?'Sign-in cancelled.':'Google sign-in was blocked. Allow pop-ups and try again.'))});client.requestAccessToken({prompt:'select_account'});});
 }
 export function disconnect(){if(accessToken&&window.google)google.accounts.oauth2.revoke(accessToken,()=>{});accessToken='';expires=0;backupGranted=false;}
 export async function api(path,options={}){if(!connected())throw new Error('Reconnect Google Calendar to continue.');const response=await fetch('https://www.googleapis.com/calendar/v3/'+path,{...options,headers:{Authorization:`Bearer ${accessToken}`,'Content-Type':'application/json',...options.headers}});if(response.status===401){accessToken='';throw new Error('Your Google session expired. Reconnect to continue.');}if(response.status===412)throw new Error('This event changed in Google. Refresh the calendar before editing it again.');if(!response.ok){let error={};try{error=await response.json();}catch{}throw new Error(error.error?.message||'Google Calendar could not complete this change.');}return response.status===204?null:response.json();}
@@ -22,14 +22,21 @@ async function drive(path,options={}){
   if(!r.ok){let e={};try{e=await r.json();}catch{}throw Error(e.error?.message||'Notebook backup could not complete.');}
   return r.json();
 }
+async function backupFolder(){
+  const p=new URLSearchParams({q:"trashed = false and mimeType = 'application/vnd.google-apps.folder' and name = 'Unbound'",pageSize:'10',fields:'files(id,name,createdTime)'});
+  const found=await drive('drive/v3/files?'+p);
+  if(found.files?.length)return found.files[0].id;
+  return (await drive('drive/v3/files?fields=id',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:'Unbound',mimeType:'application/vnd.google-apps.folder'})})).id;
+}
 export async function listBackups(){
-  const p=new URLSearchParams({spaces:'appDataFolder',q:"trashed = false and name contains 'unbound-days-'",pageSize:'100',orderBy:'createdTime desc',fields:'nextPageToken,files(id,name,createdTime,description)'});
+  const folder=await backupFolder();
+  const p=new URLSearchParams({q:`trashed = false and '${folder}' in parents and name contains 'unbound-days-'`,pageSize:'100',orderBy:'createdTime desc',fields:'nextPageToken,files(id,name,createdTime,description)'});
   let result=[],token='';do{if(token)p.set('pageToken',token);const r=await drive('drive/v3/files?'+p);result.push(...(r.files||[]));token=r.nextPageToken||'';}while(token);return result;
 }
 // Immutable snapshots avoid one device silently replacing another's notebook.
 export async function backupNotebook(state,device){
-  const boundary='unbound_'+crypto.randomUUID(),time=new Date().toISOString();
-  const metadata={name:`unbound-days-${time}-${device}.json`,parents:['appDataFolder'],mimeType:'application/json',description:`Unbound notebook saved ${time}`};
+  const folder=await backupFolder(),boundary='unbound_'+crypto.randomUUID(),time=new Date().toISOString();
+  const metadata={name:`unbound-days-${time}-${device}.json`,parents:[folder],mimeType:'application/json',description:`Unbound notebook saved ${time}`};
   const body=`--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(metadata)}\r\n--${boundary}\r\nContent-Type: application/json\r\n\r\n${JSON.stringify(state)}\r\n--${boundary}--`;
   return drive('upload/drive/v3/files?uploadType=multipart&fields=id,createdTime',{method:'POST',headers:{'Content-Type':`multipart/related; boundary=${boundary}`},body});
 }
