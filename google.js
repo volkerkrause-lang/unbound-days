@@ -38,6 +38,12 @@ export async function backupNotebook(state,device){
   const folder=await backupFolder(),boundary='unbound_'+crypto.randomUUID(),time=new Date().toISOString();
   const metadata={name:`unbound-days-${time}-${device}.json`,parents:[folder],mimeType:'application/json',description:`Unbound notebook saved ${time}`};
   const body=`--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(metadata)}\r\n--${boundary}\r\nContent-Type: application/json\r\n\r\n${JSON.stringify(state)}\r\n--${boundary}--`;
-  return drive('upload/drive/v3/files?uploadType=multipart&fields=id,createdTime',{method:'POST',headers:{'Content-Type':`multipart/related; boundary=${boundary}`},body});
+  const saved=await drive('upload/drive/v3/files?uploadType=multipart&fields=id,createdTime',{method:'POST',headers:{'Content-Type':`multipart/related; boundary=${boundary}`},body});
+  // Keep automatic Drive snapshots bounded. The newest 20 complete copies remain available.
+  try{
+    const copies=await listBackups();
+    for(const old of copies.slice(20))await drive('drive/v3/files/'+encodeURIComponent(old.id),{method:'DELETE'});
+  }catch{}
+  return saved;
 }
 export async function readBackup(id){return drive('drive/v3/files/'+encodeURIComponent(id)+'?alt=media');}
