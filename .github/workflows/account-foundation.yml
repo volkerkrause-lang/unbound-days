@@ -18,6 +18,18 @@ jobs:
       - run: npm run check
       - run: npm test
       - run: npm run build
+      - name: Verify Classic & Clean mobile layout
+        if: github.ref == 'refs/heads/development/classic-clean-mobile'
+        run: |
+          npx playwright install --with-deps chromium
+          node server.mjs &
+          node scripts/mobile-smoke.mjs
+      - name: Save mobile browser result
+        if: always() && github.ref == 'refs/heads/development/classic-clean-mobile'
+        uses: actions/upload-artifact@v4
+        with:
+          name: classic-clean-mobile-browser
+          path: test-results/
       - uses: actions/upload-artifact@v4
         with:
           name: unbound-account-development
