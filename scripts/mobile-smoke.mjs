@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import {mkdir} from 'node:fs/promises';
 const browser=await chromium.launch({headless:true});
 try{
- const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true}),errors=[];
+ const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true,reducedMotion:'reduce'}),errors=[];
  page.on('pageerror',e=>errors.push(e.message));
  await page.goto(process.env.UNBOUND_TEST_URL||'http://localhost:4173/');
  await page.locator('#account-open').waitFor();
