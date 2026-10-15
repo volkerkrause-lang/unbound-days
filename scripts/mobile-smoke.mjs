@@ -22,7 +22,7 @@ try{
  await page.getByRole('button',{name:'Search planner',exact:true}).click();await page.getByLabel('Search your notebook').fill('Keep my writing');await page.getByRole('button',{name:'Close',exact:true}).click();
  await page.getByRole('button',{name:'Settings',exact:true}).click();await page.getByRole('button',{name:'Close',exact:true}).click();
  await page.getByRole('button',{name:'Close notebook and show cover',exact:true}).click();await page.locator('[data-action="open"]').waitFor();await page.locator('[data-action="open"]').click();
- await page.reload();if(await page.locator('[data-action="open"]').isVisible())await page.locator('[data-action="open"]').click();await page.locator('[data-mobile-view="day"]').click();
+ await page.reload();await page.locator('[data-action="open"]').click();await page.locator('[data-mobile-view="day"]').click();
  assert.equal(await page.getByLabel('Priority 1',{exact:true}).inputValue(),'Keep my writing');
  await mkdir('test-results',{recursive:true});await page.screenshot({path:'test-results/classic-clean-mobile.png',fullPage:true});
  assert.deepEqual(errors,[]);console.log('390px mobile layout, navigation, pinned form, search/settings, cover and writing persistence passed');
