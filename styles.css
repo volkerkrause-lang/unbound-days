@@ -299,3 +299,41 @@ body:has(dialog[open]) #app .shared-write-tools{visibility:hidden}
 /* Today sits above the month index rather than protruding above the page. */
 .book-shell>.bookmark-today{left:auto;right:0;top:48px;width:40px;height:70px;padding:8px 2px 15px;writing-mode:vertical-rl;background:linear-gradient(90deg,#a66f20,#d9b65b 30%,#bd913c 75%,#987027);color:#423013;font:600 13px var(--serif);clip-path:polygon(0 0,100% 0,100% 100%,50% 89%,0 100%);z-index:5;text-shadow:0 1px #ffecae}.book-shell>.month-tabs{top:127px}
 @media(max-width:760px){.task-ribbon-wrap{flex-basis:105px}.all-ribbon{flex-basis:70px}.task-ribbon{font-size:12px}.todo-card{gap:7px;padding:11px 8px}.todo-card .task-name{font-size:15px}.todo-card{flex-wrap:wrap}.todo-card-content{flex-basis:calc(100% - 65px)}.task-date{margin-left:42px}.task-quick{flex-wrap:wrap}.task-quick input{flex-basis:100%}.todo-cards{max-height:60vh}.book-shell>.bookmark-today{right:0;top:57px;width:27px;height:57px;font-size:11px}.book-shell>.month-tabs{top:121px}.task-toolbar .write-tools{position:static}}
+
+/* Classic & Clean phone layout. Tablet and desktop keep their existing spread. */
+.mobile-view-switch,.mobile-pinned-tab,.mobile-search-label{display:none}
+@media(max-width:767px){
+ body{background:#eee9df;padding-top:env(safe-area-inset-top)}
+ .app-bar{position:sticky;top:0;z-index:30;height:56px;padding:0 10px;background:#f7f3eb;border-bottom:1px solid #d9cfbf;gap:6px}
+ .brand{font-size:19px;gap:5px;letter-spacing:0}.brand .beta,.bar-actions>[data-action="gallery"],.bar-actions>.fullscreen{display:none}
+ .bar-actions{gap:2px;min-width:0}.bar-actions .icon-button{width:36px;height:40px;font-size:23px}
+ .bar-actions>[data-action="search"]{display:flex;align-items:center;justify-content:center;gap:5px;width:auto;padding:0 9px;border:1px solid #d9cfbf;border-radius:18px}
+ .mobile-search-label{display:inline;font:12px var(--ui)}
+ #save-status{display:none}
+ .account-buttons{display:flex;gap:2px}.account-buttons .text-action{font-size:11px;padding:4px;min-height:40px}
+ #app{padding:0 8px calc(82px + env(safe-area-inset-bottom));min-height:calc(100dvh - 56px)}
+ .book-shell{margin:0;padding:0 33px 0 0;min-width:0}
+ .book-shell>.book{display:flex;flex-direction:column;min-width:0;min-height:calc(100dvh - 140px);padding:0 12px 20px;background:var(--paper);border-radius:0 0 6px 6px;box-shadow:0 3px 10px #49351e18}
+ .book:before{display:none}
+ .mobile-view-switch{display:flex;position:sticky;top:56px;z-index:20;gap:4px;padding:8px 0;background:var(--paper);border-bottom:1px solid var(--line)}
+ .mobile-view-switch button{flex:1;min-width:0;min-height:40px;padding:6px 3px;font:13px var(--ui);border-radius:5px}
+ .mobile-view-switch button[aria-pressed="true"]{background:#e8e2d5;color:#40382d;box-shadow:inset 0 -2px #9b8056}
+ .book-head{margin:12px 0 8px;padding:0 0 10px;gap:8px;flex-wrap:wrap}.book-head>div:first-child{min-width:0}.book-head h1{font-size:23px;line-height:1.2;margin:0}.book-head .eyebrow{display:none}
+ .date-controls{gap:4px;flex-wrap:wrap}.date-controls .today-button{display:none}.date-controls select{font-size:17px}.date-controls .primary{min-height:36px;padding:6px 10px;font-size:12px}
+ .book-shell>.section-tabs{position:fixed;inset:auto 0 0;z-index:40;display:flex;align-items:stretch;justify-content:flex-start;gap:5px;height:calc(62px + env(safe-area-inset-bottom));max-width:100%;padding:7px 10px calc(7px + env(safe-area-inset-bottom));overflow-x:auto;overflow-y:hidden;flex-wrap:nowrap;overscroll-behavior-x:contain;background:#f7f3eb;border-top:1px solid #d9cfbf;box-shadow:0 -3px 12px #49351e10;scrollbar-width:thin}
+ .section-tabs .section-tab{flex:0 0 auto;display:flex;align-items:center;justify-content:center;min-height:42px;padding:8px 14px;white-space:nowrap;font:13px var(--ui);border:1px solid #d7caba;border-radius:5px;background:#eee8db;color:#514839;box-shadow:none;transform:none;clip-path:none}
+ .section-tabs .section-tab.active,.section-tabs .section-tab[aria-current="page"]{background:#6b775f;color:#fffdf6;border-color:#6b775f}
+ .section-tabs .mobile-pinned-tab{display:flex;background:#e9dfce}.section-tabs [data-section="myforms"]{display:none}
+ .book-shell>.bookmark-today{position:fixed;left:auto;right:3px;top:116px;z-index:25;width:30px;height:58px;font-size:11px;color:#f5dfaa;background:linear-gradient(90deg,#663933,#8a5148 45%,#663933)}
+ .book-shell>.month-tabs{position:fixed;right:3px;top:182px;bottom:calc(78px + env(safe-area-inset-bottom));z-index:25;width:30px;display:flex;flex-direction:column;gap:3px;overflow-y:auto;scrollbar-width:none}
+ .month-tabs .month-tab{flex:1 0 29px;min-height:29px;width:30px;padding:3px 1px;font-size:9px}.month-tabs .month-tab.active{width:30px}
+ .shared-write-tools{position:static;justify-content:flex-end;gap:5px;margin:0 0 10px;flex-wrap:nowrap}
+ .shared-write-tools .writing-target{flex:1;max-width:230px;min-width:0;width:auto;font-size:13px;min-height:36px}
+ .shared-write-tools button{min-width:38px;min-height:38px;padding:5px;font-size:22px}.writing-tool-label{display:none}
+ .day-spread,.calendar-layout,.year-layout,.notes-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
+ .day-spread section{margin-bottom:18px}.day-spread h2,.day-spread .small-heading{font:400 19px var(--serif);letter-spacing:0;text-transform:none;margin-bottom:10px}
+ .priority-input{gap:10px}.priority-input input{min-width:0;width:100%}.day-spread .agenda-item{gap:10px}.day-spread .task-row{min-width:0;gap:6px}.day-spread .task-name{min-width:0;overflow-wrap:anywhere}
+ .page-content{overflow:visible;min-width:0}.page-footer:has(.view-switch){display:none}
+ .book-shell>.named-ribbons{margin:8px 0;gap:14px}.book-shell>.named-ribbons:has(>.ribbon-add:only-child){display:none}
+ #toast{bottom:calc(80px + env(safe-area-inset-bottom))}
+}
