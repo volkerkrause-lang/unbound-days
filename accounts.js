@@ -20,4 +20,4 @@ export const redirectURL=()=>new URL('./',location.href).href;
 export const result=async promise=>{const r=await promise;if(r.error)throw r.error;return r.data;};
 export async function role(){if(!client||!user)return 'user';const data=await result(client.from('profiles').select('role').eq('id',user.id).single());return data.role;}
 
-export async function signInGoogle(){return result(client.auth.signInWithOAuth(googleLoginOptions(redirectURL(),user?.email)));}
+export async function signInGoogle(consent=false){return result(client.auth.signInWithOAuth(googleLoginOptions(redirectURL(),user?.email,consent)));}

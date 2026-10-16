@@ -26,7 +26,7 @@ For durable public use, move the OAuth consent app out of **Testing** and comple
 
 ## Activate and verify
 
-After backend setup, publish this branch to a development preview. Sign in with Google once and grant all four API scopes. Login now requests offline access and consent; the callback transfers the grant to the authenticated backend. Refresh credentials are encrypted at rest and stripped from the browser's persisted Supabase session. Short-lived Google access tokens are held in app memory.
+After backend setup, publish this branch to a development preview. Sign in with Google once and grant all four API scopes. Login now requests offline access; Connect Google explicitly requests fresh consent when needed. the callback transfers the grant to the authenticated backend. Refresh credentials are encrypted at rest and stripped from the browser's persisted Supabase session. Short-lived Google access tokens are held in app memory.
 
 Verify with the owner's account (never create/delete personal records just for testing):
 

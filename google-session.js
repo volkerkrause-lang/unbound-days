@@ -1,7 +1,7 @@
 // Provider credentials are never included in notebook storage or backups.
 export const googleScopes=['https://www.googleapis.com/auth/calendar.events','https://www.googleapis.com/auth/calendar.calendarlist.readonly','https://www.googleapis.com/auth/tasks','https://www.googleapis.com/auth/drive.file'];
-export function googleLoginOptions(redirectTo,email){
- return {provider:'google',options:{redirectTo,scopes:googleScopes.join(' '),queryParams:{access_type:'offline',prompt:'consent',...(email?{login_hint:email}:{})}}};
+export function googleLoginOptions(redirectTo,email,consent=false){
+ return {provider:'google',options:{redirectTo,scopes:googleScopes.join(' '),queryParams:{access_type:'offline',include_granted_scopes:'true',...(consent?{prompt:'consent'}:{}),...(email?{login_hint:email}:{})}}};
 }
 // Supabase persists its own session, but Google credentials belong on the server.
 export function authStorage(storage){return {
