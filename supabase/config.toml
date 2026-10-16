@@ -4,3 +4,6 @@ project_id = "unbound-development"
 # the current publishable-key client and Supabase signing-key configurations.
 [functions.delete-account]
 verify_jwt = false
+
+[functions.google-connection]
+verify_jwt = false
