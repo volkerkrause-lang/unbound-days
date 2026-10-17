@@ -1,43 +1,13 @@
-name: Publish isolated Cloudflare development preview
+# Cloudflare Pages already deploys this GitHub development branch automatically.
+# Keep only the validated no-deployment workflow (account-foundation.yml).
+# Do not add a second deployer or request Cloudflare API credentials.
+name: Cloudflare preview integration note
 on:
-  push:
-    branches:
-      - development/filofax-refinement-20261017
   workflow_dispatch:
 permissions:
   contents: read
 jobs:
-  preview:
-    name: Validate and publish preview (never production)
+  information:
     runs-on: ubuntu-latest
-    environment: development-preview
-    env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      CF_PREVIEW_PROJECT: ${{ vars.CLOUDFLARE_PREVIEW_PROJECT }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: npm
-      - run: npm ci
-      - run: npm run check
-      - run: npm test
-      - run: npm run build
-      - name: Check isolated preview configuration
-        id: config
-        shell: bash
-        run: |
-          if [[ -z "$CLOUDFLARE_API_TOKEN" || -z "$CLOUDFLARE_ACCOUNT_ID" || -z "$CF_PREVIEW_PROJECT" ]]; then
-            echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "Cloudflare preview not deployed: configure CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_PREVIEW_PROJECT in repository Settings. No production changes made." >> "$GITHUB_STEP_SUMMARY"
-            echo "::error::Cloudflare preview configuration missing. No deployment occurred. Set the two secrets and one variable in GitHub Settings → Secrets and variables → Actions, then rerun this workflow."
-            exit 1
-          else
-            echo "ready=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Publish to isolated Cloudflare preview branch
-        if: steps.config.outputs.ready == 'true'
-        run: |
-          npx --yes wrangler@4 pages deploy _site --project-name "$CF_PREVIEW_PROJECT" --branch "filofax-refinement-20261017" --commit-hash "$GITHUB_SHA"
+      - run: echo "Cloudflare Pages Git integration publishes development/filofax-refinement-20261017 as a preview. No GitHub-side deployment or credentials required."
