@@ -375,3 +375,36 @@ body:has(dialog[open]) #app .shared-write-tools{visibility:hidden}
 @media(max-width:760px){
  .cover-book>.cover-tab[data-section="tasks"]{top:229px}
 }
+
+/* One palette and calendar interaction surface for every responsive layout. */
+:root{--accent-gold:#b5a06a;--accent-sage:#91a58f;--accent-blue:#9bb3c9;--accent-lavender:#b5a7c6;--accent-rose:#bf9ba5;--accent-tan:#bea185}
+.calendar-highlight-surface{position:relative;min-width:0;isolation:isolate}
+.calendar-highlight-surface>*:not(canvas){position:relative;z-index:0}
+.calendar-highlight-tools{position:sticky;top:0;margin:0 0 10px;padding:6px 0;background:var(--paper,#faf7ef);z-index:7}
+.calendar-highlight-tools button[aria-pressed=true]{background:#eee3c4;border-color:var(--accent-gold)}
+.calendar-highlight-tools input{min-width:32px;min-height:32px}
+.calendar-highlight-tools button{min-height:36px}
+.calendar-layout,.calendar-layout>* ,.day-spread>* ,.agenda-item>div{min-width:0}
+.calendar-table{max-width:100%;table-layout:fixed}
+.calendar-table td{overflow:hidden}
+.day-cell{min-width:0;max-width:100%;overflow:hidden}
+.calendar-table .entry-chip{width:100%;max-width:100%;min-width:0;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.agenda-item button,.agenda-meta,.day-spread .task-name{overflow-wrap:anywhere;min-width:0}
+.entry-chip.family{background:#f2e8de!important;border-left-color:var(--accent-tan)!important}
+.entry-chip.task{background:#f3eddc!important;border-left-color:var(--accent-gold)!important}
+.day-spread .priority-input:nth-of-type(1){border-left:3px solid var(--accent-gold);padding-left:8px}
+.day-spread .priority-input:nth-of-type(2){border-left:3px solid var(--accent-sage);padding-left:8px}
+.day-spread .priority-input:nth-of-type(3){border-left:3px solid var(--accent-lavender);padding-left:8px}
+.day-spread .agenda-item{border-left-color:var(--accent-blue);background:#e7edf433}
+.day-spread .task-row{border-left:3px solid var(--accent-sage);padding-left:8px}
+.section-tab:not(.active):nth-child(6n+1){background:#a89464}
+.section-tab:not(.active):nth-child(6n+2){background:#80957e}
+.section-tab:not(.active):nth-child(6n+3){background:#7e97af}
+.section-tab:not(.active):nth-child(6n+4){background:#9b8dac}
+.section-tab:not(.active):nth-child(6n+5){background:#a87e8b}
+.section-tab:not(.active):nth-child(6n){background:#a3876e}
+.view-switch .active{box-shadow:inset 0 -3px var(--accent-gold)}
+/* Tablet notebook uses its existing side bookmark; desktop keeps its header control. */
+@media(min-width:768px) and (max-width:1366px) and (pointer:coarse){.section-calendar.view-month .date-controls .today-button{display:none}}
+.calendar-highlight-tools [data-highlight-swatch]{border-bottom:4px solid var(--swatch);background:#fffaf0;color:#49443d}
+@media(max-width:767px){.section-tabs .section-tab:not(.active){color:#fffdf6}}

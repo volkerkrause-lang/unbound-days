@@ -11,3 +11,20 @@ For every Unbound Days change, follow this process without asking the owner to r
 7. Run syntax checks, calendar/recovery tests, and inspect cover, navigation and reload persistence in the browser. Update service-worker cache version and package every new module/asset.
 8. Publish through GitHub main with an expected-head lease. Confirm GitHub Actions passes and open the live Pages app to verify the release. Report blockers clearly; preserve completed improvements.
 9. Before changing storage formats, take recovery copies and verify old notebooks import correctly. Browser copies do not replace off-device backups.
+
+## One app, three layouts
+
+General features and visual meanings must work consistently on desktop, iPad and
+mobile. Use shared rendering, handlers, state, persistence and palette tokens;
+responsive layouts may differ, capabilities must not. Preserve notebook layouts,
+Apple Pencil/Scribble, dictation, bookmarks and mobile navigation. Audit all three
+layouts when changing shared functionality. Check desktop, iPad landscape, iPad
+portrait and mobile, including editing and reload persistence. Calendar highlights
+use the existing date-bound `state.ink` strokes on every device; do not introduce a
+second format. Calendar cells must contain long entries and offer access to their
+full contents through the existing Day view/editor.
+
+For development-preview tasks, the owner's explicit target branch and preview
+supersede steps 1 and 8 above: use the requested existing branch, commit with an
+expected-head lease, verify that preview's deployed commit, and leave main and the
+public production deployment unchanged. Do not create or delete branches routinely.
