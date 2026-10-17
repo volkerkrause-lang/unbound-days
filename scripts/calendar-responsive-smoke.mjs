@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 const browser=await chromium.launch({headless:true});
 try {
  for(const [name,width,height,touch] of [['desktop',1440,1000,false],['ipad-landscape',1194,834,true],['ipad-portrait',834,1194,true],['mobile',390,844,true]]){
-  const context=await browser.newContext({viewport:{width,height},hasTouch:touch});
+  const context=await browser.newContext({viewport:{width,height},hasTouch:touch,reducedMotion:'reduce'});
   const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto(process.env.UNBOUND_TEST_URL||'http://localhost:4173/');
   await page.locator('[data-action="open"]').click();
