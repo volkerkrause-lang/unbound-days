@@ -19,13 +19,13 @@ jobs:
       - run: npm test
       - run: npm run build
       - name: Verify Classic & Clean mobile layout
-        if: (github.ref == 'refs/heads/development/classic-clean-mobile' || github.ref == 'refs/heads/development/google-persistent-connection')
+        if: startsWith(github.ref, 'refs/heads/development/')
         run: |
           npx playwright install --with-deps chromium
           node server.mjs &
           node scripts/mobile-smoke.mjs
       - name: Save mobile browser result
-        if: always() && (github.ref == 'refs/heads/development/classic-clean-mobile' || github.ref == 'refs/heads/development/google-persistent-connection')
+        if: always() && startsWith(github.ref, 'refs/heads/development/')
         uses: actions/upload-artifact@v4
         with:
           name: classic-clean-mobile-browser
