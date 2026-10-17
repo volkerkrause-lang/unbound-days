@@ -27,7 +27,7 @@ try {
   await page.evaluate(()=>{const s=JSON.parse(localStorage.getItem('unbound-days-v1')),d=new Date(),date=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;s.events=Array.from({length:5},(_,i)=>({id:'responsive-'+i,date,title:i?'Long appointment '+ 'Unbroken'.repeat(60):'Short',category:'work',time:'10:00'}));localStorage.setItem('unbound-days-v1',JSON.stringify(s));});
   await page.reload();if(await page.locator('[data-action="open"]').count())await page.locator('[data-action="open"]').click();
   await page.locator('.bookmark-today').click();
-  await page.locator('[data-view="month"]').filter({visible:true}).click();
+  await page.locator(width<768?'[data-mobile-view="month"]':'[data-view="month"]').click();
   const chips=page.locator('.calendar-table .entry-chip');assert.equal(await chips.count(),2);
   assert.ok(await chips.evaluateAll(nodes=>nodes.every(n=>{const a=n.getBoundingClientRect(),b=n.closest('td').getBoundingClientRect();return a.left>=b.left&&a.right<=b.right+1&&n.scrollWidth>=n.clientWidth;})));
   assert.equal(await page.locator('.more-count').textContent(),'+3 more');
