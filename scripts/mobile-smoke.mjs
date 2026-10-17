@@ -27,7 +27,8 @@ try{
  await page.getByRole('button',{name:'Close',exact:true}).click();
  assert.equal(await page.locator('[data-action="fullscreen"]').count(),0);
  await page.getByRole('button',{name:'Close notebook and show cover',exact:true}).click();await page.locator('[data-action="open"]').waitFor();
- assert.equal(await page.locator('[data-action="personalize"]').count(),1);
+ assert.equal(await page.locator('.cover-controls [data-action="gallery"]').count(),1);
+ assert.equal(await page.locator('.cover-controls [data-action="personalize"]').count(),0);
  await page.locator('.cover-controls [data-action="gallery"]').click();
  await page.locator('[data-cover="16"]').click();
  await page.reload();await page.locator('.cover-book[data-cover="16"]').waitFor();
