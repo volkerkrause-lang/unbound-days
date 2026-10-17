@@ -24,6 +24,7 @@ jobs:
           npx playwright install --with-deps chromium
           node server.mjs &
           node scripts/mobile-smoke.mjs
+          node scripts/filofax-smoke.mjs
       - name: Save mobile browser result
         if: always() && startsWith(github.ref, 'refs/heads/development/')
         uses: actions/upload-artifact@v4
