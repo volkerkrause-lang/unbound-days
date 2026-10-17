@@ -350,3 +350,13 @@ body:has(dialog[open]) #app .shared-write-tools{visibility:hidden}
 .entry-chip.work{background:#e7edf4!important;border-left-color:#839ab5!important}
 .agenda-item{border-left:3px solid #9aa99b;background:#f5f2e9;padding:8px 10px;margin:4px 0;border-radius:2px}
 @media(max-width:650px){.todo-view .task-ribbon,.todo-view .all-ribbon{padding:6px 9px!important;font-size:11px!important}.todo-view .task-card,.todo-view .task-row{padding:6px!important}}
+
+/* Consistent accessible task rows and explicit selection mode */
+.todo-card{min-height:0!important;padding:8px 10px!important;gap:8px!important;align-items:center!important}
+.todo-card .task-name{font-weight:450!important;font-size:14px!important;line-height:1.25!important;text-align:left!important}
+.todo-card .task-name:after{content:' ✎';font-size:12px;opacity:.55}
+.todo-card .task-badges{font-size:10px!important;margin-top:2px!important}
+.todo-card .task-date{font-size:11px!important;white-space:nowrap}
+.todo-card-content p{margin:3px 0!important;font-size:12px!important;line-height:1.25!important}
+.task-ribbon small{font-size:10px!important;margin-left:4px}
+@media(max-width:700px){.todo-card{padding:7px!important;gap:5px!important}.todo-card .task-name{font-size:13px!important}.todo-card .task-date{font-size:10px!important}.task-toolbar{flex-wrap:wrap}}
