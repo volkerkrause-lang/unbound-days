@@ -32,6 +32,8 @@ jobs:
           if [[ -z "$CLOUDFLARE_API_TOKEN" || -z "$CLOUDFLARE_ACCOUNT_ID" || -z "$CF_PREVIEW_PROJECT" ]]; then
             echo "ready=false" >> "$GITHUB_OUTPUT"
             echo "Cloudflare preview not deployed: configure CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_PREVIEW_PROJECT in repository Settings. No production changes made." >> "$GITHUB_STEP_SUMMARY"
+            echo "::error::Cloudflare preview configuration missing. No deployment occurred. Set the two secrets and one variable in GitHub Settings → Secrets and variables → Actions, then rerun this workflow."
+            exit 1
           else
             echo "ready=true" >> "$GITHUB_OUTPUT"
           fi
