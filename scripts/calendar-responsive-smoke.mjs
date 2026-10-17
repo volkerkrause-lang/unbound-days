@@ -19,13 +19,13 @@ try {
   const key=Object.keys(saved.ink).find(k=>k.startsWith('calendar-highlight:day:'));
   assert.equal(saved.ink[key].at(-1).color,'#91a58f');
   await page.reload();
-  if(await page.locator('[data-action="open"]').count())await page.locator('[data-action="open"]').click();
+  await page.locator('[data-action="open"]').click();
   await page.locator('.bookmark-today').click();
   assert.equal(await page.getByLabel('Priority 1',{exact:true}).inputValue(),'Responsive writing');
   assert.ok(await page.locator('#calendar-highlight-canvas').evaluate(c=>Array.from(c.getContext('2d').getImageData(0,0,c.width,c.height).data).some((v,i)=>i%4===3&&v>0)));
   // Populate the isolated notebook through its existing storage schema.
   await page.evaluate(()=>{const s=JSON.parse(localStorage.getItem('unbound-days-v1')),d=new Date(),date=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;s.events=Array.from({length:5},(_,i)=>({id:'responsive-'+i,date,title:i?'Long appointment '+ 'Unbroken'.repeat(60):'Short',category:'work',time:'10:00'}));localStorage.setItem('unbound-days-v1',JSON.stringify(s));});
-  await page.reload();if(await page.locator('[data-action="open"]').count())await page.locator('[data-action="open"]').click();
+  await page.reload();await page.locator('[data-action="open"]').click();
   await page.locator('.bookmark-today').click();
   await page.locator(width<768?'[data-mobile-view="month"]':'[data-view="month"]').click();
   const chips=page.locator('.calendar-table .entry-chip');assert.equal(await chips.count(),2);
