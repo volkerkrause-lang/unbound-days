@@ -369,3 +369,9 @@ body:has(dialog[open]) #app .shared-write-tools{visibility:hidden}
 .calendar-highlight-tools button[aria-pressed=true]{background:#e9d58b}
 .calendar-highlight-tools label{font-size:12px;display:flex;gap:5px;align-items:center}
 .calendar-highlight-tools input{width:26px;height:25px;border:0;background:none;padding:0}
+
+/* Closed-cover third index: keep To-Do attached to the book edge on all sizes. */
+.cover-book>.cover-tab[data-section="tasks"]{top:295px;background:#b3907d;color:#fffdf6}
+@media(max-width:760px){
+ .cover-book>.cover-tab[data-section="tasks"]{top:229px}
+}
