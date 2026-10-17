@@ -409,7 +409,7 @@ body:has(dialog[open]) #app .shared-write-tools{visibility:hidden}
 .calendar-highlight-tools [data-highlight-swatch]{border-bottom:4px solid var(--swatch);background:#fffaf0;color:#49443d}
 @media(max-width:767px){.section-tabs .section-tab:not(.active){color:#fffdf6}}
 /* Reserve the same preview space in every date, including inline delete controls. */
-.calendar-table .day-cell{height:136px;min-height:0}
+.calendar-table .day-cell{height:156px;min-height:0}
 .calendar-table .entry-chip{display:inline-block;vertical-align:middle;width:calc(100% - 22px);margin:2px 0}
 .calendar-table .entry-chip+.quick-delete{display:inline-flex;width:18px;min-width:18px;height:24px;margin:0 0 0 3px;font-size:12px;vertical-align:middle}
 .calendar-table .more-count{display:block;clear:both}
