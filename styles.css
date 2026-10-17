@@ -413,3 +413,12 @@ body:has(dialog[open]) #app .shared-write-tools{visibility:hidden}
 .calendar-table .entry-chip{display:inline-block;vertical-align:middle;width:calc(100% - 22px);margin:2px 0}
 .calendar-table .entry-chip+.quick-delete{display:inline-flex;width:18px;min-width:18px;height:24px;margin:0 0 0 3px;font-size:12px;vertical-align:middle}
 .calendar-table .more-count{display:block;clear:both}
+
+/* Compact shared highlighter: the palette floats over paper only while choosing. */
+.calendar-highlight-tools{display:block;padding:3px 0 6px;margin-bottom:6px;border-top:0}
+.calendar-highlight-picker[hidden]{display:none}
+.calendar-highlight-picker{position:absolute;top:100%;left:0;width:min(340px,100%);padding:12px;background:var(--paper,#faf7ef);border:1px solid #d2c5b2;border-radius:8px;box-shadow:0 8px 24px #49351e26;z-index:8}
+.highlight-colours{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.calendar-highlight-tools .highlight-colours button{display:flex;align-items:center;gap:6px;border:1px solid #d2c5b2;border-radius:5px;min-height:40px;padding:6px;background:#fffaf0}
+.highlight-colours button span{width:15px;height:15px;flex:none;border-radius:50%;background:var(--swatch);border:1px solid #0002}
+.highlight-picker-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid #ded8ca}

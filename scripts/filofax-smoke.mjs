@@ -12,12 +12,13 @@ try{
   assert.equal(await page.locator('.section-tabs [data-section="launchpad"]').textContent(),'Notes & Ideas');
   const canvas=page.locator('#calendar-highlight-canvas');await canvas.waitFor();
   const toggle=page.locator('[data-action="highlight-toggle"]');
-  await toggle.click();assert.equal(await toggle.getAttribute('aria-pressed'),'true');
+  await toggle.click();await page.getByRole('button',{name:'Gold highlight',exact:true}).click();assert.equal(await toggle.getAttribute('aria-pressed'),'true');
   const rect=await canvas.boundingBox();assert.ok(rect?.width>100&&rect?.height>100);
   await page.mouse.move(rect.x+rect.width*.3,rect.y+rect.height*.3);
   await page.mouse.down();await page.mouse.move(rect.x+rect.width*.5,rect.y+rect.height*.4,{steps:6});await page.mouse.up();
   const saved=await page.evaluate(()=>{const d=JSON.parse(localStorage.getItem('unbound-days-v1'));return Object.entries(d.ink||{}).filter(([k])=>k.startsWith('calendar-highlight:'));});
   assert.ok(saved.length>0&&saved[0][1].length>0,'Highlight persisted');
+  await toggle.click();await toggle.click();
   await page.locator('[data-action="highlight-undo"]').click();
   const erased=await page.evaluate(()=>{const d=JSON.parse(localStorage.getItem('unbound-days-v1'));return Object.entries(d.ink||{}).filter(([k])=>k.startsWith('calendar-highlight:'));});
   assert.equal(erased[0][1].length,0);

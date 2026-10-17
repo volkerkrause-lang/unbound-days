@@ -10,11 +10,16 @@ try {
   await page.locator('[data-action="open"]').click();
   await page.locator('.bookmark-today').click();
   await page.getByLabel('Priority 1',{exact:true}).fill('Responsive writing');
+  const picker=page.locator('#calendar-highlight-picker'),toggle=page.locator('[data-action="highlight-toggle"]');
+  assert.equal(await picker.isVisible(),false);
+  assert.ok((await page.locator('.calendar-highlight-tools').boundingBox()).height<60);
+  await toggle.click();assert.equal(await picker.isVisible(),true);
   await page.getByRole('button',{name:'Sage highlight',exact:true}).click();
-  await page.locator('[data-action="highlight-toggle"]').click();
+  assert.equal(await picker.isVisible(),false);assert.equal(await toggle.getAttribute('aria-pressed'),'true');
   const box=await page.locator('#calendar-highlight-canvas').boundingBox();
   await page.mouse.move(box.x+25,box.y+45);await page.mouse.down();await page.mouse.move(box.x+110,box.y+45,{steps:8});await page.mouse.up();
-  await page.locator('[data-action="highlight-toggle"]').click();
+  await toggle.click();assert.equal(await toggle.getAttribute('aria-pressed'),'false');
+  await toggle.click();await page.keyboard.press('Escape');assert.equal(await picker.isVisible(),false);
   const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('unbound-days-v1')));
   const key=Object.keys(saved.ink).find(k=>k.startsWith('calendar-highlight:day:'));
   assert.equal(saved.ink[key].at(-1).color,'#91a58f');
