@@ -30,6 +30,17 @@ try{
   await page.locator('#planner-search').waitFor();
   assert.equal(await page.locator('.writing-target').count(),0);
   for(const section of ['tasks','habits','launchpad']){await page.locator('.section-tabs [data-section="'+section+'"]').click();assert.equal(await page.locator('.mobile-view-switch').count(),0);assert.equal(await page.locator('.writing-target').count(),0);}
+  if(!await page.locator('#ink-canvas').count())await page.getByRole('button',{name:'New idea',exact:true}).click();
+  const ideaCanvas=page.locator('#ink-canvas');await ideaCanvas.waitFor();
+  for(const tool of ['Ink pen','Pencil','Highlighter','Eraser','Lasso'])assert.equal(await page.getByRole('button',{name:tool,exact:true}).count(),1);
+  await page.locator('[data-idea-paper]').selectOption('grid');await page.locator('.idea-paper-grid').waitFor();
+  const ideaRect=await ideaCanvas.boundingBox();assert.ok(ideaRect?.width>100&&ideaRect?.height>100);
+  await page.mouse.move(ideaRect.x+40,ideaRect.y+50);await page.mouse.down();await page.mouse.move(ideaRect.x+140,ideaRect.y+100,{steps:8});await page.mouse.up();
+  const ideaInk=await page.evaluate(()=>{const d=JSON.parse(localStorage.getItem('unbound-days-v1'));return Object.values(d.ink||{}).filter(x=>Array.isArray(x)&&x.some(s=>s.tool==='pen'));});
+  assert.ok(ideaInk.length>0,'Idea ink persisted');
+  await page.locator('.idea-transcript summary').click();await page.locator('.idea-transcript textarea').fill('Clean converted note');
+  await page.getByRole('button',{name:'Convert handwriting to text',exact:true}).click();await page.getByRole('button',{name:'Replace canvas with text',exact:true}).click();
+  await page.locator('.idea-converted-editor').waitFor();assert.equal(await page.locator('#ink-canvas').count(),0);
   await page.locator('.section-tabs [data-section="tasks"]').click();
   await page.getByRole('button',{name:'Pencil',exact:true}).click();
   assert.equal(await page.locator('#task-quick input[name="title"]').evaluate(e=>document.activeElement===e),true);
