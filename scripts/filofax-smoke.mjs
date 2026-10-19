@@ -24,8 +24,8 @@ try{
   assert.equal(erased[0][1].length,0);
   await page.locator('[data-section="goals"]').first().click();
   assert.equal(await page.getByRole('button',{name:'Monthly Reflection',exact:true}).count(),0);
-  await page.getByRole('heading',{name:'Build Your Own',exact:true}).waitFor();
-  await page.getByRole('heading',{name:'Choose from Forms',exact:true}).waitFor();
+  await page.getByText('Build Your Own',{exact:true}).waitFor();
+  await page.getByText('Choose from Forms',{exact:true}).waitFor();
   await page.getByRole('button',{name:/Choose from Forms/}).click();
   await page.locator('#planner-search').waitFor();
   assert.equal(await page.locator('.writing-target').count(),0);
