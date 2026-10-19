@@ -422,3 +422,30 @@ body:has(dialog[open]) #app .shared-write-tools{visibility:hidden}
 .calendar-highlight-tools .highlight-colours button{display:flex;align-items:center;gap:6px;border:1px solid #d2c5b2;border-radius:5px;min-height:40px;padding:6px;background:#fffaf0}
 .highlight-colours button span{width:15px;height:15px;flex:none;border-radius:50%;background:var(--swatch);border:1px solid #0002}
 .highlight-picker-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid #ded8ca}
+
+/* Compact shared writing actions; mobile keeps them within reach. */
+.task-ribbon,.all-ribbon{height:48px!important;min-height:48px!important;clip-path:none!important;border-radius:7px 7px 3px 3px!important;background:var(--list-colour,#9bb3c9)!important;box-shadow:inset 0 1px #ffffff80,0 2px 4px #30271920}
+.task-ribbon.active{outline:2px solid var(--ink);outline-offset:-2px}
+.task-quick{position:sticky;bottom:0;background:var(--paper);padding:10px 0;z-index:3}
+@media(max-width:767px){
+ .book-shell{padding-right:0}.book-shell>.month-tabs{display:none!important}
+ .book-shell>.bookmark-today{position:fixed;top:112px;right:0;z-index:35;width:27px;height:58px}
+ .section-tabs{position:static!important;display:flex!important;flex-wrap:nowrap!important;overflow-x:auto;gap:4px;padding:6px 0!important;height:auto!important;transform:none!important}
+ .section-tabs .section-tab{flex:0 0 auto;min-height:38px!important;height:38px!important;padding:7px 10px!important;white-space:nowrap;transform:none!important;clip-path:none!important;border-radius:6px!important}
+ .book-shell>.book{padding:0 12px 80px;overflow:visible}
+ .mobile-view-switch{position:static;padding:4px 0}.mobile-view-switch button{min-height:36px}
+ .book-head{margin:8px 0;padding-bottom:6px}.book-head h1{font-size:21px;padding-right:18px}
+ #app .shared-write-tools{position:fixed!important;bottom:calc(12px + env(safe-area-inset-bottom));right:12px;z-index:45;background:var(--paper);border:1px solid #b5a06a;border-radius:24px;padding:5px 10px!important;width:auto!important;box-shadow:0 4px 18px #33261530;margin:0!important}
+ .shared-write-tools button{min-height:40px}.writing-tool-label{display:inline!important}
+ .calendar-highlight-tools{position:static;padding:0;margin-bottom:6px}
+ .day-spread{display:flex!important;flex-direction:column;gap:10px}.day-spread>div{display:contents}.day-spread section{margin-bottom:10px}.day-spread .side-section{padding:8px 0}
+ .year-layout{display:block}.year-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px}.mini-month{padding:4px!important}.mini-month button{min-height:28px!important;padding:2px!important}
+ .week-grid{min-width:0!important}.calendar-table th,.calendar-table td{padding:3px!important}.day-cell{min-height:76px!important}.calendar-table .event-chip{font-size:11px}
+ .planner-category-card{min-height:0!important;padding:12px!important}.planner-category-grid{gap:8px}.planner-category-heading strong{font-size:17px}.planner-category-card>span{font-size:14px}
+ .planner-table textarea{font-size:16px!important;min-height:70px}.planner-meta{grid-template-columns:1fr}.todo-card .task-name{font-size:16px!important}.todo-card .task-date{font-size:12px!important}.todo-cards{max-height:none!important}
+ .launchpad-layout .note-controls{flex-wrap:wrap}.launchpad-layout .ruled{min-height:220px}.bright-ideas-instruction{font-size:14px;margin:4px 0 10px}.section-habits .page-content{overflow-x:auto}
+}
+@media(max-width:767px){
+ .weekly-grid{display:flex!important;flex-direction:column;gap:8px}.weekly-grid>.week-day{min-height:0;padding:8px}.weekly-grid>.week-day:nth-child(1){order:0}.weekly-grid>.week-day:nth-child(2){order:3}.weekly-grid>.week-day:nth-child(3){order:1}.weekly-grid>.week-day:nth-child(4){order:4}.weekly-grid>.week-day:nth-child(5){order:2}.weekly-grid>.week-day:nth-child(6){order:5}.weekly-grid>.week-day:nth-child(7){order:6}.weekly-grid>.week-notes{order:7}
+ .week-day>.ruled{min-height:64px!important;height:64px}.week-day>.entry-chip{font-size:16px!important}.section-tabs{inset:auto!important;width:100%;max-width:100%}.task-quick{bottom:64px}
+}
