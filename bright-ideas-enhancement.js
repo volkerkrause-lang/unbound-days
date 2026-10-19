@@ -18,8 +18,17 @@
   };
   const build = () => {
     const layout = document.querySelector('.launchpad-layout');
-    const editor = layout?.querySelector('.note-editor');
-    if (!layout || !editor) return;
+    if (!layout) return;
+    const editor = layout.querySelector('.note-editor');
+    if (!editor) {
+      layout.classList.add('bright-ideas-enhanced');
+      const starter = layout.querySelector('[data-action="idea-page"]');
+      if (starter && layout.dataset.ideaAutostart !== '1') {
+        layout.dataset.ideaAutostart = '1';
+        starter.click();
+      }
+      return;
+    }
     const id = noteId();
     if (state.root === editor && state.noteId === id && editor.dataset.enhanced === '1') return;
     state.root = editor; state.noteId = id; editor.dataset.enhanced = '1';
