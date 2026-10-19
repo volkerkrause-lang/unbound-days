@@ -458,7 +458,7 @@ body:has(dialog[open]) #app .shared-write-tools{visibility:hidden}
 
 /* Bright Ideas native-style iPad workspace */
 .bright-ideas-enhanced{position:relative;display:block!important}
-.bright-ideas-enhanced>aside{display:none!important}
+.bright-ideas-enhanced>aside:not(.idea-collection-popover){display:none!important}
 .bright-ideas-enhanced .note-editor{width:100%;max-width:none;min-width:0}
 .bright-ideas-enhanced .idea-editor-head{display:flex;align-items:center;gap:12px;justify-content:space-between}
 .idea-native-toolbar{display:flex;align-items:center;gap:5px;flex-wrap:wrap;padding:6px 0;margin-bottom:8px;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:16;background:var(--paper)}
