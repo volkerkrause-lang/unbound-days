@@ -449,3 +449,7 @@ body:has(dialog[open]) #app .shared-write-tools{visibility:hidden}
  .weekly-grid{display:flex!important;flex-direction:column;gap:8px}.weekly-grid>.week-day{min-height:0;padding:8px}.weekly-grid>.week-day:nth-child(1){order:0}.weekly-grid>.week-day:nth-child(2){order:3}.weekly-grid>.week-day:nth-child(3){order:1}.weekly-grid>.week-day:nth-child(4){order:4}.weekly-grid>.week-day:nth-child(5){order:2}.weekly-grid>.week-day:nth-child(6){order:5}.weekly-grid>.week-day:nth-child(7){order:6}.weekly-grid>.week-notes{order:7}
  .week-day>.ruled{min-height:64px!important;height:64px}.week-day>.entry-chip{font-size:16px!important}.section-tabs{inset:auto!important;width:100%;max-width:100%}.task-quick{bottom:64px}
 }
+@media(max-width:767px){
+ #app .shared-write-tools{top:auto!important;left:auto!important;height:auto!important;max-height:64px;align-items:center}
+ .mobile-view-switch,.section-tabs,.mobile-view-switch button{scroll-margin-top:64px}
+}
