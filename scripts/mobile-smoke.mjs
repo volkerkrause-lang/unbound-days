@@ -16,7 +16,7 @@ try{
  const geometry=await page.evaluate(()=>{const nav=document.querySelector('.section-tabs'),today=document.querySelector('.bookmark-today'),months=document.querySelector('.month-tabs');return{width:innerWidth,overflow:document.documentElement.scrollWidth>innerWidth,nav:getComputedStyle(nav).position,scrollable:nav.scrollWidth>nav.clientWidth,today:getComputedStyle(today).position,months:getComputedStyle(months).display};});
  assert.deepEqual(geometry,{width:390,overflow:false,nav:'static',scrollable:true,today:'fixed',months:'none'});
  await page.locator('.mobile-pinned-tab').click();await page.getByRole('heading',{name:'Mobile trip',exact:true}).waitFor();
- await page.locator('[data-mobile-view="month"]').click();await page.locator('.section-calendar.view-month').waitFor();
+ await page.locator('.section-tabs [data-section="calendar"]').click();await page.locator('[data-mobile-view="month"]').click();await page.locator('.section-calendar.view-month').waitFor();
  for(const view of ['year','week','day']){await page.locator(`[data-mobile-view="${view}"]`).click();await page.locator(`.section-calendar.view-${view}`).waitFor();}
  await page.getByRole('button',{name:'Go to today',exact:true}).click();
  await page.getByRole('button',{name:'Search planner',exact:true}).click();await page.getByLabel('Search your notebook').fill('Keep my writing');await page.getByRole('button',{name:'Close',exact:true}).click();
