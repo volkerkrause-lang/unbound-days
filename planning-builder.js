@@ -71,7 +71,7 @@ export function renderComponent({form,component:c,entry,esc}){
  }
  if(c.type==='location'){
   const address=entry(key),description=entry(entryKey(form,c,'description')),maps=`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`;
-  body=`<div class="custom-location"><input data-entry="${key}" value="${esc(address)}" placeholder="Address" aria-label="Address"><input data-entry="${entryKey(form,c,'description')}" value="${esc(description)}" placeholder="Location description (optional)" aria-label="Location description">${address?`<a class="secondary" href="${maps}" target="_blank" rel="noopener">Open directions in Google Maps</a>`:''}</div>`;
+  body=`<div class="custom-location"><input data-entry="${key}" value="${esc(address)}" placeholder="Address" aria-label="Address"><input data-entry="${entryKey(form,c,'description')}" value="${esc(description)}" placeholder="Location description (optional)" aria-label="Location description"><a class="secondary" data-custom-map="${c.id}" href="${maps}" target="_blank" rel="noopener" ${address?'':'hidden'}>Open directions in Google Maps</a></div>`;
  }
  return `<section class="custom-component size-${esc(c.size||'wide')}" data-custom-component="${c.id}" data-custom-drop="${c.id}">${head}<div class="custom-component-body">${body}</div></section>`;
 }
@@ -124,6 +124,7 @@ export function createPlanningBuilder(options){
   const form=current();if(!form)return false;
   if(target.dataset.customTitle){updateComponent(form,target.dataset.customTitle,c=>c.title=target.value);return true;}
   if(target.dataset.customItemLabel){updateComponent(form,target.dataset.customItemLabel,c=>{const item=(c.items||[]).find(x=>x.id===target.dataset.item);if(item)item.label=target.value;});return true;}
+  if(target.getAttribute('aria-label')==='Address'){const componentId=target.dataset.entry?.split(':').at(-2),link=document.querySelector(`[data-custom-map="${componentId}"]`);if(link){link.href=`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(target.value)}`;link.hidden=!target.value.trim();}}
   if(target.matches('.custom-slider input'))target.nextElementSibling.textContent=target.value+'%';
   return false;
  };
