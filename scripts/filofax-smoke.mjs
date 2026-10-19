@@ -23,10 +23,15 @@ try{
   const erased=await page.evaluate(()=>{const d=JSON.parse(localStorage.getItem('unbound-days-v1'));return Object.entries(d.ink||{}).filter(([k])=>k.startsWith('calendar-highlight:'));});
   assert.equal(erased[0][1].length,0);
   await page.locator('[data-section="goals"]').first().click();
-  await page.getByRole('button',{name:'Monthly Reflection'}).click();
-  await page.locator('.reflection-grid').waitFor();
+  assert.equal(await page.getByRole('button',{name:'Monthly Reflection',exact:true}).count(),0);
+  await page.locator('#planner-search').waitFor();
+  assert.equal(await page.locator('.writing-target').count(),0);
+  for(const section of ['tasks','habits','launchpad']){await page.locator('.section-tabs [data-section="'+section+'"]').click();assert.equal(await page.locator('.mobile-view-switch').count(),0);assert.equal(await page.locator('.writing-target').count(),0);}
+  await page.locator('.section-tabs [data-section="tasks"]').click();
+  await page.getByRole('button',{name:'Pencil',exact:true}).click();
+  assert.equal(await page.locator('#task-quick input[name="title"]').evaluate(e=>document.activeElement===e),true);
   assert.deepEqual(errors,[]);
   await page.close();
  }
- console.log('Desktop, tablet and mobile: highlight persistence, undo, navigation and Reflection passed');
+ console.log('Desktop, tablet and mobile: highlight persistence, undo, navigation and automatic writing focus passed');
 }finally{await browser.close();}
