@@ -60,3 +60,19 @@ test('confirmed folder deletion preserves templates and existing sheets',async()
  assert.equal(records(entries)[0].parent,'');
  assert.equal(entries['form:original:custom:note:value'],'Keep this answer');
 });
+
+test('folder deletion moves nested templates to chosen destination or explicitly deletes templates only',async()=>{
+ const {createTemplateLibrary}=await import('../form-templates.js');
+ for(const contents of ['move','delete']){
+  const entries={'form:filled:custom:note:value':'Keep filled sheet'};
+  putRecord(entries,{id:'a',name:'Source',parent:'',colour:'#718b80'},'folder');
+  putRecord(entries,{id:'b',name:'Destination',parent:'',colour:'#8a7894'},'folder');
+  putRecord(entries,templateFromDefinition('t','Review','',blankDefinition(),'a'));
+  const library=createTemplateLibrary({entries:()=>entries,save(){},render(){},id:()=>'',esc:String,openModal(){},closeModal(){},builder:{},current:()=>'',toast(){}});
+  library.submit({id:'template-library-form',dataset:{operation:'folder-delete',id:'a'}},{confirmed:'on',contents,parent:'b'});
+  assert.equal(records(entries).length,contents==='delete'?0:1);
+  if(contents==='move')assert.equal(records(entries)[0].parent,'b');
+  assert.equal(records(entries,'folder')[0].colour,'#8a7894');
+  assert.equal(entries['form:filled:custom:note:value'],'Keep filled sheet');
+ }
+});

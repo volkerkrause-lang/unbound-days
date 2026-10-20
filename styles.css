@@ -533,3 +533,40 @@ body:has(dialog[open]) #app .shared-write-tools{visibility:hidden}
 .custom-component-actions [data-custom-duplicate] svg{flex:none;width:18px;height:18px}
 .planning-voice-status{position:fixed;z-index:10000;bottom:16px;left:50%;transform:translateX(-50%);max-width:calc(100vw - 24px);padding:10px 14px;border:1px solid #ac8c63;border-radius:8px;background:#fff7e8;color:#313a41;box-shadow:0 3px 16px #0003;display:flex;align-items:center;gap:12px;font:14px var(--ui)}
 .planning-voice-status button{background:#7b3d43;color:#fff;border-radius:4px;padding:8px 12px;flex:none}
+/* Compact stationery controls and responsive planning rows. */
+.shared-write-tools{position:fixed!important;right:auto!important;bottom:auto!important;z-index:90;display:flex;gap:2px;padding:3px!important;border-radius:12px;background:#faf7ed;box-shadow:0 3px 12px #30271930}
+.shared-write-tools[hidden]{display:none!important}
+.shared-write-tools button{width:38px!important;min-width:38px!important;height:36px!important;padding:4px!important;font-size:22px!important}
+.shared-write-tools .writing-tool-label{display:none}
+.planner-table th{word-break:normal!important;overflow-wrap:normal!important;hyphens:none}
+.template-folders{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,180px));gap:16px;margin:20px 0}
+.template-folders>div{min-width:0;padding:12px;border-radius:10px;background:#fffdf780;box-shadow:0 2px 7px #30271912}
+.template-folders>div>button:first-child{display:flex;flex-direction:column;align-items:center;width:100%;gap:10px;border:0;background:transparent;overflow-wrap:anywhere}
+.folder-art{display:block;position:relative;width:80px;height:53px;margin-top:9px;border-radius:4px 7px 7px 7px;background:linear-gradient(#ffffff30,#00000012),var(--folder-colour);box-shadow:inset 0 1px #ffffff90,0 4px 6px #30271925}
+.folder-art:before{content:'';position:absolute;left:0;top:-8px;width:34px;height:10px;border-radius:5px 5px 0 0;background:var(--folder-colour)}
+.template-folders .text-action{font-size:12px;padding:6px}
+.section-tabs .section-tab{width:116px!important;min-width:116px!important;height:44px!important;min-height:44px!important;flex:0 0 116px!important;white-space:normal!important;line-height:1.15;padding:5px!important;font-size:14px!important;box-shadow:inset 0 1px 2px #ffffff90,0 3px 5px #30271935!important;border:1px solid #43352a30!important;background-image:linear-gradient(170deg,#ffffff40,transparent 45%,#00000015)!important;border-radius:6px 6px 3px 3px!important}
+.section-tabs .section-tab.active{box-shadow:inset 0 1px 2px #ffffffa0,0 4px 6px #30271950!important}
+.task-ribbon{width:112px!important;min-width:112px!important;background-image:linear-gradient(170deg,#ffffff40,transparent 45%,#00000018)!important}
+@media(max-width:600px){
+ .planner-table-scroll{overflow:visible}.planner-table,.planner-table tbody{display:block;width:100%;min-width:0!important}.planner-table thead{display:none}.planner-table tr{display:grid;grid-template-columns:36px minmax(0,1fr);gap:6px;border-bottom:1px solid #cbbda8;padding:10px 0}.planner-table td{display:block;width:auto!important;min-width:0;border:0!important;padding:3px!important;grid-column:2}.planner-table td:first-child{grid-column:1;grid-row:1}.planner-table td[data-label]:before{content:attr(data-label);display:block;font:13px/1.4 var(--ui);color:#626b60}.planner-table textarea{width:100%;height:48px!important;min-height:48px!important;line-height:24px!important}.planner-table textarea::placeholder{font-size:14px}.custom-page,.custom-component,.planner-register{min-width:0;max-width:100%}.template-folders{grid-template-columns:repeat(2,minmax(0,1fr))}.my-template-library{padding:14px}.my-template-library input{max-width:100%;box-sizing:border-box}
+}
+
+#app .shared-write-tools,#modal-content>.shared-write-tools{width:88px!important;max-height:none;flex-wrap:nowrap;gap:2px!important;padding:3px!important;border:1px solid #b5a06a;border-radius:10px!important;transform:none!important;margin:0!important}
+.shared-write-tools .writing-tool-label{display:none!important}
+.template-icon-action{display:inline-flex;align-items:center;justify-content:center;min-width:36px;min-height:36px;border-radius:6px}
+.template-icon-action:hover,.template-icon-action:active,.template-folders>div>button:hover{background:#e7e3d8}
+.section-tabs .section-tab:nth-child(6n+1){background-color:#827048!important;color:#fffdf6!important}
+.section-tabs .section-tab:nth-child(6n+2){background-color:#526b5e!important;color:#fffdf6!important}
+.section-tabs .section-tab:nth-child(6n+3){background-color:#516d83!important;color:#fffdf6!important}
+.section-tabs .section-tab:nth-child(6n+4){background-color:#7d6688!important;color:#fffdf6!important}
+.section-tabs .section-tab:nth-child(6n+5){background-color:#925f70!important;color:#fffdf6!important}
+.section-tabs .section-tab:nth-child(6n){background-color:#89694d!important;color:#fffdf6!important}
+.section-tabs .section-tab.active{border-color:#e4ce8e!important;filter:brightness(1.12)}
+.template-location-label{font:14px var(--ui);color:#626b60;margin:12px 0}.my-template-library h2{display:flex;gap:8px;align-items:center}
+.task-ribbon-wrap{flex:0 0 112px!important}.task-ribbon.all-ribbon{width:112px!important;flex:0 0 112px!important;min-height:48px!important}
+.month-tabs .month-tab{width:38px!important;flex:1 1 0;min-height:28px;padding:3px;box-shadow:inset 1px 1px #ffffff70,2px 3px 5px #30271935;background-image:linear-gradient(100deg,#ffffff35,transparent 50%,#00000015);border:1px solid #30271930;border-radius:2px 5px 5px 2px;color:#fffdf6}
+.month-tabs .month-tab.active{width:38px!important;filter:brightness(1.15);border-color:#e4ce8e}
+.month-tab:nth-child(12n+1){background-color:#827048}.month-tab:nth-child(12n+2){background-color:#526b5e}.month-tab:nth-child(12n+3){background-color:#516d83}.month-tab:nth-child(12n+4){background-color:#7d6688}.month-tab:nth-child(12n+5){background-color:#925f70}.month-tab:nth-child(12n+6){background-color:#89694d}.month-tab:nth-child(12n+7){background-color:#587e7b}.month-tab:nth-child(12n+8){background-color:#74784c}.month-tab:nth-child(12n+9){background-color:#70587a}.month-tab:nth-child(12n+10){background-color:#916953}.month-tab:nth-child(12n+11){background-color:#53677d}.month-tab:nth-child(12n){background-color:#896676}
+
+.todo-view .task-ribbon,.todo-view .all-ribbon{height:48px!important;min-height:48px!important;box-shadow:inset 0 1px 2px #ffffff80,0 3px 5px #30271930!important}

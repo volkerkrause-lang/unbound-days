@@ -5,7 +5,7 @@ if(process.env.UNBOUND_DEVICE&&process.env.UNBOUND_DEVICE!==name)continue;
 const browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||undefined,args:process.env.CHROMIUM_EXECUTABLE_PATH?['--no-sandbox','--disable-dev-shm-usage','--no-zygote','--single-process','--use-gl=angle','--use-angle=swiftshader','--disable-gpu-sandbox','--in-process-gpu']:[]});
 try{
  const page=await browser.newPage({viewport:{width,height}}),errors=[];page.setDefaultTimeout(8000);page.on('pageerror',e=>{errors.push(e.message);console.log('BROWSER ERROR',e.message);});
- await page.goto('http://localhost:4173/');
+ await page.goto(process.env.UNBOUND_TEST_URL||'http://localhost:4173/');
  await page.evaluate(()=>{localStorage.setItem('unbound-days-v1-backup-onboarding','deferred');const today=new Date().toISOString().slice(0,10);localStorage.setItem('unbound-days-v1',JSON.stringify({version:1,events:['Early',' EARLY ','Late','Long Day','Appointment'].map((title,i)=>({id:'sample-'+i,title,date:today,endDate:today,lastDate:today,time:'',category:'personal',repeat:'none'})),tasks:[],notes:[],habits:[],entries:{},settings:{cover:0,favorites:[],selectedCalendars:[],ink:'#313a41',backupPromptSeen:true},ink:{},trash:[],bookmarks:[]}));});
  await page.reload();await page.locator('[data-action="open"]').click();
  // Dismiss optional first-run backup prompt, if shown.
@@ -20,7 +20,7 @@ try{
  await page.locator('[data-planner-root]').click();await page.locator('[data-planner-choice="forms"]').click();
  await page.locator('[data-template-new-folder]').click();await page.locator('#template-library-form [name="name"]').fill('Work');await page.locator('#template-library-form [type="submit"]').click();
  await page.locator('[data-template-move]').click();await page.locator('#template-library-form [name="parent"]').selectOption({label:'Work'});await page.locator('#template-library-form [type="submit"]').click();
- await page.getByRole('button',{name:'▱ Work',exact:true}).click();await page.locator('[data-template-use]').click();assert.equal(await page.locator('.custom-note').inputValue(),'');
+ await page.getByRole('button',{name:'Work',exact:true}).click();await page.locator('[data-template-use]').click();assert.equal(await page.locator('.custom-note').inputValue(),'');
  await page.locator('.custom-note').fill('New separate sheet');await page.reload();
  assert.ok(Object.values(await page.evaluate(()=>JSON.parse(localStorage.getItem('unbound-days-v1')).entries)).includes('New separate sheet'));
  // Navigate to Month, verify title-derived backgrounds and containment.

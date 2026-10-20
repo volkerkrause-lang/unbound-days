@@ -43,6 +43,7 @@ try{
   await page.getByRole('button',{name:'Convert handwriting to text',exact:true}).click();await page.getByRole('button',{name:'Replace canvas with text',exact:true}).click();
   await page.locator('.idea-converted-editor').waitFor();assert.equal(await page.locator('#ink-canvas').count(),0);
   await page.locator('.section-tabs [data-section="tasks"]').click();
+  await page.locator('#task-quick input[name="title"]').focus();
   await page.getByRole('button',{name:'Pencil',exact:true}).click();
   assert.equal(await page.locator('#task-quick input[name="title"]').evaluate(e=>document.activeElement===e),true);
   assert.deepEqual(errors,[]);
