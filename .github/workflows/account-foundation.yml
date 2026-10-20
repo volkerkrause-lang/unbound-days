@@ -27,6 +27,7 @@ jobs:
           node scripts/filofax-smoke.mjs
           node scripts/calendar-responsive-smoke.mjs
           node scripts/template-colours-smoke.mjs
+          node scripts/voice-recorder-smoke.mjs
       - name: Save mobile browser result
         if: always() && startsWith(github.ref, 'refs/heads/development/')
         uses: actions/upload-artifact@v4

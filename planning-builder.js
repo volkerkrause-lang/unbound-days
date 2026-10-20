@@ -1,3 +1,4 @@
+import {createVoiceRecorder} from './voice-recorder.js?v=0.4.0';
 const COMPONENTS={
  note:{label:'Note',icon:'▤',title:'Notes',size:'wide'},
  checklist:{label:'Tick-list',icon:'☑',title:'Checklist',size:'wide'},
@@ -40,7 +41,7 @@ export function deadlineStatus(value,today=new Date()){
  return days===0?'Due today':days>0?`${days} day${days===1?'':'s'} remaining`:`${Math.abs(days)} day${days===-1?'':'s'} overdue`;
 }
 
-function control(key,c,esc){return `<div class="custom-component-actions"><button type="button" data-custom-move="${c.id}" data-direction="-1" aria-label="Move ${esc(c.title)} up">↑</button><button type="button" data-custom-move="${c.id}" data-direction="1" aria-label="Move ${esc(c.title)} down">↓</button><button type="button" data-custom-duplicate="${c.id}" aria-label="Duplicate ${esc(c.title)}">⧉</button><button type="button" data-custom-resize="${c.id}" aria-label="Resize ${esc(c.title)}">↔</button><button type="button" class="danger" data-custom-remove="${c.id}" aria-label="Remove ${esc(c.title)}">×</button><span class="custom-drag-handle" draggable="true" data-custom-drag="${c.id}" title="Drag to reorder">⋮⋮</span></div>`;}
+function control(key,c,esc){return `<div class="custom-component-actions"><button type="button" data-custom-move="${c.id}" data-direction="-1" aria-label="Move ${esc(c.title)} up">↑</button><button type="button" data-custom-move="${c.id}" data-direction="1" aria-label="Move ${esc(c.title)} down">↓</button><button type="button" data-custom-duplicate="${c.id}" aria-label="Copy ${esc(c.title)}" title="Copy component"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M15 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3"/></svg><span>Copy</span></button><button type="button" data-custom-resize="${c.id}" aria-label="Resize ${esc(c.title)}">↔</button><button type="button" class="danger" data-custom-remove="${c.id}" aria-label="Remove ${esc(c.title)}">×</button><span class="custom-drag-handle" draggable="true" data-custom-drag="${c.id}" title="Drag to reorder">⋮⋮</span></div>`;}
 function entryKey(form,c,field='value'){return `form:${form}:custom:${c.id}:${field}`;}
 function titleInput(c,esc){return `<input class="custom-component-title" data-custom-title="${c.id}" value="${esc(c.title)}" aria-label="Component heading" maxlength="100">`;}
 
@@ -89,7 +90,7 @@ export function renderCustomLibrary({records,esc}){
 export function formatTime(ms){const total=Math.max(0,Math.floor(Number(ms||0)/1000)),hours=Math.floor(total/3600),minutes=Math.floor(total%3600/60),seconds=total%60;return hours?`${hours}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`:`${minutes}:${String(seconds).padStart(2,'0')}`;}
 
 export function createPlanningBuilder(options){
- const {entries,ink,save,render,toast,id,esc,schedule}=options;let removed=null,dragged=null,recorders=new Map(),timers=[];
+ const {entries,ink,save,render,toast,id,esc,schedule}=options;let removed=null,dragged=null,timers=[],voiceTimer=null;
  const definitionKey=form=>`form:${form}:custom-definition`;
  const get=form=>parseDefinition(entries()[definitionKey(form)],entries()[`form:${form}:title`]);
  const set=(form,value)=>{entries()[definitionKey(form)]=serialiseDefinition(value);save();};
@@ -114,7 +115,7 @@ export function createPlanningBuilder(options){
   if(data.customRating){entries()[`form:${form}:custom:${data.customRating}:value`]=String(data.value);save();render();return true;}
   if(data.customStopwatch){const base=`form:${form}:custom:${data.customStopwatch}:`,elapsed=Number(entries()[base+'elapsed'])||0,running=entries()[base+'running']==='yes';if(data.command==='reset'){entries()[base+'elapsed']='0';entries()[base+'running']='no';delete entries()[base+'started'];}else if(data.command==='pause'&&running){entries()[base+'elapsed']=String(elapsed+(Date.now()-Number(entries()[base+'started']||Date.now())));entries()[base+'running']='no';delete entries()[base+'started'];}else if(data.command==='start'&&!running){entries()[base+'started']=String(Date.now());entries()[base+'running']='yes';}save();render();return true;}
   if(data.customCalendar){const c=get(form).components.find(x=>x.id===data.customCalendar),date=entries()[`form:${form}:custom:${c.id}:value`];schedule({title:c.title,date});return true;}
-  if(data.customAudioDelete){delete entries()[`form:${form}:custom:${data.customAudioDelete}:audio`];delete entries()[`form:${form}:custom:${data.customAudioDelete}:duration`];save();render();return true;}
+  if(data.customAudioDelete){if(voice.session){toast('Stop recording before deleting a voice memo.');return true;}delete entries()[`form:${form}:custom:${data.customAudioDelete}:audio`];delete entries()[`form:${form}:custom:${data.customAudioDelete}:duration`];save();render();return true;}
   if(data.customRecord){await recordAudio(form,data.customRecord);return true;}
   if(data.customFormDuplicate){const old=data.customFormDuplicate,source=get(old),title=(entries()[`form:${old}:title`]||'Custom form')+' copy',next=create(title,{...clone(source),title}),prefix=`form:${old}:custom:`;for(const [key,value] of Object.entries(entries()))if(key.startsWith(prefix))entries()[`form:${next}:custom:`+key.slice(prefix.length)]=value;for(const [key,value] of Object.entries(ink()))if(key.startsWith(`planner:${old}:`))ink()[`planner:${next}:`+key.slice(`planner:${old}:`.length)]=clone(value);save();render();return true;}
   if(data.customInkUndo||data.customInkRedo||data.customInkClear||data.customInkTool)return true;
@@ -129,13 +130,48 @@ export function createPlanningBuilder(options){
   return false;
  };
  const changed=target=>{if(target.dataset.entry?.startsWith(`form:${current()}:custom:`)&&(target.type==='date'||target.getAttribute('aria-label')==='Address'))render();};
- async function recordAudio(form,componentId){
-  if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){toast('Voice recording is not available in this browser.');return;}
-  if(recorders.has(componentId)){recorders.get(componentId).stop();return;}
-  const stream=await navigator.mediaDevices.getUserMedia({audio:true}),chunks=[],started=Date.now(),recorder=new MediaRecorder(stream);
-  recorders.set(componentId,recorder);recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};recorder.onstop=()=>{stream.getTracks().forEach(track=>track.stop());recorders.delete(componentId);const blob=new Blob(chunks,{type:recorder.mimeType||'audio/webm'}),reader=new FileReader();reader.onload=()=>{entries()[`form:${form}:custom:${componentId}:audio`]=String(reader.result);entries()[`form:${form}:custom:${componentId}:duration`]=formatTime(Date.now()-started);save();render();};reader.readAsDataURL(blob);};recorder.start();toast('Recording… tap Stop when finished.');const button=document.querySelector(`[data-custom-record="${componentId}"]`);if(button)button.textContent='Stop';
+ const voice=createVoiceRecorder({
+  capture:()=>{
+   if(!globalThis.isSecureContext)throw Error('Voice recording needs a secure HTTPS connection. Open Unbound directly in Safari or Chrome.');
+   if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder)throw Error('Voice recording is unavailable here. Open Unbound directly in Safari or Chrome and allow microphone access.');
+   return navigator.mediaDevices.getUserMedia({audio:true});
+  },
+  Recorder:()=>window.MediaRecorder,
+  readBlob:blob=>new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result));reader.onerror=()=>reject(Error('Could not read the recording. Your previous memo has been kept.'));reader.readAsDataURL(blob);}),
+  store:(session,data,duration)=>{
+   if(options.blocked?.()||entries()!==session.notebook)throw Error('The notebook changed while recording. The memo was not added to a different account.');
+   if(!get(session.form).components.some(c=>c.id===session.component&&c.type==='voice'))throw Error('The voice memo component was removed before recording finished.');
+   const base=`form:${session.form}:custom:${session.component}:`;
+   entries()[base+'audio']=data;entries()[base+'duration']=formatTime(duration);save();
+  },
+  changed:()=>{updateVoiceControls();if(!voice.session)render();},error:toast
+ });
+ const recordAudio=(form,componentId)=>voice.toggle(form,componentId,entries());
+ function updateVoiceControls(){
+  clearInterval(voiceTimer);voiceTimer=null;
+  const update=()=>{
+   const session=voice.session;
+   document.querySelectorAll('[data-custom-record]').forEach(button=>{
+    const active=session?.form===current()&&session?.component===button.dataset.customRecord;
+    const audio=entries()[`form:${current()}:custom:${button.dataset.customRecord}:audio`];
+    button.textContent=active?(session.phase==='requesting'?'Allow microphone…':session.phase==='saving'?'Saving…':'Stop recording'):(audio?'Record again':'Record');
+    button.disabled=!!session&&(!active||session.phase!=='recording');
+    button.setAttribute('aria-pressed',String(active&&session.phase==='recording'));
+    const wrapper=button.closest('.custom-voice');
+    wrapper?.querySelectorAll('[data-custom-audio-delete]').forEach(b=>b.disabled=!!session);
+    if(active){const duration=wrapper?.querySelector('[data-voice-duration]');if(duration)duration.textContent=session.phase==='recording'?formatTime(Date.now()-session.startedAt):session.phase==='requesting'?'Waiting for microphone permission':'Saving recording…';}
+   });
+   let banner=document.getElementById('planning-voice-status');
+   if(!session){banner?.remove();return;}
+   if(!banner){banner=document.createElement('div');banner.id='planning-voice-status';banner.className='planning-voice-status';banner.setAttribute('role','status');document.body.append(banner);}
+   banner.replaceChildren();const label=document.createElement('span');label.textContent=session.phase==='recording'?`Voice memo · Recording ${formatTime(Date.now()-session.startedAt)}`:session.phase==='requesting'?'Voice memo · Allow microphone access in your browser':'Voice memo · Saving…';banner.append(label);
+   const stop=document.createElement('button');stop.type='button';stop.textContent=session.phase==='requesting'?'Cancel':'Stop recording';stop.disabled=session.phase==='saving';stop.onclick=()=>session.phase==='requesting'?voice.cancel():voice.stop();banner.append(stop);
+  };
+  update();if(voice.session?.phase==='recording')voiceTimer=setInterval(update,500);
  }
+ globalThis.addEventListener?.('beforeunload',event=>{if(voice.session){event.preventDefault();event.returnValue='';}});
  const mount=()=>{
+  updateVoiceControls();
   timers.forEach(clearInterval);timers=[];
   document.querySelectorAll('[data-stopwatch][data-running="true"]').forEach(output=>{const tick=()=>output.textContent=formatTime(Number(output.dataset.elapsed||0)+Date.now()-Number(output.dataset.started||Date.now()));tick();timers.push(setInterval(tick,1000));});
   document.querySelectorAll('[data-custom-drag]').forEach(handle=>handle.addEventListener('dragstart',()=>dragged=handle.dataset.customDrag));
@@ -153,7 +189,7 @@ export function createPlanningBuilder(options){
   const redoButton=toolbar?.querySelector('[data-custom-ink-redo]');if(redoButton)redoButton.onclick=()=>{if(redo.length){undo.push(clone(paths));paths=redo.pop();ink()[key]=paths;save();draw();}};
   const clearButton=toolbar?.querySelector('[data-custom-ink-clear]');if(clearButton)clearButton.onclick=()=>{undo.push(clone(paths));redo=[];paths=[];ink()[key]=paths;save();draw();};
  }
- return {create,get,set,handle,input,changed,mount,hasUndo:()=>!!removed,definitionFromTemplate};
+ return {create,get,set,handle,input,changed,mount,hasUndo:()=>!!removed,definitionFromTemplate,cancelRecording:()=>voice.cancel()};
 }
 
 export {COMPONENTS};

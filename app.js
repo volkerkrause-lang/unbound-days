@@ -375,7 +375,7 @@ app.addEventListener('pointerup',e=>{
 });
 
 function renderLegacyGoals(){return `<div style="display:flex;justify-content:flex-end;margin-bottom:12px">${tools()}</div><section class="side-section"><h2>The bigger picture</h2>${ruled(`goals:${year()}:year`,'Your goals for the year','style="min-height:100px;height:100px"')}</section><div class="goals-grid">${months.map((m,i)=>`<section class="goal-box"><h2>${m}</h2>${ruled(`goals:${year()}:${i}`,`Goals for ${m}`)}<div class="goal-actions"><button class="text-action" data-goal-task="${i}">Make a task from this goal</button></div></section>`).join('')}</div>`;}
-const customBuilder=createPlanningBuilder({entries:()=>state.entries,ink:()=>state.ink,save,render,toast,id,esc,current:()=>plannerPage,
+const customBuilder=createPlanningBuilder({blocked:()=>accountLocked||externalChange||storageCorrupt,entries:()=>state.entries,ink:()=>state.ink,save,render,toast,id,esc,current:()=>plannerPage,
  open:key=>{plannerMode='custom';plannerPage=key;plannerPinned=false;section='goals';closed=false;render();},
  library:()=>{plannerMode='custom';plannerPage=null;plannerPinned=false;section='goals';render();},
  schedule:({title,date:targetDate})=>{eventForm();const form=document.querySelector('#event-form');form.querySelector('[name=title]').value=title||'Planning deadline';form.querySelector('[name=date]').value=targetDate;form.querySelector('[name=endDate]').value=targetDate;form.querySelector('[name=notes]').value='Created from a custom Planning Tools page.';}
@@ -452,7 +452,7 @@ accountManager=mountAccounts({getState:()=>state,empty:emptyState,
  finishLocal:()=>mirrorQueue.catch(()=>{}),
  blocked:()=>externalChange||accountLocked||storageCorrupt,onStatus:updateSaveStatus,render,openModal,closeModal,toast,snapshot,
  exportNotebook:()=>{const {_cloud,...copy}=state;download('unbound-account-export.json',JSON.stringify(copy,null,2),'application/json');},
- lock:()=>{accountLocked=true;clearTimeout(taskSyncTimer);Google.disconnect();Dropbox.disconnect();document.querySelector('#app').inert=true;document.querySelector('#modal').inert=true;},
+ lock:()=>{customBuilder.cancelRecording();accountLocked=true;clearTimeout(taskSyncTimer);Google.disconnect();Dropbox.disconnect();document.querySelector('#app').inert=true;document.querySelector('#modal').inert=true;},
  // Cloud snapshots omit device-only preferences and Google caches by design.
  // Validate a hydrated copy without modifying the stored cloud payload.
  validateBackup:(data)=>validateBackup({...emptyState(),...data,

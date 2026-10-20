@@ -528,3 +528,8 @@ body:has(dialog[open]) #app .shared-write-tools{visibility:hidden}
 .template-card>div{display:flex;flex-wrap:wrap;gap:8px;padding:8px}
 .template-card small{white-space:normal;overflow-wrap:anywhere}
 .custom-page>.custom-component{min-width:0;max-width:100%}
+
+.custom-component-actions [data-custom-duplicate]{display:inline-flex;align-items:center;gap:4px;width:auto;min-width:58px;font-size:12px}
+.custom-component-actions [data-custom-duplicate] svg{flex:none;width:18px;height:18px}
+.planning-voice-status{position:fixed;z-index:10000;bottom:16px;left:50%;transform:translateX(-50%);max-width:calc(100vw - 24px);padding:10px 14px;border:1px solid #ac8c63;border-radius:8px;background:#fff7e8;color:#313a41;box-shadow:0 3px 16px #0003;display:flex;align-items:center;gap:12px;font:14px var(--ui)}
+.planning-voice-status button{background:#7b3d43;color:#fff;border-radius:4px;padding:8px 12px;flex:none}
