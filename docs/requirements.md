@@ -57,3 +57,23 @@ Start with an installable web app and validate daily use, then consider a native
 - Rejected: quick capture, natural-language appointments, drag-to-reschedule and custom page layouts. Do not reintroduce them.
 - Refine covers 0–20 without changing IDs or removing other designs. Premium cognac leather is the default; realistic material scale, binding, shadows, reflections and 3D depth.
 - Cloud integration release limits must be stated plainly: provider credentials, actual OAuth consent, Box secure backend, and real iPad testing remain external setup/validation work.
+
+
+## 20. Save and organise custom planning forms
+
+- Build Your Own offers Save as Template with a required name and optional description.
+- Templates preserve component layout, headings, formatting and configuration, separately from filled answers, recordings and ink. Saving never replaces the source sheet.
+- Choose from Forms starts with My Forms, ahead of built-in categories. Support folders and subfolders, creation, rename, move, deletion confirmation, search, recognisable names and component summaries.
+- Templates can be edited through a separate draft, explicitly updated, duplicated, moved and deleted. Confirm replacement and deletion. Prevent cyclic folder moves. Folder deletion preserves templates by moving them to My Forms.
+- Opening a template creates an independent, automatically saved editable planning sheet. Keep Save sheet, Duplicate form and Pin as notebook tab available.
+- Persist string-backed records within the existing notebook entries, recovery mirrors, backups and supported account sync. Preserve existing forms, entries and pinned tabs.
+- All added components default to the same full page width across desktop, iPad and mobile; users may still resize them.
+
+## 21. Consistent calendar colours by entry title
+
+- Match titles after Unicode normalisation, trimming, case folding and collapsing repeated whitespace.
+- Use a fixed palette and deterministic title mapping, independent of calendar source, event date and render order. Early, Late, Long Day, Appointment and CES Las Vegas use distinct palette colours.
+- Users may select a readable palette colour or reset to Automatic in the appointment editor; apply the preference to every matching title in Day, Week and Month views.
+- Keep preferences in notebook entries so reload, recovery, backup and supported account sync retain them. Do not alter Google event identities, recurrence or integration semantics.
+- Preserve text styling and day-cell containment. Finite palette collisions are permitted for arbitrary titles; users can override them.
+- Verify template independence, folder cycle rejection, normalisation, colour stability and overrides, recovery, calendar tests and responsive browser behaviour before deployment.

@@ -2,10 +2,10 @@ const COMPONENTS={
  note:{label:'Note',icon:'▤',title:'Notes',size:'wide'},
  checklist:{label:'Tick-list',icon:'☑',title:'Checklist',size:'wide'},
  drawing:{label:'Freehand drawing',icon:'✎',title:'Drawing',size:'wide'},
- voice:{label:'Voice memo',icon:'●',title:'Voice memo',size:'compact'},
- rating:{label:'Visual rating',icon:'★',title:'Confidence',size:'compact'},
- stopwatch:{label:'Stopwatch',icon:'◷',title:'Stopwatch',size:'compact'},
- deadline:{label:'Date & deadline',icon:'◫',title:'Deadline',size:'compact'},
+ voice:{label:'Voice memo',icon:'●',title:'Voice memo',size:'wide'},
+ rating:{label:'Visual rating',icon:'★',title:'Confidence',size:'wide'},
+ stopwatch:{label:'Stopwatch',icon:'◷',title:'Stopwatch',size:'wide'},
+ deadline:{label:'Date & deadline',icon:'◫',title:'Deadline',size:'wide'},
  location:{label:'Address & location',icon:'⌖',title:'Location',size:'wide'}
 };
 
@@ -28,8 +28,8 @@ export function definitionFromTemplate(template,flow,title=template.title){
  return {version:1,title,sourceTemplate:template.id,components:[
   {id:`${prefix}-context`,type:'note',title:flow?.contextTitle||'Planning notes',size:'wide'},
   {id:`${prefix}-actions`,type:'checklist',title:flow?.tableTitle||'Actions',size:'wide',items:(flow?.columns||template.columns||['Action']).map((label,i)=>({id:`${prefix}-item-${i}`,label}))},
-  {id:`${prefix}-deadline`,type:'deadline',title:'Target date',size:'compact'},
-  {id:`${prefix}-review`,type:'rating',title:'Progress',size:'compact',ratingStyle:'percentage'}
+  {id:`${prefix}-deadline`,type:'deadline',title:'Target date',size:'wide'},
+  {id:`${prefix}-review`,type:'rating',title:'Progress',size:'wide',ratingStyle:'percentage'}
  ]};
 }
 
@@ -76,14 +76,14 @@ export function renderComponent({form,component:c,entry,esc}){
  return `<section class="custom-component size-${esc(c.size||'wide')}" data-custom-component="${c.id}" data-custom-drop="${c.id}">${head}<div class="custom-component-body">${body}</div></section>`;
 }
 
-export function renderBuilder({record,definition,entry,esc,undoAvailable=false}){
+export function renderBuilder({record,definition,entry,esc,undoAvailable=false,editingTemplate=''}){
  const library=Object.entries(COMPONENTS).map(([type,item])=>`<button type="button" data-custom-add="${type}"><span>${item.icon}</span><strong>${item.label}</strong></button>`).join('');
- return `<div class="custom-builder"><div class="planner-toolbar"><button class="secondary" data-custom-library>Build Your Own</button><button class="secondary" data-planner-home>Planning Tools</button><button class="secondary" data-planner-pin="${record.key}" aria-pressed="${record.pinned}">${record.pinned?'Unpin form':'Pin as notebook tab'}</button><button class="secondary" data-custom-form-duplicate="${record.key}">Duplicate form</button>${undoAvailable?'<button class="secondary" data-custom-undo>Undo removal</button>':''}<button class="text-action" data-planner-archive="${record.key}">${record.archived?'Restore form':'Archive form'}</button></div><div class="custom-form-name"><label>Form name<input data-entry="form:${record.key}:title" value="${esc(record.title)}" maxlength="120"></label><span>Saved automatically</span></div><details class="custom-component-library" open><summary>Add a component</summary><div>${library}</div></details><div class="custom-page" data-custom-page>${definition.components.map(c=>renderComponent({form:record.key,component:c,entry,esc})).join('')||'<div class="custom-empty"><strong>Your page is ready.</strong><span>Add a component above to begin arranging it.</span></div>'}</div></div>`;
+ return `<div class="custom-builder"><div class="planner-toolbar"><button class="secondary" data-custom-library>Build Your Own</button><button class="secondary" data-planner-root>Planning Tools</button><button class="secondary" data-planner-pin="${record.key}" aria-pressed="${record.pinned}">${record.pinned?'Unpin form':'Pin as notebook tab'}</button><button class="primary" data-template-save>Save as Template</button><button class="secondary" data-template-save-sheet>Save sheet</button>${editingTemplate?`<button class="secondary" data-template-update="${esc(editingTemplate)}">Update Template</button>`:''}<button class="secondary" data-custom-form-duplicate="${record.key}">Duplicate form</button>${undoAvailable?'<button class="secondary" data-custom-undo>Undo removal</button>':''}<button class="text-action" data-planner-archive="${record.key}">${record.archived?'Restore form':'Archive form'}</button></div><div class="custom-form-name"><label>Form name<input data-entry="form:${record.key}:title" value="${esc(record.title)}" maxlength="120"></label><span>Saved automatically</span></div><details class="custom-component-library" open><summary>Add a component</summary><div>${library}</div></details><div class="custom-page" data-custom-page>${definition.components.map(c=>renderComponent({form:record.key,component:c,entry,esc})).join('')||'<div class="custom-empty"><strong>Your page is ready.</strong><span>Add a component above to begin arranging it.</span></div>'}</div></div>`;
 }
 
 export function renderCustomLibrary({records,esc}){
  const active=records.filter(r=>!r.archived),archived=records.filter(r=>r.archived);
- return `<div class="custom-library"><div class="planner-toolbar"><button class="secondary" data-planner-home>Planning Tools</button><button class="primary" data-custom-new>+ New custom form</button></div><p class="planner-intro">Arrange notes, checklists, drawings, voice memos and practical widgets on your own notebook page.</p><div class="planner-cards">${active.map(r=>`<button class="planner-card" data-planner-open="${r.key}"><strong>${r.pinned?'★ ':''}${esc(r.title)}</strong><span>Custom planning page</span></button>`).join('')||'<p class="empty-note">Create your first custom planning page.</p>'}</div>${archived.length?`<details><summary>Archived custom forms (${archived.length})</summary>${archived.map(r=>`<button class="planner-saved-item" data-planner-open="${r.key}">${esc(r.title)}</button>`).join('')}</details>`:''}</div>`;
+ return `<div class="custom-library"><div class="planner-toolbar"><button class="secondary" data-planner-root>Planning Tools</button><button class="primary" data-custom-new>+ New custom form</button></div><p class="planner-intro">Arrange notes, checklists, drawings, voice memos and practical widgets on your own notebook page.</p><div class="planner-cards">${active.map(r=>`<button class="planner-card" data-planner-open="${r.key}"><strong>${r.pinned?'★ ':''}${esc(r.title)}</strong><span>Custom planning page</span></button>`).join('')||'<p class="empty-note">Create your first custom planning page.</p>'}</div>${archived.length?`<details><summary>Archived custom forms (${archived.length})</summary>${archived.map(r=>`<button class="planner-saved-item" data-planner-open="${r.key}">${esc(r.title)}</button>`).join('')}</details>`:''}</div>`;
 }
 
 export function formatTime(ms){const total=Math.max(0,Math.floor(Number(ms||0)/1000)),hours=Math.floor(total/3600),minutes=Math.floor(total%3600/60),seconds=total%60;return hours?`${hours}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`:`${minutes}:${String(seconds).padStart(2,'0')}`;}

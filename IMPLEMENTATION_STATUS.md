@@ -137,3 +137,15 @@ Remaining validation and limitations:
 3. Run browser smoke when Chromium is available. Check account/login, cover, navigation, task form, Today and reload persistence before removing draft status.
 4. Existing Google task list transfers and existing subtask-parent changes are deliberately blocked in Unbound; perform those changes in Google and refresh, or explicitly duplicate a task. New lists created by the existing Unbound list button remain local. Synchronisation runs on connection, after notebook edits, Calendar refresh or the Tasks sync button; it is not a background service.
 5. Unknown creation outcomes require explicit review rather than automatic duplicate-prone retries. Initial creation on another device waits for the original device. Browser-only tokens do not provide unattended refresh.
+
+## Custom templates and title colours — 20 October 2026
+
+Requirements 20 and 21 are appended to docs/requirements.md without removing previous requirements.
+
+Implemented reusable template snapshots, My Forms above built-in categories, nested folders, search, rename/move/duplicate/delete, protected layout editing via independent drafts, confirmed replacement/deletion, independent sheets and existing pinning. Folder deletion moves contained templates to My Forms. Filled answers/audio/ink stay in sheets rather than becoming template defaults. New components default to full width. The Planning Tools return button now reaches the two-option hub. Existing filled built-in forms are labelled Saved sheets to distinguish them from reusable templates.
+
+Shared title colours use a fixed palette and normalised title hash with explicit distinct defaults for Early/Late/Long Day/Appointment/CES Las Vegas. Appointment editing supports a palette override and Automatic reset. Preferences are string-backed notebook entries, carried by existing recovery/backups/account merge. Google event payloads are not used to store colour preferences. Existing recurrence and Google save handlers remain in use.
+
+Validation: syntax checks and production build passed; 92 Node tests passed. Browser workflows passed at desktop 1366×1024, iPad landscape 1180×820, iPad portrait 820×1180, and mobile 390×844: template creation, original-sheet preservation, full-width defaults, folder creation/move, independent template use, reload persistence, colour equality/override persistence and month-cell containment. New browser smoke is included in development CI.
+
+Limits: arbitrary titles can share one of the 12 palette colours; users can override them. Actual signed-in Google Calendar/account cross-device round trips require connected test accounts and were not performed in this isolated browser. Existing API/account/sync tests passed. Production main is unchanged; this continues the existing development improvement task.

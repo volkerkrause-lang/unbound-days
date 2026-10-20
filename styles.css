@@ -515,3 +515,16 @@ body:has(dialog[open]) #app .shared-write-tools{visibility:hidden}
 .custom-deadline input{max-width:180px}.deadline-badge{padding:7px 10px;border-radius:18px;background:#e7eddf;color:#42503d}.deadline-badge.overdue{background:#f5ddd7;color:#8b3328}.custom-location{display:grid;grid-template-columns:1fr 1fr;gap:10px}.custom-location a{grid-column:1/-1;justify-self:start;text-decoration:none}.custom-empty{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:240px;color:#777}.custom-empty strong{font:26px var(--hand)}
 @media(max-width:1000px){.custom-component-library>div{grid-template-columns:repeat(4,minmax(90px,1fr))}}
 @media(max-width:767px){.planner-choice{grid-template-columns:1fr;gap:12px;margin:0}.planner-choice>button{min-height:0;padding:20px}.planner-choice-icon{margin-bottom:12px}.planner-choice strong{font-size:27px}.custom-component-library>div{display:flex;overflow-x:auto}.custom-component-library button{flex:0 0 105px}.custom-page{display:block;padding:8px}.custom-component{margin-bottom:10px}.custom-component-actions button:nth-child(-n+2){display:grid}.custom-drag-handle{display:none}.custom-form-name{display:block}.custom-form-name>span{display:block;margin-top:5px}.custom-voice,.custom-location{grid-template-columns:1fr}.custom-location a,.custom-voice audio,.custom-voice .danger{grid-column:1}.custom-deadline{align-items:stretch;flex-direction:column}.custom-deadline input{max-width:none}}
+
+
+/* Shared title colours override older category fills; text styling is preserved. */
+.entry-chip.title-coloured,.agenda-item.title-coloured{background:var(--event-background)!important;border-left:4px solid #85765f!important}
+.agenda-item.title-coloured{padding:6px 8px;border-radius:3px}
+.my-template-library{margin:0 0 24px;padding:18px;border:1px solid #cfc4b0;background:#f8f3e8;border-radius:6px;min-width:0}
+.my-template-library input[type=search]{display:block;width:100%;margin:8px 0 14px}
+.template-folders>div{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.template-card{min-width:0;border:1px solid #d6ccbb;border-radius:5px;overflow:hidden}
+.template-card .planner-card{width:100%;border:0;min-width:0}
+.template-card>div{display:flex;flex-wrap:wrap;gap:8px;padding:8px}
+.template-card small{white-space:normal;overflow-wrap:anywhere}
+.custom-page>.custom-component{min-width:0;max-width:100%}
