@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: read
+  checks: read
 
 concurrency:
   group: unbound-development-preview
@@ -15,10 +16,12 @@ concurrency:
 
 jobs:
   deploy:
+    if: github.ref == 'refs/heads/development/account-foundation'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     environment:
       name: unbound-development
-      url: https://unbound-development.pages.dev
+      url: ${{ steps.preview.outputs.url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -29,9 +32,40 @@ jobs:
       - run: npm run check
       - run: npm test
       - run: npm run build
-      - name: Deploy development preview to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
+      # Cloudflare's existing Git integration deploys this branch. Verify its
+      # commit-specific result rather than running a second credentialed deployer.
+      - name: Verify Cloudflare Git preview deployment
+        id: preview
+        uses: actions/github-script@v7
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy _site --project-name=unbound-development --branch=development-account-foundation
+          script: |
+            for (let attempt = 0; attempt < 36; attempt++) {
+              const {data} = await github.rest.checks.listForRef({
+                ...context.repo, ref: context.sha, check_name: 'Cloudflare Pages'
+              });
+              const check = data.check_runs.find(run => run.name === 'Cloudflare Pages');
+              if (check?.status === 'completed') {
+                if (check.conclusion !== 'success') {
+                  throw new Error(`Cloudflare Git deployment failed: ${check.details_url}`);
+                }
+                const summary = check.output?.summary || '';
+                const url = summary.match(/https:\/\/[a-f0-9]+\.unbound-development\.pages\.dev\b/)?.[0];
+                if (!url) throw new Error('Cloudflare returned no isolated commit preview URL.');
+                const response = await fetch(url);
+                if (!response.ok || !(await response.text()).includes('id="app"')) {
+                  throw new Error(`Preview did not serve the Unbound app: ${url}`);
+                }
+                const app = await fetch(`${url}/app.js`);
+                if (!app.ok || !(app.headers.get('content-type') || '').includes('javascript')) {
+                  throw new Error(`Preview app module is unavailable: ${url}/app.js`);
+                }
+                core.setOutput('url', url);
+                await core.summary.addHeading('Development preview verified')
+                  .addLink(context.sha, url)
+                  .addRaw('\nCloudflare Git integration deployed this commit; HTML and app module checks passed.\n')
+                  .write();
+                return;
+              }
+              await new Promise(resolve => setTimeout(resolve, 10000));
+            }
+            throw new Error('Timed out waiting for the Cloudflare Pages check for this commit.');
