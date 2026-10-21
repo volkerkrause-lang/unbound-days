@@ -89,13 +89,13 @@ export function mountAccounts({getState,empty,apply,persist,render,openModal,clo
  // Empty accounts are not uploaded automatically before the owner has a chance
  // to import their legacy data. Explicit Sync Now can create an empty notebook.
  const ready=sync?sync.sync():Promise.resolve();
- if(sync){timer=setInterval(()=>{if(document.visibilityState==='visible')sync.sync();},60000);window.addEventListener('online',()=>sync.sync());}
+ if(sync){document.addEventListener('focusout',()=>queueMicrotask(()=>{if(active())sync.queue();}));timer=setInterval(()=>{if(document.visibilityState==='visible')sync.sync();},60000);window.addEventListener('online',()=>sync.sync());}
  if(Accounts.recovery)setTimeout(recoveryForm,0);
  const file=document.createElement('input');file.type='file';file.accept='.json,application/json';file.hidden=true;document.body.append(file);
  file.onchange=()=>run(async()=>{const f=file.files[0];if(!f)return;if(f.size>15*1024*1024)throw Error('Backup is too large.');await importData(JSON.parse(await f.text()));file.value='';});
  // Attach file-import button whenever the account panel is opened.
  const observer=new MutationObserver(()=>{const button=document.querySelector('#account-import');if(button&&!document.querySelector('#account-import-file')){const extra=document.createElement('button');extra.id='account-import-file';extra.className='secondary';extra.textContent='Import legacy export file';extra.onclick=()=>file.click();button.after(extra);}});observer.observe(document.querySelector('#modal-content'),{childList:true,subtree:true});
- return {ready,queue:()=>{if(active())sync?.queue();},active,cloudStatus:()=>cloudText};
+ return {ready,queue:()=>{if(!stopped&&bootId)sync?.queue();},active,cloudStatus:()=>cloudText};
 }
 function downloadJSON(data,name){const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 async function loadCaptcha(){if(window.turnstile)return;await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';s.onload=resolve;s.onerror=()=>reject(Error('Could not load sign-in verification.'));document.head.append(s);});}

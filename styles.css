@@ -570,3 +570,41 @@ body:has(dialog[open]) #app .shared-write-tools{visibility:hidden}
 .month-tab:nth-child(12n+1){background-color:#827048}.month-tab:nth-child(12n+2){background-color:#526b5e}.month-tab:nth-child(12n+3){background-color:#516d83}.month-tab:nth-child(12n+4){background-color:#7d6688}.month-tab:nth-child(12n+5){background-color:#925f70}.month-tab:nth-child(12n+6){background-color:#89694d}.month-tab:nth-child(12n+7){background-color:#587e7b}.month-tab:nth-child(12n+8){background-color:#74784c}.month-tab:nth-child(12n+9){background-color:#70587a}.month-tab:nth-child(12n+10){background-color:#916953}.month-tab:nth-child(12n+11){background-color:#53677d}.month-tab:nth-child(12n){background-color:#896676}
 
 .todo-view .task-ribbon,.todo-view .all-ribbon{height:48px!important;min-height:48px!important;box-shadow:inset 0 1px 2px #ffffff80,0 3px 5px #30271930!important}
+/* Notebook refinement: fixed geometry, compact controls and independent surfaces. */
+#app .shared-write-tools,#modal-content>.shared-write-tools{width:126px!important;right:auto!important;bottom:auto!important}
+.shared-write-tools button[aria-pressed=true]{background:#e7deca;border-radius:7px}
+.idea-native-toolbar{display:flex;align-items:center;gap:5px;flex-wrap:wrap;overflow:visible}
+.idea-native-toolbar .idea-tool,.idea-native-toolbar .paper-picker,.idea-native-toolbar .idea-colour{width:36px;height:36px;min-width:36px;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;position:relative}
+.paper-picker select,.idea-colour input{position:absolute;inset:0;width:100%;height:100%;opacity:.01;cursor:pointer}
+.idea-native-toolbar .idea-size{width:92px;flex:0 0 92px}
+.idea-native-toolbar .idea-size input{width:88px}
+.idea-tool.active,.idea-tool.recording{background:#e5d9bc;box-shadow:inset 0 0 0 1px #ad9458}
+.idea-tool.recording{color:#b33333;animation:pulse 1s infinite}
+.note-mode-switch{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 10px;font:13px var(--ui)}
+.note-mode-switch button{padding:7px 10px;border-radius:6px;border:1px solid #d5c7ad}
+.note-mode-switch [aria-pressed=true]{background:#e9dfca;border-color:#ac925b}
+.note-media{display:flex;flex-direction:column;gap:8px;width:100%;min-width:0}
+.note-media figure{max-width:100%;box-sizing:border-box;margin:8px 0;padding:8px;border:1px solid #d5c7ad;border-radius:6px}
+.note-media img{width:100%;height:auto;display:block}.note-media label{display:inline-flex;font:12px var(--ui);align-items:center;gap:4px;max-width:100%}.note-media input{width:90px}.note-media audio{max-width:100%}
+.task-management{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin:8px 0;font:12px var(--ui)}
+.task-management button{display:flex;align-items:center;justify-content:center;gap:4px;min-height:36px;padding:4px;border:1px solid #d5c7ad;border-radius:6px;white-space:nowrap}
+.task-management button:disabled{opacity:.45}
+.todo-view .task-ribbon,.todo-view .all-ribbon{box-sizing:border-box;width:112px!important;height:48px!important;min-height:48px!important;padding:5px 8px!important;display:flex;align-items:center;justify-content:center;gap:3px;white-space:normal!important;overflow:hidden;background-color:var(--list-colour,#527b9c)!important;background-image:linear-gradient(115deg,#ffffff66,transparent 36%,#ffffff24 48%,#00000026 80%),repeating-linear-gradient(0deg,transparent 0 2px,#ffffff0a 2px 3px)!important;box-shadow:inset 0 1px 1px #ffffffa0,inset 0 -1px 2px #0003,0 3px 5px #30271930!important;color:white;font-weight:500}
+.todo-view .task-ribbon.active{outline:2px solid #55472c;outline-offset:-2px;filter:none}
+.todo-view .all-ribbon{--list-colour:#527b9c}.todo-view .task-ribbon-wrap:nth-child(6n+1){--list-colour:#9b4c50!important}.todo-view .task-ribbon-wrap:nth-child(6n+2){--list-colour:#b18a31!important}.todo-view .task-ribbon-wrap:nth-child(6n+3){--list-colour:#735588!important}.todo-view .task-ribbon-wrap:nth-child(6n+4){--list-colour:#377a75!important}.todo-view .task-ribbon-wrap:nth-child(6n+5){--list-colour:#b06539!important}.todo-view .task-ribbon-wrap:nth-child(6n){--list-colour:#495f92!important}
+.todo-card{padding:8px 10px;margin-bottom:6px;gap:8px}.todo-card .task-name{font-weight:400!important}.task-badges{margin-top:2px;gap:4px}.task-badges span{padding:1px 5px}.task-date:before{display:none!important}
+.todo-card .task-inline-notes{box-sizing:border-box;width:100%;min-height:30px;height:30px;resize:vertical;background:transparent;border:0;border-bottom:1px solid transparent;border-radius:0;padding:4px 0;font:400 13px/1.4 var(--ui);color:#68675e;overflow:hidden;field-sizing:content}
+.todo-card .task-inline-notes:focus{min-height:56px;border-bottom-color:#ac925b;overflow:auto}
+.task-quick{flex-wrap:nowrap!important}.task-quick input{flex:1 1 auto!important;width:0}.task-quick button{width:36px;min-width:36px;font-size:23px;padding:3px}
+@media(max-width:650px){.todo-card{padding:5px 7px;gap:5px}.task-management{font-size:10px;gap:3px}.task-management button{gap:2px;padding:3px 1px}.todo-card .task-name{font-size:14px}.task-date{font-size:11px;margin-left:35px}.task-badges{font-size:10px}.idea-native-toolbar{gap:2px}.idea-native-toolbar .idea-tool,.idea-native-toolbar .paper-picker,.idea-native-toolbar .idea-colour{min-width:30px;width:30px;height:34px}.idea-native-toolbar .idea-size{flex-basis:76px}.idea-native-toolbar .idea-size input{width:72px}}
+.todo-cards{overflow-anchor:none}
+.task-list-strip{align-items:flex-start!important}.task-ribbon-scroll{padding-top:0!important}.todo-view .all-ribbon{margin-top:0!important}
+.todo-card .task-inline-notes{min-height:24px;height:24px;resize:none;padding:2px 0}
+.todo-card .task-inline-notes:focus{min-height:56px}
+.todo-view .task-list-strip{align-items:flex-start!important}
+.todo-card{display:grid!important;grid-template-columns:20px minmax(0,1fr) auto auto;align-items:start!important}
+.todo-card:has([data-task-select]){grid-template-columns:16px 20px minmax(0,1fr) auto auto}
+.todo-card>input{align-self:center}.todo-card>.task-date{margin:0!important;align-self:start;max-width:90px;padding:4px 2px}
+.todo-card>.task-more{padding:3px;align-self:start}.todo-card-content{min-width:0}
+@media(max-width:650px){.todo-card{padding:6px!important;column-gap:5px!important;row-gap:0!important}.todo-card>.task-date{max-width:60px;font-size:10px!important}.todo-card .task-name{font-size:14px!important}.todo-card>.task-more{padding:2px;width:22px}.todo-card .task-badges{font-size:9px!important}}
+.todo-view .task-quick{position:static!important;bottom:auto!important;z-index:auto;margin:6px 0 10px;padding:0}

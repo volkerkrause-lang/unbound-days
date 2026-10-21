@@ -63,7 +63,7 @@ export function createTaskSync({api,identity,getState,persist,active=()=>true,st
       task.taskSyncUncertain={kind:'create',time:new Date().toISOString()};await checkpoint();
       try{const result=await api(path+(task.parentId?'?parent='+encodeURIComponent(task.parentId):''),{method:'POST',body:JSON.stringify(body(sent))});if(!valid())return;
        task.googleTask={account,list:list.id,id:result.id,etag:result.etag,base:remoteFields(result)};delete task.taskSyncUncertain;delete task.taskSyncError;
-      }catch(e){if(e.status&&e.status<500&&![408,429].includes(e.status))delete task.taskSyncUncertain;task.taskSyncError=e.message;}
+      }catch(e){if(e.status&&e.status<500&&![408].includes(e.status))delete task.taskSyncUncertain;task.taskSyncError=e.message;}
      }
      await checkpoint();
     }
