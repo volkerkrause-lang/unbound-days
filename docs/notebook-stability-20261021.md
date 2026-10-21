@@ -13,7 +13,7 @@ Development target: `development/filofax-refinement-20261017`; preview: https://
 ## Implemented
 
 - Pencil, microphone, keyboard floating controls and cursor-preserving dictation insertion; dictation toggles start/stop.
-- Calendar refresh updates the calendar only when the user is not editing. Tasks refresh does not rebuild other sections. Account sync preserves the selected note, pauses application of remote merges during focused editing/drawing, and reconciles idle visible editors/canvases in place. Cloud saves remain queued and resume after editing.
+- Calendar refresh updates the calendar only when the user is not editing. Tasks refresh does not rebuild other sections. Task tab/scroll preferences remain device-local, including when merging older cloud snapshots. Account sync preserves the selected note, pauses application of remote merges during focused editing/drawing, and reconciles idle visible editors/canvases in place. Cloud saves remain queued and resume after editing.
 - In-progress Notes and builder ink receives immediate local draft protection, with full notebook/recovery persistence on stroke completion; recovery applies a newer interrupted draft after account resolution. Existing notebook and ink formats remain unchanged.
 - Pressure/coalesced pen points; touch pointers do not draw by default on multitouch devices. Finger drawing is an explicit option in Notes; normal finger scrolling remains available when off. Canvas observers are cleaned up. Undo survives same-note rerenders.
 - Notes toolbar: paper, calligraphy pen, pencil, colours, eraser, attachments, undo, redo, voice memo, followed by size control. Separate freehand/structured modes preserve stored layers.
@@ -36,7 +36,7 @@ The exact live quota-producing endpoint cannot be established without a failing 
 
 ## Verification
 
-- Syntax checks, 102 automated tests (including three new request-gate tests), build pass.
+- Syntax checks, 103 automated tests (including three new request-gate tests and a device-local task-preference regression), build pass.
 - New Notes/task interaction checks passed desktop, iPad landscape, iPad portrait and mobile; mobile window scrolling retained 900 px. Template/folder/colour/containment/reload checks passed all four viewports. Local account/cover/reload smoke passed. Simulated microphone recordings retained playable audio data; no physical microphone claim. Desktop and mobile screenshots inspected, with tab alignment and mobile row density refined.
 - Browser results and deployed commit are reported separately in the delivery; do not infer physical-device or authenticated integration success from automated tests.
 - Regression script: `scripts/notebook-stability-smoke.mjs`; template/folder/colour regression: `scripts/template-colours-smoke.mjs`.

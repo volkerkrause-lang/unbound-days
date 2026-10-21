@@ -8,8 +8,8 @@ export async function fingerprint(state){
 // A local revision/base travels atomically with the durable draft. Failed writes
 // leave it unchanged, so a reload can safely retry or merge with newer cloud data.
 export function reconcile(state,remote,empty){
- const local=cloudContent(state),base=state._cloud?.base||cloudContent(empty);
- const theirs=remote?.data||cloudContent(empty);
+ const local=cloudContent(state),base=cloudContent(state._cloud?.base||empty);
+ const theirs=cloudContent(remote?.data||empty);
  const merged=mergeNotebook(base,local,theirs);
  return {...merged,revision:remote?.revision||0,base:theirs};
 }

@@ -74,3 +74,8 @@ test('fresh empty accounts remain available for explicit legacy import',async()=
 });
 
 test('cloud validation restores omitted device preferences and retains task-list settings',()=>{const defaults={...empty(),settings:{favorites:[],selectedCalendars:[],ink:'#313a41',cover:0}};const content=cloudContent({...defaults,settings:{...defaults.settings,taskListOrder:['local','work']}});assert.equal(content.settings.selectedCalendars,undefined);const restored=validationNotebook(content,defaults);assert.deepEqual(restored.settings.selectedCalendars,[]);assert.deepEqual(restored.settings.taskListOrder,['local','work']);assert.equal(content.settings.selectedCalendars,undefined);});
+
+test('task tab and scroll preferences remain device-local across legacy cloud snapshots',()=>{
+ const local=empty(),remote=empty();local.settings.taskView={list:'local',scroll:900};remote.settings.taskView={list:'other',scroll:0};remote.settings.taskLists=[{id:'other',title:'Shared list'}];
+ const result=reconcile(local,{data:remote,revision:1},empty());assert.deepEqual(result.conflicts,[]);assert.equal(result.data.settings.taskView,undefined);assert.equal(result.data.settings.taskLists[0].id,'other');assert.equal(local.settings.taskView.scroll,900);
+});

@@ -83,7 +83,7 @@ async function pullCloud(){if(inkDrawing)return;
  }
  if(saveGeneration!==startGeneration){seenCloud=initialSeen;throw Error('New writing saved while checking cloud copies. Retry sync when you finish writing.');}if(changed){snapshot();applyCloudContent(working);save();render();toast('Changes from your other device have been saved here.');}saveJournal();
 }
-function applyCloudContent(content){const deviceSettings={googleClientId:state.settings.googleClientId,selectedCalendars:state.settings.selectedCalendars,defaultCalendar:state.settings.defaultCalendar,backupProvider:state.settings.backupProvider};Object.assign(state,content);Object.assign(state.settings,deviceSettings);
+function applyCloudContent(content){const deviceSettings={taskView:state.settings.taskView,googleClientId:state.settings.googleClientId,selectedCalendars:state.settings.selectedCalendars,defaultCalendar:state.settings.defaultCalendar,backupProvider:state.settings.backupProvider};Object.assign(state,content);Object.assign(state.settings,deviceSettings);
  // Reconcile visible fields in place; a remote value must not leave a stale editor
  // which could replace that value on the next keystroke.
  document.querySelectorAll('[data-entry]').forEach(el=>{if(el!==document.activeElement&&el.value!==(state.entries[el.dataset.entry]||''))el.value=state.entries[el.dataset.entry]||'';});

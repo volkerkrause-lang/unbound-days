@@ -1,7 +1,7 @@
 // Three-way merging preserves unrelated edits and exposes same-field conflicts.
 const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const copy=x=>x===undefined?undefined:structuredClone(x);
-export function notebookContent(s){const {googleClientId,selectedCalendars,defaultCalendar,backupProvider,...settings}=s.settings||{};return {version:1,events:s.events||[],tasks:s.tasks||[],notes:s.notes||[],habits:s.habits||[],entries:s.entries||{},ink:s.ink||{},trash:s.trash||[],bookmarks:s.bookmarks||[],settings};}
+export function notebookContent(s){const {googleClientId,selectedCalendars,defaultCalendar,backupProvider,taskView,...settings}=s.settings||{};return {version:1,events:s.events||[],tasks:s.tasks||[],notes:s.notes||[],habits:s.habits||[],entries:s.entries||{},ink:s.ink||{},trash:s.trash||[],bookmarks:s.bookmarks||[],settings};}
 export function mergeNotebook(base,local,remote){
  const conflicts=[];
  function merge(b,l,r,path){
