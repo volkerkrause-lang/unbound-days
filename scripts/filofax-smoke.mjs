@@ -1,11 +1,11 @@
 import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
-const browser=await chromium.launch({headless:true});
+const browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||undefined,args:process.env.CHROMIUM_EXECUTABLE_PATH?['--no-sandbox','--disable-dev-shm-usage','--no-zygote','--single-process','--use-gl=angle','--use-angle=swiftshader','--disable-gpu-sandbox','--in-process-gpu']:[]});
 try{
  for(const viewport of [{width:1180,height:820},{width:1024,height:768},{width:390,height:844}]){
-  const page=await browser.newPage({viewport,reducedMotion:'reduce'});
+  if(process.env.UNBOUND_DEVICE==='desktop'&&viewport.width!==1180)continue;const page=await browser.newPage({viewport,reducedMotion:'reduce'});
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
-  await page.goto('http://localhost:4173/');
+  await page.route('**/*',route=>['localhost','127.0.0.1'].includes(new URL(route.request().url()).hostname)?route.continue():route.abort());await page.goto('http://localhost:4173/',{waitUntil:'domcontentloaded'});
   await page.locator('[data-action="open"]').click();
   await page.locator('.section-calendar.view-day').waitFor();
   assert.equal(await page.locator('.section-tabs [data-section="reflection"]').count(),0);
@@ -33,15 +33,15 @@ try{
   if(!await page.locator('#ink-canvas').count())await page.getByRole('button',{name:'New idea',exact:true}).click();
   const ideaCanvas=page.locator('#ink-canvas');await ideaCanvas.waitFor();
   const handwritingTools=page.getByRole('toolbar',{name:'Handwriting tools',exact:true});
-  for(const tool of ['Ink pen','Pencil','Highlighter','Eraser','Lasso'])assert.equal(await handwritingTools.getByRole('button',{name:tool,exact:true}).count(),1);
+  for(const tool of ['Calligraphy pen','Pencil','Eraser','Attachments','Undo','Redo','Voice memo'])assert.equal(await handwritingTools.getByRole('button',{name:tool,exact:true}).count(),1);
   await page.locator('[data-idea-paper]').selectOption('grid');await page.locator('.idea-paper-grid').waitFor();
   const ideaRect=await ideaCanvas.boundingBox();assert.ok(ideaRect?.width>100&&ideaRect?.height>100);
   await page.mouse.move(ideaRect.x+40,ideaRect.y+50);await page.mouse.down();await page.mouse.move(ideaRect.x+140,ideaRect.y+100,{steps:8});await page.mouse.up();
   const ideaInk=await page.evaluate(()=>{const d=JSON.parse(localStorage.getItem('unbound-days-v1'));return Object.values(d.ink||{}).filter(x=>Array.isArray(x)&&x.some(s=>s.tool==='pen'));});
   assert.ok(ideaInk.length>0,'Idea ink persisted');
   await page.locator('.idea-transcript summary').click();await page.locator('.idea-transcript textarea').fill('Clean converted note');
-  await page.getByRole('button',{name:'Convert handwriting to text',exact:true}).click();await page.getByRole('button',{name:'Replace canvas with text',exact:true}).click();
-  await page.locator('.idea-converted-editor').waitFor();assert.equal(await page.locator('#ink-canvas').count(),0);
+  await page.getByRole('button',{name:/Structured note/}).click();
+  await page.locator('.idea-converted-editor').waitFor();assert.equal(await page.locator('.idea-converted-editor').inputValue(),'Clean converted note');await page.getByRole('button',{name:/Freehand note/}).click();await page.locator('#ink-canvas').waitFor();assert.ok(await page.evaluate(()=>Object.values(JSON.parse(localStorage.getItem('unbound-days-v1')).ink).some(paths=>paths.some(s=>s.tool==='pen'))),'Mode switch retains original ink');
   await page.locator('.section-tabs [data-section="tasks"]').click();
   await page.locator('#task-quick input[name="title"]').focus();
   await page.getByRole('button',{name:'Pencil',exact:true}).click();

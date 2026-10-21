@@ -29,6 +29,7 @@ jobs:
           node scripts/template-colours-smoke.mjs
           node scripts/mobile-refinements-smoke.mjs
           node scripts/voice-recorder-smoke.mjs
+          UNBOUND_DEVICE=desktop node scripts/notebook-stability-smoke.mjs
       - name: Save mobile browser result
         if: always() && startsWith(github.ref, 'refs/heads/development/')
         uses: actions/upload-artifact@v4
