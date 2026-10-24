@@ -18,7 +18,7 @@ New regression: `scripts/polished-forms-smoke.mjs`, also included in development
 
 The original update left the planning drawing canvas on the old per-segment renderer. This follow-up shares `drawInkStroke` from `idea-workspace.js` between Notes and planning drawings: one solid centreline, quadratic smoothing and one stroke call, independent of pressure. Planning canvas also uses frame-scheduled redraw, reduced live cloning, empty-coalesced-sample fallback and touch-action none. Existing stroke storage is unchanged.
 
-Form toolbar controls now use compact outlined SVGs with accessible names and hover tooltips, above the form name. Edit layout uses a pencil, View form an eye, collection a grid/folder, pin a pin, duplicate overlapping sheets, template save a starred page, save sheet a disk. Delete keeps its small icon and explicit label from the owner's earlier request. Shared on built-in and custom sheets; mobile row uses 34px controls.
+Form toolbar controls now use compact outlined SVGs with accessible names and hover tooltips, above the form name. Edit layout uses a pencil, View form an eye, collection a grid/folder, pin a pin, duplicate overlapping sheets, template save a starred page, save sheet a disk. Delete keeps its explicit label on larger screens; mobile uses the highlighted trash icon with accessible name and tooltip. Shared on built-in and custom sheets; mobile row uses 34px controls.
 
 Native Apple Pencil double-tap remains unavailable in Safari: no supported web hook was established. A native iPad integration is required; do not claim hardware gesture support or add an invented browser event.
 

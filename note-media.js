@@ -1,4 +1,4 @@
-import {createVoiceRecorder} from './voice-recorder.js?v=0.4.2';
+import {createVoiceRecorder} from './voice-recorder.js?v=0.4.3';
 export const readFile=file=>new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result));r.onerror=()=>reject(Error('Could not read this file.'));r.readAsDataURL(file);});
 export function createNoteMedia({notebookId,entries,current,save,render,esc,toast,blocked}){
  const key=id=>`idea:${id}:attachments`;
