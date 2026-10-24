@@ -27,6 +27,7 @@ jobs:
           node scripts/filofax-smoke.mjs
           node scripts/calendar-responsive-smoke.mjs
           node scripts/template-colours-smoke.mjs
+          node scripts/polished-forms-smoke.mjs
           node scripts/mobile-refinements-smoke.mjs
           node scripts/voice-recorder-smoke.mjs
           UNBOUND_DEVICE=desktop node scripts/notebook-stability-smoke.mjs

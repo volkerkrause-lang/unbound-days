@@ -17,7 +17,7 @@ try{
  const sizes=await page.locator('.custom-component').evaluateAll(nodes=>nodes.map(n=>n.getBoundingClientRect().width));assert.ok(Math.abs(sizes[0]-sizes[1])<2);
  await page.locator('[data-template-save]').click();await page.locator('#template-library-form [name="name"]').fill('Ward review');await page.locator('#template-library-form [type="submit"]').click();
  const source=await page.evaluate(()=>JSON.parse(localStorage.getItem('unbound-days-v1')).entries);assert.ok(Object.values(source).includes('Filled source answer'));
- await page.locator('[data-planner-root]').click();await page.locator('[data-planner-choice="forms"]').click();
+ await page.locator('[data-section="goals"]').first().click();await page.locator('[data-planner-choice="forms"]').click();
  await page.locator('[data-template-new-folder]').click();await page.locator('#template-library-form [name="name"]').fill('Work');await page.locator('#template-library-form [type="submit"]').click();
  await page.locator('[data-template-move]').click();await page.locator('#template-library-form [name="parent"]').selectOption({label:'Work'});await page.locator('#template-library-form [type="submit"]').click();
  await page.getByRole('button',{name:'Work',exact:true}).click();await page.locator('[data-template-use]').click();assert.equal(await page.locator('.custom-note').inputValue(),'');

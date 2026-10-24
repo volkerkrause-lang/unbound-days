@@ -1,4 +1,4 @@
-import {createVoiceRecorder} from './voice-recorder.js?v=0.4.0';
+import {createVoiceRecorder} from './voice-recorder.js?v=0.4.1';
 const COMPONENTS={
  note:{label:'Note',icon:'▤',title:'Notes',size:'wide'},
  checklist:{label:'Tick-list',icon:'☑',title:'Checklist',size:'wide'},
@@ -45,8 +45,8 @@ function control(key,c,esc){return `<div class="custom-component-actions"><butto
 function entryKey(form,c,field='value'){return `form:${form}:custom:${c.id}:${field}`;}
 function titleInput(c,esc){return `<input class="custom-component-title" data-custom-title="${c.id}" value="${esc(c.title)}" aria-label="Component heading" maxlength="100">`;}
 
-export function renderComponent({form,component:c,entry,esc}){
- const key=entryKey(form,c),head=`<header>${titleInput(c,esc)}${control(form,c,esc)}</header>`;
+export function renderComponent({form,component:c,entry,esc,polished=false}){
+ const key=entryKey(form,c),head=`<header>${polished?`<h2>${esc(c.title)}</h2>`:titleInput(c,esc)}${polished?'':control(form,c,esc)}</header>`;
  let body='';
  if(c.type==='note')body=`<textarea class="ruled custom-note" data-entry="${key}" aria-label="${esc(c.title)}" placeholder="Write, dictate or use iPad Scribble…">${esc(entry(key))}</textarea>`;
  if(c.type==='checklist'){
@@ -60,7 +60,7 @@ export function renderComponent({form,component:c,entry,esc}){
  }
  if(c.type==='rating'){
   const value=entry(key)||'0',style=c.ratingStyle||'stars';
-  body=`<div class="custom-rating-style"><button type="button" data-custom-rating-style="${c.id}" data-style="stars" aria-pressed="${style==='stars'}">Stars</button><button type="button" data-custom-rating-style="${c.id}" data-style="percentage" aria-pressed="${style==='percentage'}">Percentage</button><button type="button" data-custom-rating-style="${c.id}" data-style="levels" aria-pressed="${style==='levels'}">Low / Med / High</button></div>${style==='stars'?`<div class="custom-stars">${[1,2,3,4,5].map(n=>`<button type="button" data-custom-rating="${c.id}" data-value="${n}" aria-pressed="${Number(value)===n}">${Number(value)>=n?'★':'☆'}</button>`).join('')}</div>`:style==='percentage'?`<label class="custom-slider"><input type="range" min="0" max="100" value="${Number(value)||0}" data-entry="${key}"><output>${Number(value)||0}%</output></label>`:`<div class="custom-levels">${['Low','Medium','High'].map(label=>`<button type="button" data-custom-rating="${c.id}" data-value="${label}" aria-pressed="${value===label}">${label}</button>`).join('')}</div>`}`;
+  body=`${polished?'':`<label class="custom-rating-style">Rating style<select data-custom-rating-select="${c.id}" aria-label="Rating style"><option value="stars" ${style==='stars'?'selected':''}>Stars</option><option value="percentage" ${style==='percentage'?'selected':''}>Percentage</option><option value="levels" ${style==='levels'?'selected':''}>Low / Med / High</option></select></label>`}${style==='stars'?`<div class="custom-stars">${[1,2,3,4,5].map(n=>`<button type="button" data-custom-rating="${c.id}" data-value="${n}" aria-pressed="${Number(value)===n}">${Number(value)>=n?'★':'☆'}</button>`).join('')}</div>`:style==='percentage'?`<label class="custom-slider"><input type="range" min="0" max="100" value="${Number(value)||0}" data-entry="${key}"><output>${Number(value)||0}%</output></label>`:`<div class="custom-levels">${['Low','Medium','High'].map(label=>`<button type="button" data-custom-rating="${c.id}" data-value="${label}" aria-pressed="${value===label}">${label}</button>`).join('')}</div>`}`;
  }
  if(c.type==='stopwatch'){
   const elapsed=Number(entry(entryKey(form,c,'elapsed')))||0,running=entry(entryKey(form,c,'running'))==='yes';
@@ -78,13 +78,14 @@ export function renderComponent({form,component:c,entry,esc}){
 }
 
 export function renderBuilder({record,definition,entry,esc,undoAvailable=false,editingTemplate=''}){
+ const polished=definition.presentation==='form'&&entry(`form:${record.key}:layout-edit`)!=='yes';
  const library=Object.entries(COMPONENTS).map(([type,item])=>`<button type="button" data-custom-add="${type}"><span>${item.icon}</span><strong>${item.label}</strong></button>`).join('');
- return `<div class="custom-builder"><div class="planner-toolbar"><button class="secondary" data-custom-library>Build Your Own</button><button class="secondary" data-planner-root>Planning Tools</button><button class="secondary" data-planner-pin="${record.key}" aria-pressed="${record.pinned}">${record.pinned?'Unpin form':'Pin as notebook tab'}</button><button class="primary" data-template-save>Save as Template</button><button class="secondary" data-template-save-sheet>Save sheet</button>${editingTemplate?`<button class="secondary" data-template-update="${esc(editingTemplate)}">Update Template</button>`:''}<button class="secondary" data-custom-form-duplicate="${record.key}">Duplicate form</button>${undoAvailable?'<button class="secondary" data-custom-undo>Undo removal</button>':''}<button class="text-action" data-planner-archive="${record.key}">${record.archived?'Restore form':'Archive form'}</button></div><div class="custom-form-name"><label>Form name<input data-entry="form:${record.key}:title" value="${esc(record.title)}" maxlength="120"></label><span>Saved automatically</span></div><details class="custom-component-library" open><summary>Add a component</summary><div>${library}</div></details><div class="custom-page" data-custom-page>${definition.components.map(c=>renderComponent({form:record.key,component:c,entry,esc})).join('')||'<div class="custom-empty"><strong>Your page is ready.</strong><span>Add a component above to begin arranging it.</span></div>'}</div></div>`;
+ return `<div class="custom-builder ${polished?'polished-form':''}"><div class="planner-toolbar"><button class="secondary" data-custom-layout>${polished?'Edit layout':'View form'}</button><button class="secondary form-secondary-action" data-custom-library>Build Your Own</button><button class="secondary" data-planner-pin="${record.key}" aria-pressed="${record.pinned}">${record.pinned?'Unpin form':'Pin as notebook tab'}</button><button class="primary form-secondary-action" data-template-save>Save as Template</button><button class="secondary form-secondary-action" data-template-save-sheet>Save sheet</button>${editingTemplate?`<button class="secondary form-secondary-action" data-template-update="${esc(editingTemplate)}">Update Template</button>`:''}<button class="secondary form-secondary-action" data-custom-form-duplicate="${record.key}">Duplicate form</button>${undoAvailable?'<button class="secondary" data-custom-undo>Undo removal</button>':''}<button class="form-delete" data-planner-delete="${record.key}" aria-label="Delete form"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"/></svg> Delete</button></div><div class="custom-form-name"><label>Form name<input data-entry="form:${record.key}:title" value="${esc(record.title)}" maxlength="120"></label><span>Saved automatically</span></div><details class="custom-component-library" ${polished?'hidden':'open'}><summary>Add a component</summary><div>${library}</div></details><div class="custom-page" data-custom-page>${polished?`<div class="form-letterhead"><span class="form-wordmark">u · unbound</span><h1>${esc(record.title)}</h1><span>Your space to plan</span></div>`:''}${definition.components.map(c=>renderComponent({form:record.key,component:c,entry,esc,polished})).join('')||'<div class="custom-empty"><strong>Your page is ready.</strong><span>Add a component above to begin arranging it.</span></div>'}</div></div>`;
 }
 
 export function renderCustomLibrary({records,esc}){
  const active=records.filter(r=>!r.archived),archived=records.filter(r=>r.archived);
- return `<div class="custom-library"><div class="planner-toolbar"><button class="secondary" data-planner-root>Planning Tools</button><button class="primary" data-custom-new>+ New custom form</button></div><p class="planner-intro">Arrange notes, checklists, drawings, voice memos and practical widgets on your own notebook page.</p><div class="planner-cards">${active.map(r=>`<button class="planner-card" data-planner-open="${r.key}"><strong>${r.pinned?'★ ':''}${esc(r.title)}</strong><span>Custom planning page</span></button>`).join('')||'<p class="empty-note">Create your first custom planning page.</p>'}</div>${archived.length?`<details><summary>Archived custom forms (${archived.length})</summary>${archived.map(r=>`<button class="planner-saved-item" data-planner-open="${r.key}">${esc(r.title)}</button>`).join('')}</details>`:''}</div>`;
+ return `<div class="custom-library"><div class="planner-toolbar"><button class="primary" data-custom-new>+ New custom form</button></div><p class="planner-intro">Arrange notes, checklists, drawings, voice memos and practical widgets on your own notebook page.</p><div class="planner-cards">${active.map(r=>`<button class="planner-card" data-planner-open="${r.key}"><strong>${r.pinned?'★ ':''}${esc(r.title)}</strong><span>Custom planning page</span></button>`).join('')||'<p class="empty-note">Create your first custom planning page.</p>'}</div>${archived.length?`<details><summary>Archived custom forms (${archived.length})</summary>${archived.map(r=>`<button class="planner-saved-item" data-planner-open="${r.key}">${esc(r.title)}</button>`).join('')}</details>`:''}</div>`;
 }
 
 export function formatTime(ms){const total=Math.max(0,Math.floor(Number(ms||0)/1000)),hours=Math.floor(total/3600),minutes=Math.floor(total%3600/60),seconds=total%60;return hours?`${hours}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`:`${minutes}:${String(seconds).padStart(2,'0')}`;}
@@ -101,6 +102,7 @@ export function createPlanningBuilder(options){
   const form=current();
   if('customLibrary'in data){options.library();return true;}
   if('customNew'in data){create();return true;}
+  if('customLayout'in data){const def=get(form),polished=def.presentation==='form'&&entries()[`form:${form}:layout-edit`]!=='yes';def.presentation='form';set(form,def);entries()[`form:${form}:layout-edit`]=polished?'yes':'no';save();render();return true;}
   if(data.customAdd){const def=addComponent(get(form),data.customAdd,id());set(form,def);render();return true;}
   if(data.customMove){set(form,moveComponent(get(form),data.customMove,Number(data.direction)));render();return true;}
   if(data.customDuplicate){const newId=id(),prefix=`form:${form}:custom:${data.customDuplicate}:`,target=`form:${form}:custom:${newId}:`;set(form,duplicateComponent(get(form),data.customDuplicate,newId));for(const [key,value] of Object.entries(entries()))if(key.startsWith(prefix))entries()[target+key.slice(prefix.length)]=value;save();render();return true;}
@@ -129,7 +131,7 @@ export function createPlanningBuilder(options){
   if(target.matches('.custom-slider input'))target.nextElementSibling.textContent=target.value+'%';
   return false;
  };
- const changed=target=>{if(target.dataset.entry?.startsWith(`form:${current()}:custom:`)&&(target.type==='date'||target.getAttribute('aria-label')==='Address'))render();};
+ const changed=target=>{if(target.dataset.customRatingSelect){updateComponent(current(),target.dataset.customRatingSelect,c=>c.ratingStyle=target.value);render();return;}if(target.dataset.entry?.startsWith(`form:${current()}:custom:`)&&(target.type==='date'||target.getAttribute('aria-label')==='Address'))render();};
  const voice=createVoiceRecorder({
   capture:()=>{
    if(!globalThis.isSecureContext)throw Error('Voice recording needs a secure HTTPS connection. Open Unbound directly in Safari or Chrome.');

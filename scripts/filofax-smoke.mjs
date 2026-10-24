@@ -33,7 +33,7 @@ try{
   if(!await page.locator('#ink-canvas').count())await page.getByRole('button',{name:'New idea',exact:true}).click();
   const ideaCanvas=page.locator('#ink-canvas');await ideaCanvas.waitFor();
   const handwritingTools=page.getByRole('toolbar',{name:'Handwriting tools',exact:true});
-  for(const tool of ['Calligraphy pen','Pencil','Eraser','Attachments','Undo','Redo','Voice memo'])assert.equal(await handwritingTools.getByRole('button',{name:tool,exact:true}).count(),1);
+  for(const tool of ['Ink pen','Pencil','Eraser','Attachments','Undo','Redo','Voice memo'])assert.equal(await handwritingTools.getByRole('button',{name:tool,exact:true}).count(),1);
   await page.locator('[data-idea-paper]').selectOption('grid');await page.locator('.idea-paper-grid').waitFor();
   const ideaRect=await ideaCanvas.boundingBox();assert.ok(ideaRect?.width>100&&ideaRect?.height>100);
   await page.mouse.move(ideaRect.x+40,ideaRect.y+50);await page.mouse.down();await page.mouse.move(ideaRect.x+140,ideaRect.y+100,{steps:8});await page.mouse.up();

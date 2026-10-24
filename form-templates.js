@@ -21,7 +21,7 @@ export function moveFolder(entries,id,parent){
  return putRecord(entries,{...f,parent},'folder');
 }
 export function templateFromDefinition(id,name,description,definition,parent=''){
- return {id,name,description,parent,version:1,definition:clone({...definition,title:name})};
+ return {id,name,description,parent,version:1,definition:clone({...definition,title:name,presentation:'form'})};
 }
 export function createTemplateLibrary({entries,save,render,id,esc,openModal,closeModal,builder,current,toast}){
  let folder='',query='';
@@ -53,14 +53,14 @@ export function createTemplateLibrary({entries,save,render,id,esc,openModal,clos
    else form('Rename '+r.name,operation,r.id,kind==='folder'?`<label>Name<input name="name" required maxlength="120" value="${esc(r.name)}"></label><label>Colour<input type="color" name="colour" value="${/^#[0-9a-f]{6}$/i.test(r.colour||'')?r.colour:'#718b80'}"></label>`:nameFields(r));return true;
   }
   if(data.templateDuplicate){const r=find(data.templateDuplicate);if(r){putRecord(entries(),{...r,id:id(),name:r.name+' copy'});save();render();}return true;}
-  if(data.templateUse||data.templateEdit){const r=find(data.templateUse||data.templateEdit);if(r){const key=builder.create(r.name,clone(r.definition));if(data.templateEdit){entries()[`form:${key}:template-edit`]=r.id;save();render();toast('Editing a separate draft. Choose Update Template when ready.');}}return true;}
+  if(data.templateUse||data.templateEdit){const r=find(data.templateUse||data.templateEdit);if(r){const key=builder.create(r.name,{...clone(r.definition),presentation:'form'});if(data.templateEdit){entries()[`form:${key}:template-edit`]=r.id;entries()[`form:${key}:layout-edit`]='yes';save();render();toast('Editing a separate draft. Choose Update Template when ready.');}}return true;}
   return false;
  }
  function submit(formElement,data){
   if(formElement.id!=='template-library-form')return false;
   const op=formElement.dataset.operation,key=formElement.dataset.id;
   if(data.parent&&!find(data.parent,'folder'))throw Error('That folder no longer exists.');
-  if(op==='save')putRecord(entries(),templateFromDefinition(id(),data.name,data.description,builder.get(key),data.parent));
+  if(op==='save'){const definition={...builder.get(key),presentation:'form'};putRecord(entries(),templateFromDefinition(id(),data.name,data.description,definition,data.parent));entries()[`form:${key}:custom-definition`]=JSON.stringify(definition);entries()[`form:${key}:layout-edit`]='no';}
   else if(op==='update'){if(!data.confirmed)throw Error('Confirm replacement.');const r=find(key);if(!r)throw Error('Template no longer exists.');putRecord(entries(),{...r,...data,definition:clone({...builder.get(current()),title:data.name})});}
   else if(op==='folder-new')putRecord(entries(),{id:id(),name:data.name,parent:data.parent,colour:data.colour},'folder');
   else {const kind=op.startsWith('folder-')?'folder':'template',r=find(key,kind);if(!r)throw Error('Item no longer exists.');
