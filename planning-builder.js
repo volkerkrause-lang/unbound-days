@@ -1,5 +1,5 @@
-import {drawInkStroke} from './idea-workspace.js?v=0.4.3';
-import {createVoiceRecorder} from './voice-recorder.js?v=0.4.3';
+import {drawInkStroke} from './idea-workspace.js?v=0.4.4';
+import {createVoiceRecorder} from './voice-recorder.js?v=0.4.4';
 const actionIcons={
  'custom-layout':'M3 3h18v18H3zM3 9h18M9 9v12',
  'custom-library':'M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z',
@@ -13,13 +13,18 @@ const actionIcons={
  'template-update':'M20 7a9 9 0 1 0 1 8M20 2v6h-6',
  'planner-archive':'M3 3h18v5H3zM5 8v13h14V8M9 12h6'
 };
+const actionCaptions={'custom-library':'Build','planner-root':'Tools','planner-home':'Forms','planner-copy':'Copy','custom-form-duplicate':'Copy','template-save':'Template','template-save-sheet':'Save','template-update':'Update','planner-archive':'Archive'};
+const drawingIcons={pen:'M12 3l8 8-6 9-4 1-7-7 1-4zM3 21l8-8M10 12h4',pencil:'m15 5 4 4M4 20l4-1L21 6l-3-3L5 16z',eraser:'m4 14 9-10 8 7-9 10H7zM9 10l8 7M12 21h9',undo:'M9 5 4 10l5 5M4 10h10a6 6 0 0 1 0 12',redo:'m15 5 5 5-5 5M20 10H10a6 6 0 0 0 0 12',clear:'M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7',size:'M4 6h16M4 12h16M4 18h16M8 3v6M16 9v6M10 15v6'};
+const drawingIcon=name=>`<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${drawingIcons[name]}"/></svg>`;
+const recordContent=label=>`<span class="record-control" aria-hidden="true"><span></span></span><span>${label}</span>`;
 export function compactFormToolbar(html){
  return html.replace(/<button([^>]+)>([^<]*)<\/button>/g,(whole,attrs,label)=>{
   const name=attrs.match(/\bdata-([a-z-]+)(?:=|\s|$)/)?.[1],path=actionIcons[name];
   if(!path)return whole;
   const title=label.trim(),iconPath=name==='custom-layout'?(title==='Edit layout'?'m4 16 12-12 4 4-12 12-5 1zM13 7l4 4':'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM9 12a3 3 0 1 0 6 0 3 3 0 1 0-6 0'):name==='template-save'?'M4 3h11l5 5v13H4zM14 3v6h6M12 11l1.5 3 3.5.5-2.5 2.5.5 3.5-3-1.5-3 1.5.5-3.5L7 14.5l3.5-.5z':path;
   attrs=attrs.replace(/\s(?:aria-label|title)="[^"]*"/g,'').replace(/class="([^"]*)"/,(_,classes)=>`class="${classes} form-icon-action"`);
-  return `<button${attrs} aria-label="${title}" title="${title}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${iconPath}"/></svg><span class="form-action-label">${label}</span></button>`;
+  const caption=name==='custom-layout'?(title==='Edit layout'?'Edit':'View'):name==='planner-pin'?(/^(Unpin|Remove)/.test(title)?'Unpin':'Pin'):actionCaptions[name]||title;
+  return `<button${attrs} aria-label="${title}" title="${title}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${iconPath}"/></svg><span class="form-action-label" aria-hidden="true">${caption}</span></button>`;
  });
 }
 const COMPONENTS={
@@ -76,10 +81,10 @@ export function renderComponent({form,component:c,entry,esc,polished=false}){
   const items=c.items||[],done=items.filter(item=>entry(entryKey(form,c,'checked-'+item.id))==='yes').length;
   body=`<div class="custom-progress"><progress value="${done}" max="${Math.max(1,items.length)}"></progress><span>${done}/${items.length}</span></div><div class="custom-checklist">${items.map(item=>`<div class="custom-check-row"><button type="button" class="habit-check ${entry(entryKey(form,c,'checked-'+item.id))==='yes'?'checked':''}" data-custom-check="${c.id}" data-item="${item.id}" aria-pressed="${entry(entryKey(form,c,'checked-'+item.id))==='yes'}">${entry(entryKey(form,c,'checked-'+item.id))==='yes'?'✓':''}</button><input data-custom-item-label="${c.id}" data-item="${item.id}" value="${esc(item.label)}" aria-label="Checklist item"><button type="button" data-custom-item-move="${c.id}" data-item="${item.id}" data-direction="-1" aria-label="Move item up">↑</button><button type="button" data-custom-item-move="${c.id}" data-item="${item.id}" data-direction="1" aria-label="Move item down">↓</button><button type="button" data-custom-item-remove="${c.id}" data-item="${item.id}" aria-label="Remove item">×</button></div>`).join('')}</div><button type="button" class="text-action" data-custom-item-add="${c.id}">+ Add item</button>`;
  }
- if(c.type==='drawing')body=`<div class="custom-ink-toolbar"><button type="button" data-custom-ink-tool="pen" data-component="${c.id}" aria-pressed="true">Ink pen</button><button type="button" data-custom-ink-tool="pencil" data-component="${c.id}">Pencil</button><button type="button" data-custom-ink-tool="eraser" data-component="${c.id}">Eraser</button><input type="color" data-custom-ink-colour="${c.id}" value="#313a41" aria-label="Ink colour"><input type="range" min="1" max="40" value="3" data-custom-ink-size="${c.id}" aria-label="Pen and eraser size"><button type="button" data-custom-ink-undo="${c.id}">Undo</button><button type="button" data-custom-ink-redo="${c.id}">Redo</button><button type="button" data-custom-ink-clear="${c.id}">Clear</button></div><canvas class="custom-drawing-canvas" data-custom-canvas="${c.id}" aria-label="${esc(c.title)} drawing area"></canvas>`;
+ if(c.type==='drawing')body=`<div class="custom-ink-toolbar" role="toolbar" aria-label="Drawing tools">${[['pen','Ink pen'],['pencil','Pencil'],['eraser','Eraser']].map(([tool,label])=>`<button type="button" data-custom-ink-tool="${tool}" data-component="${c.id}" aria-label="${label}" title="${label}" aria-pressed="${tool==='pen'}">${drawingIcon(tool)}</button>`).join('')}<label class="custom-ink-colour" title="Ink colour"><span class="sr-only">Ink colour</span><input type="color" data-custom-ink-colour="${c.id}" value="#313a41" aria-label="Ink colour"></label><details class="custom-size-picker"><summary aria-label="Pen and eraser thickness" title="Thickness">${drawingIcon('size')}<output>3</output></summary><label>Thickness <output data-size-value>3</output><input type="range" min="1" max="40" step="1" value="3" data-custom-ink-size="${c.id}" aria-label="Pen and eraser size"></label></details>${[['undo','Undo'],['redo','Redo'],['clear','Clear drawing']].map(([tool,label])=>`<button type="button" data-custom-ink-${tool}="${c.id}" aria-label="${label}" title="${label}">${drawingIcon(tool)}</button>`).join('')}</div><canvas class="custom-drawing-canvas" data-custom-canvas="${c.id}" aria-label="${esc(c.title)} drawing area"></canvas>`;
  if(c.type==='voice'){
   const audio=entry(entryKey(form,c,'audio')),name=entry(entryKey(form,c,'name'))||c.title,duration=entry(entryKey(form,c,'duration'))||'0:00';
-  body=`<div class="custom-voice"><input data-entry="${entryKey(form,c,'name')}" value="${esc(name)}" aria-label="Voice memo name"><span data-voice-duration="${c.id}">${esc(duration)}</span><button type="button" data-custom-record="${c.id}">${audio?'Record again':'Record'}</button>${audio?`<audio controls src="${esc(audio)}"></audio><button type="button" data-custom-audio-delete="${c.id}" class="text-action danger">Delete recording</button>`:''}</div>`;
+  body=`<div class="custom-voice"><input data-entry="${entryKey(form,c,'name')}" value="${esc(name)}" aria-label="Voice memo name"><span data-voice-duration="${c.id}">${esc(duration)}</span><button type="button" data-custom-record="${c.id}">${recordContent(audio?'Record again':'Record')}</button>${audio?`<audio controls src="${esc(audio)}"></audio><button type="button" data-custom-audio-delete="${c.id}" class="text-action danger">Delete recording</button>`:''}</div>`;
  }
  if(c.type==='rating'){
   const value=entry(key)||'0',style=c.ratingStyle||'stars';
@@ -119,6 +124,7 @@ export function createPlanningBuilder(options){
  const get=form=>parseDefinition(entries()[definitionKey(form)],entries()[`form:${form}:title`]);
  const set=(form,value)=>{entries()[definitionKey(form)]=serialiseDefinition(value);save();};
  const current=()=>options.current();
+ const finish=form=>{const def=get(form);entries()[definitionKey(form)]=serialiseDefinition({...def,presentation:'form'});entries()[`form:${form}:layout-edit`]='no';};
  const create=(title='My planning page',definition=blankDefinition(title))=>{const key=id();entries()[`form:${key}:type`]='custom';entries()[`form:${key}:title`]=title;entries()[definitionKey(key)]=serialiseDefinition({...definition,title});save();options.open(key);return key;};
  const updateComponent=(form,componentId,fn)=>{const def=get(form),index=def.components.findIndex(c=>c.id===componentId);if(index<0)return;fn(def.components[index],def);set(form,def);};
  const handle=async data=>{
@@ -179,7 +185,8 @@ export function createPlanningBuilder(options){
    document.querySelectorAll('[data-custom-record]').forEach(button=>{
     const active=session?.form===current()&&session?.component===button.dataset.customRecord;
     const audio=entries()[`form:${current()}:custom:${button.dataset.customRecord}:audio`];
-    button.textContent=active?(session.phase==='requesting'?'Allow microphone…':session.phase==='saving'?'Saving…':'Stop recording'):(audio?'Record again':'Record');
+    const label=active?(session.phase==='requesting'?'Allow microphone…':session.phase==='saving'?'Saving…':'Stop recording'):(audio?'Record again':'Record');
+    button.innerHTML=recordContent(label);button.setAttribute('aria-label',label);
     button.disabled=!!session&&(!active||session.phase!=='recording');
     button.setAttribute('aria-pressed',String(active&&session.phase==='recording'));
     const wrapper=button.closest('.custom-voice');
@@ -212,13 +219,14 @@ export function createPlanningBuilder(options){
   canvas.onpointerdown=e=>{if(e.button>0||pointer!==null||(stylusOnly&&e.pointerType==='touch'))return;pointer=e.pointerId;paths=clone(ink()[key]||[]);e.preventDefault();canvas.setPointerCapture(e.pointerId);undo.push(clone(paths));redo.length=0;active={tool,color:colour,size:tool==='eraser'?size*3:size,points:[point(e)]};paths.push(active);persistInk(true);requestDraw();};canvas.onpointermove=e=>{if(active&&e.pointerId===pointer){for(const sample of (e.getCoalescedEvents?.()?.length?e.getCoalescedEvents():[e]))active.points.push(point(sample));persistInk(true);requestDraw();}};canvas.onpointerup=canvas.onpointercancel=e=>{if(e.pointerId!==pointer)return;pointer=null;if(active){active=null;persistInk();}if(canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId);};
   toolbar?.querySelectorAll('[data-custom-ink-tool]').forEach(button=>button.onclick=()=>{tool=button.dataset.customInkTool;toolbar.querySelectorAll('[data-custom-ink-tool]').forEach(x=>x.setAttribute('aria-pressed',String(x===button)));});
   canvas.addEventListener('notebook-content-updated',()=>{if(!active){paths=clone(ink()[key]||[]);draw();}});
-  const sizePicker=toolbar?.querySelector('[data-custom-ink-size]');if(sizePicker)sizePicker.oninput=e=>size=Number(e.target.value);
+  const sizePicker=toolbar?.querySelector('[data-custom-ink-size]');if(sizePicker)sizePicker.oninput=e=>{size=Number(e.target.value);toolbar.querySelectorAll('.custom-size-picker output').forEach(o=>o.textContent=size);};
+  toolbar?.querySelectorAll('.custom-size-picker').forEach(p=>p.addEventListener('toggle',()=>{if(p.open)toolbar.querySelectorAll('.custom-size-picker').forEach(other=>{if(other!==p)other.open=false;});}));
   const picker=toolbar?.querySelector('[data-custom-ink-colour]');if(picker)picker.oninput=e=>colour=e.target.value;
   const undoButton=toolbar?.querySelector('[data-custom-ink-undo]');if(undoButton)undoButton.onclick=()=>{if(undo.length){redo.push(clone(paths));paths=undo.pop();ink()[key]=paths;save();draw();}};
   const redoButton=toolbar?.querySelector('[data-custom-ink-redo]');if(redoButton)redoButton.onclick=()=>{if(redo.length){undo.push(clone(paths));paths=redo.pop();ink()[key]=paths;save();draw();}};
   const clearButton=toolbar?.querySelector('[data-custom-ink-clear]');if(clearButton)clearButton.onclick=()=>{undo.push(clone(paths));redo.length=0;paths=[];ink()[key]=paths;save();draw();};
  }
- return {create,get,set,handle,input,changed,mount,hasUndo:()=>!!removed,definitionFromTemplate,cancelRecording:()=>voice.cancel()};
+ return {create,get,set,finish,handle,input,changed,mount,hasUndo:()=>!!removed,definitionFromTemplate,cancelRecording:()=>voice.cancel()};
 }
 
 export {COMPONENTS};

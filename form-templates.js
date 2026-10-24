@@ -42,7 +42,7 @@ export function createTemplateLibrary({entries,save,render,id,esc,openModal,clos
  function handle(data){
   if('templateSave'in data){const key=current();form('Save as Template','save',key,nameFields({name:entries()[`form:${key}:title`]||'My form'}));return true;}
   if(data.templateUpdate){const r=find(data.templateUpdate);if(r)form('Update reusable template','update',r.id,`<p>This replaces the template layout with this sheet’s layout. Existing filled sheets remain unchanged.</p>${nameFields(r)}<label><input type="checkbox" name="confirmed" required> Replace the saved template</label>`);return true;}
-  if('templateSaveSheet'in data){save();toast('Sheet saved. Check the notebook save status for backup progress.');return true;}
+  if('templateSaveSheet'in data){builder.finish(current());save();render();toast('Sheet saved. Check the notebook save status for backup progress.');return true;}
   if('templateFolder'in data){folder=data.templateFolder;query='';render();return true;}
   if('templateNewFolder'in data){form('New Folder','folder-new','',`<label>Folder name<input name="name" maxlength="120" required autofocus></label><label>Colour<input type="color" name="colour" value="${['#718b80','#8a7894','#a58351','#68889c'][folders().length%4]}"></label><label>Parent folder<select name="parent">${destinations(folder)}</select></label>`);return true;}
   for(const [field,kind,op] of [['templateFolderRename','folder','rename'],['templateFolderMove','folder','move'],['templateFolderDelete','folder','delete'],['templateRename','template','rename'],['templateMove','template','move'],['templateDelete','template','delete']]){
@@ -61,13 +61,14 @@ export function createTemplateLibrary({entries,save,render,id,esc,openModal,clos
   const op=formElement.dataset.operation,key=formElement.dataset.id;
   if(data.parent&&!find(data.parent,'folder'))throw Error('That folder no longer exists.');
   if(op==='save'){const definition={...builder.get(key),presentation:'form'};putRecord(entries(),templateFromDefinition(id(),data.name,data.description,definition,data.parent));entries()[`form:${key}:custom-definition`]=JSON.stringify(definition);entries()[`form:${key}:layout-edit`]='no';}
-  else if(op==='update'){if(!data.confirmed)throw Error('Confirm replacement.');const r=find(key);if(!r)throw Error('Template no longer exists.');putRecord(entries(),{...r,...data,definition:clone({...builder.get(current()),title:data.name})});}
+  else if(op==='update'){if(!data.confirmed)throw Error('Confirm replacement.');const r=find(key);if(!r)throw Error('Template no longer exists.');putRecord(entries(),{...r,...data,definition:clone({...builder.get(current()),title:data.name,presentation:'form'})});}
   else if(op==='folder-new')putRecord(entries(),{id:id(),name:data.name,parent:data.parent,colour:data.colour},'folder');
   else {const kind=op.startsWith('folder-')?'folder':'template',r=find(key,kind);if(!r)throw Error('Item no longer exists.');
    if(op.endsWith('-delete')){if(!data.confirmed)throw Error('Confirm deletion.');if(kind==='folder'){const descendants=folderDescendants(entries(),key);for(const t of templates())if(descendants.has(t.parent))putRecord(entries(),data.contents==='delete'?{...t,deleted:true}:{...t,parent:data.parent||''});for(const f of folders())if(descendants.has(f.id))putRecord(entries(),{...f,deleted:true},'folder');}else putRecord(entries(),{...r,deleted:true});}
    else if(op==='folder-move')moveFolder(entries(),key,data.parent);
    else putRecord(entries(),{...r,...data},kind);
   }
+  if(op==='update')builder.finish(current());
   save();closeModal();render();toast('Saved.');return true;
  }
  function input(target){if(target.id!=='my-template-search')return;query=target.value;const root=document.querySelector('#my-template-results');if(root){const holder=document.createElement('div');holder.innerHTML=html();root.innerHTML=holder.querySelector('#my-template-results').innerHTML;}}
