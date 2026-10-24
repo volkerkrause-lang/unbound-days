@@ -52,3 +52,17 @@ export function eraseWholeStrokes(strokes, point, radius = .025) {
 export function paperEntry(noteId, suffix = 'paper') {
   return `idea:${noteId}:${suffix}`;
 }
+
+// One solid centreline for both Notes and planning drawings; no offset nib edges.
+export function drawInkStroke(ctx,path,width,height){
+ const ps=path.points||[];if(!ps.length)return;
+ ctx.globalCompositeOperation=path.tool==='eraser'?'destination-out':'source-over';
+ ctx.globalAlpha=Number.isFinite(path.opacity)?path.opacity:path.tool==='pencil'?.72:1;
+ ctx.strokeStyle=path.color||'#313a41';ctx.lineWidth=path.size||3;
+ ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();
+ ctx.moveTo(ps[0].x*width,ps[0].y*height);
+ if(ps.length===1)ctx.lineTo(ps[0].x*width+.01,ps[0].y*height+.01);
+ for(let i=1;i<ps.length-1;i++){const a=ps[i],b=ps[i+1];ctx.quadraticCurveTo(a.x*width,a.y*height,(a.x+b.x)*width/2,(a.y+b.y)*height/2);}
+ const last=ps.at(-1);ctx.lineTo(last.x*width,last.y*height);ctx.stroke();
+ ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;
+}

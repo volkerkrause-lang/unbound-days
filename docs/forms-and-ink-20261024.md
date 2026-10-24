@@ -13,3 +13,13 @@ Development branch: `development/filofax-refinement-20261017`. Base `d0557d6`.
 Validation: syntax/build and 103 unit tests; template/folder/colour and new form regression across desktop, iPad landscape/portrait and mobile; Notes pen/palm filtering, reload, document attachment and native audio persistence/playback checks across all four (run one device per browser process locally). Inspected finished desktop/iPad/mobile screenshots. No physical iPad/Pencil or real signed-in Google request tested.
 
 New regression: `scripts/polished-forms-smoke.mjs`, also included in development CI. Service worker `v1.7.2-polished-forms`, runtime URLs `v=0.4.1`.
+
+## Follow-up: compact icons and shared drawing engine
+
+The original update left the planning drawing canvas on the old per-segment renderer. This follow-up shares `drawInkStroke` from `idea-workspace.js` between Notes and planning drawings: one solid centreline, quadratic smoothing and one stroke call, independent of pressure. Planning canvas also uses frame-scheduled redraw, reduced live cloning, empty-coalesced-sample fallback and touch-action none. Existing stroke storage is unchanged.
+
+Form toolbar controls now use compact outlined SVGs with accessible names and hover tooltips, above the form name. Edit layout uses a pencil, View form an eye, collection a grid/folder, pin a pin, duplicate overlapping sheets, template save a starred page, save sheet a disk. Delete keeps its small icon and explicit label from the owner's earlier request. Shared on built-in and custom sheets; mobile row uses 34px controls.
+
+Native Apple Pencil double-tap remains unavailable in Safari: no supported web hook was established. A native iPad integration is required; do not claim hardware gesture support or add an invented browser event.
+
+Regression adds pixel-column proof of exactly one ink band from an alternating-pressure pen stroke in planning drawings at all four layouts, verifies one saved stroke with multiple samples, plus the existing Notes/palm/reload checks. Unit test requires one continuous path even with pressure changes. Service worker v1.7.3-compact-ink; runtime v=0.4.2.

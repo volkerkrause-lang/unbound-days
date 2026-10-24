@@ -34,3 +34,10 @@ test('paper preferences stay in notebook string entries',()=>{
  assert.equal(paperEntry('abc'),'idea:abc:paper');
  assert.equal(paperEntry('abc','mode'),'idea:abc:mode');
 });
+
+test('solid ink remains a single continuous centreline when Pencil pressure changes',async()=>{
+ const {drawInkStroke}=await import('../idea-workspace.js');let strokes=0,starts=0;
+ const ctx={beginPath(){starts++;},moveTo(){},lineTo(){},quadraticCurveTo(){},stroke(){strokes++;}};
+ drawInkStroke(ctx,{tool:'pen',size:3,color:'#123456',points:[{x:.1,y:.2,p:.1},{x:.2,y:.2,p:1},{x:.3,y:.2,p:.2}]},500,300);
+ assert.equal(strokes,1);assert.equal(starts,1);assert.equal(ctx.lineWidth,3);assert.equal(ctx.globalCompositeOperation,'source-over');assert.equal(ctx.globalAlpha,1);
+});
