@@ -24,6 +24,7 @@ jobs:
           npx playwright install --with-deps chromium
           node server.mjs &
           node scripts/mobile-smoke.mjs
+          node scripts/cover-artwork-audit.mjs
           node scripts/cover-library-smoke.mjs
           UNBOUND_DEVICE=ipad node scripts/cover-library-smoke.mjs
           UNBOUND_DEVICE=portrait node scripts/cover-library-smoke.mjs

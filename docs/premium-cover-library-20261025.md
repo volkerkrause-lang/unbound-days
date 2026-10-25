@@ -51,3 +51,23 @@ change. App/import 0.4.6; service worker v1.8.1-complete-cover-collection.
 Extended responsive smoke checks every category has eight new covers, all
 136 artwork files decode, new/original counts, filter resets, reopening the
 picker, selected details, favourites, navigation and persisted writing.
+
+## Distinct artwork correction, 25 October
+The previous loader audit proved image decoding but missed the product defect:
+category variants shared their base palette and most motifs. All 96 additive
+covers now use individual material palettes and name-specific pattern selection.
+Examples include ivory ostrich leather, oxblood crocodile, quilted navy, copper,
+rose gold, Damascus waves, sea glass, crystal, opal, malachite and lunar eclipse.
+These remain scalable vector illustrations; they are not photographic materials.
+Stable cover IDs and saved personalisation are preserved. Original 40 files are unchanged.
+
+Rebuild source assets with `node scripts/generate-cover-artwork.mjs`.
+The new browser artwork audit verifies every generated file matches its source,
+all 96 decode, and all 96 have distinct rendered pixels. It also captures a
+complete contact sheet for visual review and runs in development CI. Pixel
+uniqueness is a guard against literal duplicates; the contact sheet remains
+necessary to judge meaningful visual distinction.
+
+Artwork URLs now use `?v=2`; module imports are 0.4.7 and offline cache is
+v1.8.2-distinct-cover-artwork. This prevents a cached old category texture from
+standing in for the replacement. Do not clear notebook storage when refreshing.
