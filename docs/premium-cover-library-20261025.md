@@ -31,3 +31,23 @@ navigation, no horizontal overflow, reload and preserved unrelated writing.
 Screenshots at all four sizes inspected. Existing notebook/account and mobile
 navigation/cover/writing smoke passed. No physical iPad or real authenticated
 cross-device sync test was performed.
+
+## Missing-design discovery fix
+
+All 136 source images decoded successfully in the browser; all 96 added SVGs
+were present and valid XML. The picker retained search/category/collection
+filters between openings and placed the 40 original covers ahead of all new
+ones. Categories overflowed horizontally, obscuring later categories.
+
+Opening the picker now clears filters. A New designs (96) view, Original
+collection (40), explicit Show all covers reset and available/shown counts
+make the whole catalogue discoverable. New designs sort first. A category
+select exposes every category on all devices; desktop pills wrap, and mobile
+uses the compact select. Mobile finish/details initially collapses to expose
+cover choices sooner. Thumbnails use lazy image elements instead of requesting
+every full-size CSS background immediately. IDs and saved preferences do not
+change. App/import 0.4.6; service worker v1.8.1-complete-cover-collection.
+
+Extended responsive smoke checks every category has eight new covers, all
+136 artwork files decode, new/original counts, filter resets, reopening the
+picker, selected details, favourites, navigation and persisted writing.
