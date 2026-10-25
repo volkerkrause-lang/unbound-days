@@ -2,7 +2,7 @@
 import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
 import {mkdir} from 'node:fs/promises';
-const browser=await chromium.launch({headless:true});
+const browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||undefined,args:process.env.CHROMIUM_EXECUTABLE_PATH?['--no-sandbox','--disable-dev-shm-usage','--no-zygote','--single-process']:[]});
 try{
  const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true,reducedMotion:'reduce'}),errors=[];
  page.on('pageerror',e=>errors.push(e.message));
@@ -30,7 +30,8 @@ try{
  assert.equal(await page.locator('.cover-controls [data-action="gallery"]').count(),1);
  assert.equal(await page.locator('.cover-controls [data-action="personalize"]').count(),0);
  await page.locator('.cover-controls [data-action="gallery"]').click();
- await page.locator('[data-cover="16"]').click();
+ await page.locator('[data-cover-preview="16"]').click();
+ await page.locator('[data-cover-apply]').click();
  await page.reload();await page.locator('.cover-book[data-cover="16"]').waitFor();
  await page.locator('[data-action="open"]').click();
  await page.reload();await page.locator('[data-action="open"]').click();await page.locator('[data-mobile-view="day"]').click();
