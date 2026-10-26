@@ -1,4 +1,4 @@
-import {categories,newCovers,readCoverOptions,defaultOptions,optionChoices,coverAttributes,ornaments,coverInscription} from './cover-library.js?v=0.4.16';
+import {categories,newCovers,readCoverOptions,defaultOptions,optionChoices,coverAttributes,ornaments,coverInscription} from './cover-library.js?v=0.4.17';
 export function createCoverGallery({getState,names,style,material,openModal,save,render,year,escape:esc}){
  let category='all',query='',collection='all',preview=null,draft={...defaultOptions},draftText={owner:'',title:'',coverInk:''};
  const oldGroups=['leather','leather','nature','glass','nature','modern','modern','gems','fabric','metal','fabric','leather','leather','leather','fabric','wood','historic','nature','fantasy','fabric','leather','leather','leather','leather','leather','fantasy','historic','metal','fabric','wood','gems','fabric','fantasy','historic','leather','leather','fantasy','fantasy','gems','leather'];

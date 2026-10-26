@@ -775,3 +775,21 @@ body:has(dialog[open]) .task-widget,body:has(.dictation-review) .task-widget,bod
 .cover-book .cover-brand[data-surface=wood]{color:#47301f94!important;text-shadow:0 -.5px .3px #27170b99,0 .6px .3px #f4d9aa80}
 .cover-book .cover-brand[data-surface=fabric]{color:#a5977b!important;text-shadow:.3px .5px .2px #33291d80;letter-spacing:.13em}
 .cover-book .cover-brand[data-surface=stone]{color:#77776b99!important;text-shadow:0 -.5px .3px #282c2c8c,0 .6px .3px #ffffea94}
+
+/* Match the actual artwork; personal ink never colours the independent maker mark. */
+.cover-book .cover-inscription[data-surface] :is(.cover-year,.cover-owner,.cover-title){color:var(--cover-ink,var(--cover-match-ink,#dfc68f))!important}
+.cover-book .cover-brand[data-surface]{color:var(--cover-brand-ink,#39291e99)!important;font-size:clamp(6px,2.3cqw,20px)}
+.cover-book .cover-inscription .cover-owner{font-size:clamp(7px,3.8cqw,34px);max-height:2.6em}
+.cover-book .cover-inscription .cover-title{font-size:clamp(6px,3.2cqw,29px);max-height:2.6em}
+@supports(color:color-mix(in srgb,#000,#fff)){
+ .cover-book[data-cover] .cover-inscription[data-surface=metal] :is(.cover-year,.cover-owner,.cover-title){
+  background:linear-gradient(154deg,color-mix(in srgb,var(--cover-ink,var(--cover-match-ink,#b6b9b8)),white 72%) 0%,var(--cover-ink,var(--cover-match-ink,#b6b9b8)) 21%,color-mix(in srgb,var(--cover-ink,var(--cover-match-ink,#b6b9b8)),white 85%) 34%,color-mix(in srgb,var(--cover-ink,var(--cover-match-ink,#b6b9b8)),black 35%) 49%,color-mix(in srgb,var(--cover-ink,var(--cover-match-ink,#b6b9b8)),white 45%) 65%,var(--cover-ink,var(--cover-match-ink,#b6b9b8)) 100%)!important;
+  background-clip:text!important;-webkit-background-clip:text!important;color:transparent!important;
+  filter:drop-shadow(.012em .022em 0 color-mix(in srgb,var(--cover-ink,var(--cover-match-ink,#b6b9b8)),black 35%)) drop-shadow(.012em .022em 0 color-mix(in srgb,var(--cover-ink,var(--cover-match-ink,#b6b9b8)),black 60%)) drop-shadow(.018em .03em .016em #160f09a6)!important;
+ }
+ .cover-book[data-cover] .cover-inscription[data-surface=fabric] :is(.cover-year,.cover-owner,.cover-title){
+  background:repeating-linear-gradient(115deg,color-mix(in srgb,var(--cover-ink,var(--cover-match-ink,#d9cbb0)),white 32%) 0 .025em,color-mix(in srgb,var(--cover-ink,var(--cover-match-ink,#d9cbb0)),black 24%) .025em .045em,var(--cover-ink,var(--cover-match-ink,#d9cbb0)) .045em .065em)!important;
+  background-clip:text!important;-webkit-background-clip:text!important;color:transparent!important;
+  filter:drop-shadow(.01em .025em 0 color-mix(in srgb,var(--cover-ink,var(--cover-match-ink,#d9cbb0)),black 40%)) drop-shadow(.018em .03em .014em #16121199)!important;
+ }
+}

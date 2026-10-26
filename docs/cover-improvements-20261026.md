@@ -60,6 +60,18 @@ All eight book entries 128–135 were present as procedural SVGs but lacked beli
 
 Runtime revision 0.4.16. The responsive suite now includes all eight book covers and captures selected book-detail screenshots after background decoding. The asset manifest now maps all 96 added collection entries to individual WebP files. Original 40 designs are preserved.
 
+## Stage 6 verification
+
+Implementation `0edd20d6d4c84981f0d83259d27c090e6d91d211`; CI run 40409261802 passed the full suite, Cloudflare succeeded. Live revision 0.4.16 and all eight book images loaded. An independent Pillow audit decoded all 136 built-in images and found 136 distinct rendered thumbnails with no exact duplicates.
+
+## Stage 7 — final lettering and release audit
+
+The final visual audit found insufficient default-face contrast from reusing one brown on both pale and dark leather. `scripts/generate-cover-tones.py` samples the existing lettering area of each of the 136 images and compiles static material-tinted dark/light ink plus a separate, subtler blind-brand tone into the existing renderer module. This is a build-time/dev helper; no runtime library, user upload, account data or new control is added. Personal ink choices still override matching ink; the logo has its own colour variable and never receives a reflective face.
+
+Selected metallic colours now preserve a directional bevel/reflection face, and selected textile colours retain ridged thread detail. Paper/glass/leather assignments corrected after visual inspection for original Kintsugi, Stained glass, Pressed botanicals, Topographic relief and Watercolour landscape, plus the leather Steampunk Observatory and Alchemy Manuscript. Small previews have readable minimum lettering sizes; two-line names/titles retain full line height.
+
+Responsive checks exercise gold/charcoal on metal and fabric, requiring the material face to survive, ink to change the face and the brand to remain unchanged. Runtime revision 0.4.17. Final CI, committed files, image availability and live responsive layouts must be verified after publication; physical iPad hardware is not claimed.
+
 ## Remaining sequence
 
 Stage 7: verify committed assets, final CI, development deployment and responsive layouts. Main/public production must remain unchanged.
