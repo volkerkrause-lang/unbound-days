@@ -29,6 +29,27 @@ Generation used the built-in image tool, one separate request per design. Shared
 
 The existing manifest/updater synchronises paths, hashes, byte sizes and offline references. Screenshot checks now await the final re-rendered thumbnail decoding before capture, avoiding misleading blank thumbnails in CI evidence. Runtime revision 0.4.14. Local syntax, 104 tests and build passed before publishing; CI and live verification must be checked after publication.
 
+## Stage 4 verification
+
+Implementation `8910c48e3b4562df9cb232b8a3f2f143de341833`; screenshot-wait correction `e2089699ec122ae82d6e6f3dfe1cce9f6088ea5e`. Full CI run 40406003901 passed, Cloudflare succeeded. Live revision 0.4.14 and all eight new Nature thumbnails were checked; mobile/iPad picker containment and three controls checked in the connected browser. Signed-in Google journal reports a pre-existing storage quota warning; notebook entries/account data were not changed during checks.
+
+## Stage 5 — Modern & Abstract
+
+Audited entries 120–127: existing procedural SVGs were present but insufficiently detailed. Eight separate built-in image-generation requests replace them with physical material compositions. Original SVGs and stable IDs are preserved. Shared prompts require full-bleed orthographic landscape 10:7, upper-left light, broad centre-left lettering space, no text/logo or surrounding scene.
+
+|ID|Design|Physical treatment|
+|---|---|---|
+|120|Bauhaus composition|Precisely fitted coloured calfskin inlays|
+|121|Quiet minimalism|Honed pale limestone, carved recess and slate inlay|
+|122|Geometric relief|Milled stepped titanium prisms|
+|123|Mid-century rhythm|Walnut and rosewood marquetry with coloured inlays|
+|124|Liquid metal|Solid sculptural chrome folds and studio reflections|
+|125|Holographic spectrum|Layered dichroic glass fins, facets and refraction|
+|126|Optical labyrinth|Machined black steel and raised silver labyrinth|
+|127|Sculpted dunes|Undulating carved sandstone relief|
+
+Assets: `assets/collection/cover-120-premium-v4.webp` through `cover-127-premium-v4.webp`. PNG-to-WebP saves use a validated temporary file followed by atomic replacement. The updater rejects empty or incomplete RIFF/WebP bytes before updating the manifest. Runtime revision 0.4.15.
+
 ## Remaining sequence
 
-Stage 5: eight Modern & Abstract entries 120–127. Stage 6: eight Rare Books & Manuscripts entries 128–135. Their current SVGs must not be described as photorealistic repairs. Stage 7: verify committed assets, final CI, development deployment and responsive layouts. Main/public production must remain unchanged.
+Stage 6: eight Rare Books & Manuscripts entries 128–135. Their current SVGs must not be described as photorealistic repairs. Stage 7: verify committed assets, final CI, development deployment and responsive layouts. Main/public production must remain unchanged.

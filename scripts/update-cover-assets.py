@@ -11,7 +11,10 @@ else:
 for r in rows:
  replacement=root/f"assets/collection/cover-{r['id']}-premium-v4.webp"
  if replacement.exists():r['file']=str(replacement.relative_to(root));r['source']='Targeted photorealistic replacement, 26 October 2026'
- b=(root/r['file']).read_bytes();r['bytes']=len(b);r['sha256']=hashlib.sha256(b).hexdigest()
+ b=(root/r['file']).read_bytes()
+ if r['file'].endswith('.webp'):
+  assert len(b)>1024 and b[:4]==b'RIFF' and b[8:12]==b'WEBP' and int.from_bytes(b[4:8],'little')+8==len(b), f"Incomplete WebP: {r['file']}"
+ r['bytes']=len(b);r['sha256']=hashlib.sha256(b).hexdigest()
 manifest.write_text(json.dumps(rows,indent=2)+'\n')
 mapping={str(r['id']):r['file'] for r in rows}
 p=root/'cover-library.js';s=p.read_text()
