@@ -685,3 +685,56 @@ body:has(dialog[open]) .task-widget,body:has(.dictation-review) .task-widget,bod
 .cover-book .cover-art{inset:0;width:100%;height:100%;background-repeat:no-repeat;transform:translateZ(0)}
 .cover-book{transform-style:flat}
 @media(max-width:760px){.cover-scene>.cover-book{max-width:calc(100vw - 72px)}.cover-library,.library-layout,.library-preview{min-width:0;max-width:100%}}
+
+/* The picker starts with the controls people actually need. */
+#modal:has(.cover-library) .modal-head{padding:14px 20px 10px}
+#modal:has(.cover-library) .modal-head h2{font-size:22px}
+#modal:has(.cover-library) .modal-body{padding:10px 20px 20px}
+.cover-library .library-toolbar{align-items:center;gap:12px;margin:0 0 10px}
+.cover-library .library-search{display:flex;align-items:center;gap:7px;border:1px solid #d8d0c1;border-radius:6px;background:#fffdf8;padding:0 10px;min-width:0;height:36px}
+.library-search svg{width:16px;height:16px;flex:none;color:#827766}
+.cover-library .library-search input{margin:0;padding:7px 0;border:0;background:none;font-size:12px;min-width:0}
+.library-upload{display:flex;align-items:center;gap:6px;flex:none;padding:6px 0 6px 4px;font-size:11px;color:#655943;white-space:nowrap}
+.library-upload svg{width:18px;height:18px}
+.cover-library .library-category-select{display:none}
+.cover-library .library-categories{gap:5px;padding:0 0 12px}
+.cover-library .library-categories button{padding:6px 10px;font-size:11px}
+.library-preview-heading{margin-top:10px}.library-preview-heading h3{font-size:18px}
+.library-options{margin-top:10px;padding-top:10px}.library-options summary{font-size:14px}
+.library-stage{padding:20px 18px 24px}
+.cover-library .cover-choice small{min-height:0}.cover-library .cover-choice strong{margin-top:6px}
+@media(max-width:700px){
+ #modal:has(.cover-library) .modal-head{padding:11px 13px 8px}
+ #modal:has(.cover-library) .modal-head h2{font-size:20px}
+ #modal:has(.cover-library) .modal-body{padding:7px 13px 16px}
+ .cover-library .library-toolbar{gap:8px;margin-bottom:8px}
+ .cover-library .library-search{height:34px;padding:0 8px}
+ .library-upload{flex-direction:column;gap:2px;padding:0;font-size:9px}
+ .library-upload svg{width:17px;height:17px}
+ .cover-library .library-category-select{display:block;margin:0 0 10px}
+ .cover-library .library-category-select select{margin:0;padding:7px 9px;height:34px}
+ .cover-library .library-categories{display:none}
+ .library-layout{gap:12px}.library-preview{gap:8px}
+ .library-stage{padding:12px 9px 15px}
+ .library-preview-heading h3{font-size:15px;margin-bottom:4px}
+ .library-preview-heading{margin:0}.library-options{margin-top:0;padding-top:8px}
+ .library-option-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+/* Shared safe lettering area: scales with the cover, never with the screen. */
+.cover-book{container-type:inline-size}
+.cover-book .cover-open{position:absolute;inset:0;padding:0;display:block;border-radius:inherit}
+.cover-book .cover-inscription{position:absolute;left:22%;top:26%;width:56%;height:49%;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:1.3cqw;padding:1cqw 2cqw;overflow:hidden;text-align:center;pointer-events:none;isolation:isolate}
+.cover-book .cover-inscription[data-placement=left]{left:13%;width:53%;top:24%;height:51%}
+.cover-book .cover-inscription :is(.cover-year,.cover-title,.cover-owner,.cover-initials,.emboss-logo){position:static;inset:auto;max-width:100%;margin:0;line-height:1.15;letter-spacing:.06em;overflow:hidden;overflow-wrap:anywhere;display:block;flex-shrink:1;color:var(--cover-ink,#e6c47d);background:none;filter:none;animation:none;-webkit-text-stroke:0;text-shadow:0 -.025em 0 #fff0bb,0 .025em 0 #b68b3f,0 .05em 0 #876022,0 .075em 0 #624117,.025em .1em .04em #1b100a99,.04em .14em .12em #160b0955}
+.cover-book .cover-inscription .cover-year{font:500 9cqw/1.1 var(--serif);letter-spacing:.06em;flex-shrink:0}
+.cover-book .cover-inscription .cover-title{font:500 3cqw/1.2 var(--serif);max-height:2.4em}
+.cover-book .cover-inscription .cover-owner{font:500 3.1cqw/1.2 var(--serif);max-height:2.4em;letter-spacing:.025em}
+.cover-book .cover-inscription .emboss-logo{font:500 2.1cqw/1.1 var(--serif);letter-spacing:.19em;margin-top:1.4cqw;text-transform:lowercase;flex-shrink:0;opacity:.85}
+.cover-book .cover-inscription .cover-initials{display:none;font:500 10cqw/1.1 var(--serif);flex-shrink:0}
+.cover-book:not([style*="--cover-ink"]) .cover-inscription :is(.cover-year,.cover-title,.cover-owner,.cover-initials,.emboss-logo){background:linear-gradient(160deg,#fff0b3 0%,#c99c4b 21%,#fff2bc 35%,#bb8731 49%,#e9c579 60%,#a5752c 78%,#edcb83 100%);background-clip:text;-webkit-background-clip:text;color:transparent;filter:drop-shadow(0 .035em 0 #8d6528) drop-shadow(.025em .07em .025em #2b190ca6);text-shadow:none}
+.cover-book .cover-inscription[data-press=deboss] :is(.cover-year,.cover-title,.cover-owner,.cover-initials,.emboss-logo){filter:none;text-shadow:0 -.035em .025em #241208cc,0 .035em .015em #fff2c24d;opacity:.9}
+.cover-book .cover-inscription[data-press=engraved] :is(.cover-year,.cover-title,.cover-owner,.cover-initials,.emboss-logo){filter:drop-shadow(0 -.025em 0 #251c13aa) drop-shadow(0 .025em 0 #fff5cf80)}
+.cover-book .cover-inscription[data-press=woven] :is(.cover-year,.cover-title,.cover-owner,.cover-initials,.emboss-logo){filter:drop-shadow(.025em .045em .015em #20150e99);text-shadow:0 .02em #f5e0b780;opacity:.9}
+.cover-book[data-lettering=initials] .cover-inscription .cover-initials{display:block}
+.cover-book[data-lettering=initials] .cover-inscription :is(.cover-year,.cover-title,.cover-owner),.cover-book[data-lettering=none] .cover-inscription :is(.cover-year,.cover-title,.cover-owner,.cover-initials,.emboss-logo),.cover-book[data-lettering=name] .cover-inscription :is(.cover-year,.cover-title),.cover-book[data-lettering=year] .cover-inscription :is(.cover-title,.cover-owner){display:none}
+.cover-book[data-lettering=name] .cover-inscription .cover-owner{font-size:5cqw}

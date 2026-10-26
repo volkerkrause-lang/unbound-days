@@ -135,3 +135,12 @@ export function artwork(c){
  }
  return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="840" viewBox="0 0 1200 840"><title>${c.name.replaceAll('&','&amp;')}</title><defs><linearGradient id="base" x2="100%" y2="100%"><stop stop-color="${base}"/><stop offset=".52" stop-color="${accent}"/><stop offset="1" stop-color="${base}"/></linearGradient><linearGradient id="spine"><stop stop-color="#000" stop-opacity=".6"/><stop offset=".035" stop-color="#fff" stop-opacity=".22"/><stop offset=".075" stop-color="#000" stop-opacity=".3"/><stop offset=".14" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".18"/></linearGradient><filter id="grain"><feTurbulence baseFrequency="${g===0?.6:.18}" numOctaves="2" seed="${c.id}" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter></defs>${rect(0,0,1200,840,'url(#base)')}${art}${rect(0,0,1200,840,'#fff',.055,'filter="url(#grain)"')}${rect(0,0,1200,840,'url(#spine)')}</svg>`;
 }
+
+// Shared, bounded lettering for the notebook and its live preview.
+export function coverInscription({id,owner='',title='',year,escape:esc}){
+ const design=coverById(id),g=design?.group;
+ const press=g===0?'deboss':g===1?'engraved':g===5?'woven':'foil';
+ const ornate=design&&![0,4,6].includes(g);
+ const initials=owner.trim().split(/\s+/).map(n=>n[0]||'').slice(0,3).join('')||'U';
+ return `<span class="cover-inscription" data-press="${press}" data-placement="${ornate?'left':'centre'}"><span class="cover-year">${year}</span>${title?`<span class="cover-title">${esc(title)}</span>`:''}${owner?`<span class="cover-owner">${esc(owner)}</span>`:''}<span class="cover-initials">${esc(initials)}</span><span class="emboss-logo">unbound</span></span>`;
+}
