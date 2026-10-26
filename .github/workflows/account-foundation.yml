@@ -18,10 +18,14 @@ jobs:
       - run: npm run check
       - run: npm test
       - run: npm run build
+      - name: Install browser for responsive checks
+        if: startsWith(github.ref, 'refs/heads/development/')
+        timeout-minutes: 5
+        run: npx playwright install chromium
       - name: Verify Classic & Clean mobile layout
+        timeout-minutes: 15
         if: startsWith(github.ref, 'refs/heads/development/')
         run: |
-          npx playwright install --with-deps chromium
           node server.mjs &
           node scripts/mobile-smoke.mjs
           node scripts/cover-artwork-audit.mjs
