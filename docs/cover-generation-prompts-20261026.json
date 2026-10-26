@@ -54,5 +54,61 @@
     "file": "assets/collection/cover-127-premium-v4.webp",
     "tool": "Built-in image generation",
     "prompt": "Use case: product-mockup. One high-resolution premium photorealistic notebook cover artwork asset named Sculpted dunes. Landscape 10:7, orthographic straight-on close-up, full bleed entire frame, no surrounding scene, book perspective or page edges. A luxury carved sandstone notebook cover, elegant sweeping dune-like undulating ivory and warm taupe stone ridges at right and lower border, fine granular stone texture, polished ridge tips, restrained fluid sculptural landform. Broad calmer sand-coloured stone centre-left, directional attached shadows show depth; no landscape horizon or surrounding scene. Upper-left soft studio lighting; exceptional tactile material detail, realistic contact shadows. Reserve broad uncluttered centre-left for runtime year/name. No text, numbers, logo, watermark or flat vector illustration."
+  },
+  {
+    "id": 128,
+    "name": "Illuminated hours",
+    "file": "assets/collection/cover-128-premium-v4.webp",
+    "tool": "Built-in image generation",
+    "prompt": "Use case: product-mockup. One high-resolution photorealistic antique notebook cover artwork named Illuminated hours. Landscape 10:7, orthographic straight-on macro material view, full bleed, no surrounding scene, perspective tilt, visible page edges or separate book silhouette (the application supplies the book shape). An exquisite antique Book of Hours binding in deep lapis-blue goatskin, intricately impressed and genuinely gilded vinework, acanthus borders and tiny jewel-like red/green corner details. Tactile fine leather grain, lightly worn raised tooling, illuminated manuscript floral ornament confined to right and lower borders; broad quieter dark blue leather centre-left. Authentic artisan binding, not a printed illustration. Fine authentic historical craftsmanship, realistic recessed ornament, upper-left soft studio light with attached contact shadows, tactile material depth. Reserve ample broad centre-left for runtime year/name/title; no lettering, logo, watermark or flat graphic illustration."
+  },
+  {
+    "id": 129,
+    "name": "Medieval binding",
+    "file": "assets/collection/cover-129-premium-v4.webp",
+    "tool": "Built-in image generation",
+    "prompt": "Use case: product-mockup. One high-resolution photorealistic antique notebook cover artwork named Medieval binding. Landscape 10:7, orthographic straight-on macro material view, full bleed, no surrounding scene, perspective tilt, visible page edges or separate book silhouette (the application supplies the book shape). Believable late-medieval dark brown calfskin binding over oak boards, heavily aged grain and worn rounded edges, small tarnished brass protective corner bosses, an aged iron fastening plate at the far right, deep blind-tooled diamond and rosette border, traces of recessed stitching and binding structure. Broad rubbed dark leather central-left. Substantial realistic weight, beautiful restrained wear. Fine authentic historical craftsmanship, realistic recessed ornament, upper-left soft studio light with attached contact shadows, tactile material depth. Reserve ample broad centre-left for runtime year/name/title; no lettering, logo, watermark or flat graphic illustration."
+  },
+  {
+    "id": 130,
+    "name": "Antique atlas",
+    "file": "assets/collection/cover-130-premium-v4.webp",
+    "tool": "Built-in image generation",
+    "prompt": "Use case: product-mockup. One high-resolution photorealistic antique notebook cover artwork named Antique atlas. Landscape 10:7, orthographic straight-on macro material view, full bleed, no surrounding scene, perspective tilt, visible page edges or separate book silhouette (the application supplies the book shape). An antique atlas binding of aged warm honey vellum, softly mottled parchment fibres and wear, dark tobacco leather corner guards and narrow spine joint at left. Fine faded engraved cartographic coastline fragments and a beautifully detailed antique compass rose around right/lower margins, subtle gold ruled border. Broad quiet aged vellum centre-left for runtime lettering. No readable labels or words. Fine authentic historical craftsmanship, realistic recessed ornament, upper-left soft studio light with attached contact shadows, tactile material depth. Reserve ample broad centre-left for runtime year/name/title; no lettering, logo, watermark or flat graphic illustration."
+  },
+  {
+    "id": 131,
+    "name": "Gilded folio",
+    "file": "assets/collection/cover-131-premium-v4.webp",
+    "tool": "Built-in image generation",
+    "prompt": "Use case: product-mockup. One high-resolution photorealistic antique notebook cover artwork named Gilded folio. Landscape 10:7, orthographic straight-on macro material view, full bleed, no surrounding scene, perspective tilt, visible page edges or separate book silhouette (the application supplies the book shape). A magnificent antique emerald-green morocco leather folio binding, deep pebbled goatskin grain, elaborate authentic gold-tooled fan and palmette ornaments, fine layered double/triple ruled gilt borders, recessed rosette medallions at right corners, realistic minute gilt wear and oxidised recesses. Broad clean inset green leather panel centre-left, convincing tooling depth; luxurious physical bookbinding. Fine authentic historical craftsmanship, realistic recessed ornament, upper-left soft studio light with attached contact shadows, tactile material depth. Reserve ample broad centre-left for runtime year/name/title; no lettering, logo, watermark or flat graphic illustration."
+  },
+  {
+    "id": 132,
+    "name": "Parchment study",
+    "file": "assets/collection/cover-132-premium-v4.webp",
+    "tool": "Built-in image generation",
+    "prompt": "Use case: product-mockup. One high-resolution photorealistic antique notebook cover artwork named Parchment study. Landscape 10:7, orthographic straight-on macro material view, full bleed, no surrounding scene, perspective tilt, visible page edges or separate book silhouette (the application supplies the book shape). Authentic old limp-vellum scholarly binding, warm ivory parchment with slight natural translucent mottling, fine wrinkles, age spots, thin stitched seams and subtly raised supports along the left joint, aged leather ties resting at far right edge. A tiny restrained ink botanical study in the lower right margin, broad quiet ivory vellum centre-left. Believable aged parchment and handmade binding, no printed title or readable text. Fine authentic historical craftsmanship, realistic recessed ornament, upper-left soft studio light with attached contact shadows, tactile material depth. Reserve ample broad centre-left for runtime year/name/title; no lettering, logo, watermark or flat graphic illustration."
+  },
+  {
+    "id": 133,
+    "name": "Scientific archive",
+    "file": "assets/collection/cover-133-premium-v4.webp",
+    "tool": "Built-in image generation",
+    "prompt": "Use case: product-mockup. One high-resolution photorealistic antique notebook cover artwork named Scientific archive. Landscape 10:7, orthographic straight-on macro material view, full bleed, no surrounding scene, perspective tilt, visible page edges or separate book silhouette (the application supplies the book shape). A beautifully preserved eighteenth-century scientific archive binding in richly worn oxblood calfskin, recessed tooled rectangular panels, tiny gilt corner flourishes, darkened spine joint and hints of hand stitching at far left, fine blind-engraved botanical instrument and geometric scientific diagrams only along the right/lower border. Deep burgundy leather grain and patina, broad centre-left title area, realistic crafted physical binding. No lettering or readable labels. Fine authentic historical craftsmanship, realistic recessed ornament, upper-left soft studio light with attached contact shadows, tactile material depth. Reserve ample broad centre-left for runtime year/name/title; no lettering, logo, watermark or flat graphic illustration."
+  },
+  {
+    "id": 134,
+    "name": "Astronomer\u2019s journal",
+    "file": "assets/collection/cover-134-premium-v4.webp",
+    "tool": "Built-in image generation",
+    "prompt": "Use case: product-mockup. One high-resolution photorealistic antique notebook cover artwork named Astronomer\u2019s journal. Landscape 10:7, orthographic straight-on macro material view, full bleed, no surrounding scene, perspective tilt, visible page edges or separate book silhouette (the application supplies the book shape). Antique astronomer's notebook binding in midnight-navy leather, delicately recessed silver-tooling of a historical celestial planisphere along the right edge, fine constellation and lunar-phase ornaments around lower border, restrained tarnished silver corner details, deeply textured old leather, gentle edge wear. Broad quiet navy leather centre-left. Elegant historical astronomy, no gears or steampunk machinery, no readable words or numbers. Fine authentic historical craftsmanship, realistic recessed ornament, upper-left soft studio light with attached contact shadows, tactile material depth. Reserve ample broad centre-left for runtime year/name/title; no lettering, logo, watermark or flat graphic illustration."
+  },
+  {
+    "id": 135,
+    "name": "Venetian endpaper",
+    "file": "assets/collection/cover-135-premium-v4.webp",
+    "tool": "Built-in image generation",
+    "prompt": "Use case: product-mockup. One high-resolution photorealistic antique notebook cover artwork named Venetian endpaper. Landscape 10:7, orthographic straight-on macro material view, full bleed, no surrounding scene, perspective tilt, visible page edges or separate book silhouette (the application supplies the book shape). A beautifully crafted antique Venetian marbled-paper binding with oxblood leather corner guards and fine worn gilt ruled edges. Intricate real hand-marbled ebru stone patterns and feathered peacock swirls in muted burgundy, teal, ochre and ivory concentrated right/lower margins, lower-contrast creamy marbled paper centre-left for runtime lettering. Handmade paper fibres, layered joints, subtle binding wear and material depth. No printed title. Fine authentic historical craftsmanship, realistic recessed ornament, upper-left soft studio light with attached contact shadows, tactile material depth. Reserve ample broad centre-left for runtime year/name/title; no lettering, logo, watermark or flat graphic illustration."
   }
 ]

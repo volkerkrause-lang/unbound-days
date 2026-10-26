@@ -617,58 +617,58 @@
   },
   {
     "id": 128,
-    "file": "assets/collection/cover-128.svg",
-    "source": "Existing procedural SVG",
-    "bytes": 7464,
-    "sha256": "96fc6578b274bdb943c09843913eec7fd11774ac65f369cef388ea0f692402b8"
+    "file": "assets/collection/cover-128-premium-v4.webp",
+    "source": "Targeted photorealistic replacement, 26 October 2026",
+    "bytes": 853242,
+    "sha256": "8b47dd0a6e48820ec1d26839ab265606f837b41c49f2fec9a1e87ddf5f45bd96"
   },
   {
     "id": 129,
-    "file": "assets/collection/cover-129.svg",
-    "source": "Existing procedural SVG",
-    "bytes": 1849,
-    "sha256": "58f08f5b1ea71ec80508661c151f32276626d3134f1b5edafea9c9aa3d6710b0"
+    "file": "assets/collection/cover-129-premium-v4.webp",
+    "source": "Targeted photorealistic replacement, 26 October 2026",
+    "bytes": 846084,
+    "sha256": "398985b853258d4bfa27449a0ea9712fd35c6ab2390af25d41af971035279b98"
   },
   {
     "id": 130,
-    "file": "assets/collection/cover-130.svg",
-    "source": "Existing procedural SVG",
-    "bytes": 7496,
-    "sha256": "b8f0d9196e5c146be01bd3f6eee9de2da498e6a2415ed86904e8dd3fc0d8f68e"
+    "file": "assets/collection/cover-130-premium-v4.webp",
+    "source": "Targeted photorealistic replacement, 26 October 2026",
+    "bytes": 775120,
+    "sha256": "488081f637aa23626bc722e05bfbae85772fa1d3a42f8dd4f557d9033bed61ce"
   },
   {
     "id": 131,
-    "file": "assets/collection/cover-131.svg",
-    "source": "Existing procedural SVG",
-    "bytes": 6119,
-    "sha256": "4cfabef8a9b1726ee0fa8722c63617664d2ddbc5d539e6c8edd317639b29d2c0"
+    "file": "assets/collection/cover-131-premium-v4.webp",
+    "source": "Targeted photorealistic replacement, 26 October 2026",
+    "bytes": 984592,
+    "sha256": "05f70b953c5e0d7e30ec47499974dab4f5e45b462fd28ba4569add47c4c5df5a"
   },
   {
     "id": 132,
-    "file": "assets/collection/cover-132.svg",
-    "source": "Existing procedural SVG",
-    "bytes": 2697,
-    "sha256": "3fcfec94c1dd6272ad215e4c8b1f2c20d052fc2a74e9ba316d207bbe048d0a29"
+    "file": "assets/collection/cover-132-premium-v4.webp",
+    "source": "Targeted photorealistic replacement, 26 October 2026",
+    "bytes": 605294,
+    "sha256": "b7c393266435d88527d709420fbb4da84f587b4db72865a6998d638afad4a9aa"
   },
   {
     "id": 133,
-    "file": "assets/collection/cover-133.svg",
-    "source": "Existing procedural SVG",
-    "bytes": 1760,
-    "sha256": "c77212de9296dd00d7bf2168e870481ec14fe3006a82f3ee1553ecfd81037326"
+    "file": "assets/collection/cover-133-premium-v4.webp",
+    "source": "Targeted photorealistic replacement, 26 October 2026",
+    "bytes": 780324,
+    "sha256": "0bb93f60665986cc96ddf934ae031b31201b27d15fed145798e0d492d5a75375"
   },
   {
     "id": 134,
-    "file": "assets/collection/cover-134.svg",
-    "source": "Existing procedural SVG",
-    "bytes": 3463,
-    "sha256": "c08231182622653465ee43342acb538ba2d93ba19c0f30a81f3da03b6a2585c0"
+    "file": "assets/collection/cover-134-premium-v4.webp",
+    "source": "Targeted photorealistic replacement, 26 October 2026",
+    "bytes": 878230,
+    "sha256": "ca6251f9d94961d4093564522e4ac8a343bd2b8e09cbe80f6b2aa7279bf7612a"
   },
   {
     "id": 135,
-    "file": "assets/collection/cover-135.svg",
-    "source": "Existing procedural SVG",
-    "bytes": 17274,
-    "sha256": "eab2c8fe8ec1a5b9eef1e40f37a56b1cb0b3af2655461205d705afc3c863c29a"
+    "file": "assets/collection/cover-135-premium-v4.webp",
+    "source": "Targeted photorealistic replacement, 26 October 2026",
+    "bytes": 781882,
+    "sha256": "8475ba42ee6d8d6bb8bb47589cd5f6d29e7bec53c76936fe79dc79b2efec0f85"
   }
 ]

@@ -50,6 +50,16 @@ Audited entries 120–127: existing procedural SVGs were present but insufficien
 
 Assets: `assets/collection/cover-120-premium-v4.webp` through `cover-127-premium-v4.webp`. PNG-to-WebP saves use a validated temporary file followed by atomic replacement. The updater rejects empty or incomplete RIFF/WebP bytes before updating the manifest. Runtime revision 0.4.15.
 
+## Stage 5 verification
+
+Implementation `dd80cd813c1fbe7b8fb530cefc113f5272813e65`; measurement correction `94d2eb2299171e152a9a2249726721fdd4905461`. CI run 40407552424 passed the complete suite and Cloudflare succeeded. The initial new cover-fill assertion incorrectly compared transformed outer-border bounds to inner artwork dimensions; corrected to compare artwork layout dimensions with the cover's inner client dimensions. No application assertion was removed. Live revision 0.4.15 and all eight Modern images loaded correctly.
+
+## Stage 6 — Rare Books & Manuscripts
+
+All eight book entries 128–135 were present as procedural SVGs but lacked believable material craftsmanship. Replaced them with eight distinct, individually generated physical bindings: lapis-blue Book of Hours; aged medieval blind-tooled calfskin with bosses/fastening; antique vellum atlas; emerald morocco gilded folio; stitched limp vellum; oxblood scientific archive; silver-tooled navy astronomer's journal; and Venetian marbled paper/leather binding. Full prompts and asset paths are in `cover-generation-prompts-20261026.json`. Original IDs and SVG assets retained. Images decoded and saved atomically before upload; each uploaded blob must match the local Git SHA and size before publication.
+
+Runtime revision 0.4.16. The responsive suite now includes all eight book covers and captures selected book-detail screenshots after background decoding. The asset manifest now maps all 96 added collection entries to individual WebP files. Original 40 designs are preserved.
+
 ## Remaining sequence
 
-Stage 6: eight Rare Books & Manuscripts entries 128–135. Their current SVGs must not be described as photorealistic repairs. Stage 7: verify committed assets, final CI, development deployment and responsive layouts. Main/public production must remain unchanged.
+Stage 7: verify committed assets, final CI, development deployment and responsive layouts. Main/public production must remain unchanged.
