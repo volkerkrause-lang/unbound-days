@@ -738,3 +738,4 @@ body:has(dialog[open]) .task-widget,body:has(.dictation-review) .task-widget,bod
 .cover-book[data-lettering=initials] .cover-inscription .cover-initials{display:block}
 .cover-book[data-lettering=initials] .cover-inscription :is(.cover-year,.cover-title,.cover-owner),.cover-book[data-lettering=none] .cover-inscription :is(.cover-year,.cover-title,.cover-owner,.cover-initials,.emboss-logo),.cover-book[data-lettering=name] .cover-inscription :is(.cover-year,.cover-title),.cover-book[data-lettering=year] .cover-inscription :is(.cover-title,.cover-owner){display:none}
 .cover-book[data-lettering=name] .cover-inscription .cover-owner{font-size:5cqw}
+.cover-book:not([style*="--cover-ink"]) .cover-inscription[data-press=deboss] :is(.cover-year,.cover-title,.cover-owner,.cover-initials,.emboss-logo){text-shadow:none;filter:drop-shadow(0 -.025em .015em #28170ca6) drop-shadow(0 .03em 0 #ffe2a466);opacity:1}
