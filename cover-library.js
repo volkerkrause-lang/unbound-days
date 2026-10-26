@@ -136,11 +136,16 @@ export function artwork(c){
  return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="840" viewBox="0 0 1200 840"><title>${c.name.replaceAll('&','&amp;')}</title><defs><linearGradient id="base" x2="100%" y2="100%"><stop stop-color="${base}"/><stop offset=".52" stop-color="${accent}"/><stop offset="1" stop-color="${base}"/></linearGradient><linearGradient id="spine"><stop stop-color="#000" stop-opacity=".6"/><stop offset=".035" stop-color="#fff" stop-opacity=".22"/><stop offset=".075" stop-color="#000" stop-opacity=".3"/><stop offset=".14" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".18"/></linearGradient><filter id="grain"><feTurbulence baseFrequency="${g===0?.6:.18}" numOctaves="2" seed="${c.id}" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter></defs>${rect(0,0,1200,840,'url(#base)')}${art}${rect(0,0,1200,840,'#fff',.055,'filter="url(#grain)"')}${rect(0,0,1200,840,'url(#spine)')}</svg>`;
 }
 
-// Shared, bounded lettering for the notebook and its live preview.
+// Physical substrate drives both the personal lettering and permanent brand.
+export function coverSurface(id){
+ const n=Number(id),design=coverById(n);
+ const overrides={104:'metal',105:'leather',106:'parchment',107:'wood',108:'leather',109:'metal',110:'glass',111:'stone',112:'parchment',113:'leather',114:'stone',115:'parchment',116:'wood',117:'glass',118:'fabric',119:'parchment',120:'leather',121:'stone',122:'metal',123:'wood',124:'metal',125:'glass',126:'metal',127:'stone',128:'leather',129:'leather',130:'parchment',131:'leather',132:'parchment',133:'leather',134:'leather',135:'parchment'};
+ if(overrides[n])return overrides[n];
+ if(design)return ['leather','metal','glass','gem','wood','fabric','stone','leather'][design.group]||'leather';
+ return [3,7,30,38].includes(n)?'gem':[9,27].includes(n)?'metal':[5,6].includes(n)?'metal':[8,10,14,19,28,31].includes(n)?'fabric':[15,29].includes(n)?'wood':'leather';
+}
 export function coverInscription({id,owner='',title='',year,escape:esc}){
- const design=coverById(id),g=design?.group;
- const press=g===0?'deboss':g===1?'engraved':g===5?'woven':'foil';
+ const design=coverById(id),g=design?.group,surface=coverSurface(id);
  const ornate=design&&![0,4,6].includes(g);
- const initials=owner.trim().split(/\s+/).map(n=>n[0]||'').slice(0,3).join('')||'U';
- return `<span class="cover-inscription" data-press="${press}" data-placement="${ornate?'left':'centre'}"><span class="cover-year">${year}</span>${owner?`<span class="cover-owner">${esc(owner)}</span>`:''}${title?`<span class="cover-title">${esc(title)}</span>`:''}<span class="cover-initials">${esc(initials)}</span></span><span class="emboss-logo cover-brand" data-press="${press}" data-placement="${ornate?'left':'centre'}" aria-label="Unbound">unbound</span>`;
+ return `<span class="cover-inscription" data-surface="${surface}" data-placement="${ornate?'left':'centre'}"><span class="cover-year">${year}</span>${owner?`<span class="cover-owner">${esc(owner)}</span>`:''}${title?`<span class="cover-title">${esc(title)}</span>`:''}</span><span class="emboss-logo cover-brand" data-surface="${surface}" data-placement="${ornate?'left':'centre'}" aria-label="Unbound">unbound</span>`;
 }
