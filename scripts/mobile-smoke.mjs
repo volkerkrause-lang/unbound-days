@@ -31,7 +31,9 @@ try{
  assert.equal(await page.locator('.cover-controls [data-action="personalize"]').count(),0);
  await page.locator('.cover-controls [data-action="gallery"]').click();
  await page.locator('[data-cover-preview="16"]').click();
- await page.locator('[data-cover-apply]').click();
+ assert.equal(await page.locator('[data-cover-apply]').count(),0);
+ assert.equal(await page.locator('#app .cover-book').getAttribute('data-cover'),'16');
+ await page.getByRole('button',{name:'Close',exact:true}).click();
  await page.reload();await page.locator('.cover-book[data-cover="16"]').waitFor();
  await page.locator('[data-action="open"]').click();
  await page.reload();await page.locator('[data-action="open"]').click();await page.locator('[data-mobile-view="day"]').click();
