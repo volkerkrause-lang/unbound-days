@@ -1,0 +1,674 @@
+[
+  {
+    "id": 40,
+    "file": "assets/collection/cover-40.webp",
+    "source": "Cognac Calfskin Luxury Planner Cover.png",
+    "bytes": 726290,
+    "sha256": "a0e483a035bd9d740e2b13f124cde99b284d0ce83f880c9d027afe14050d7a26"
+  },
+  {
+    "id": 41,
+    "file": "assets/collection/cover-41.webp",
+    "source": "Distressed saddle leather planner cover.png",
+    "bytes": 759070,
+    "sha256": "82921f0c64232543052e3c894549c42de2cc684d23cb6638d0cb2efb3cd6bf34"
+  },
+  {
+    "id": 42,
+    "file": "assets/collection/cover-42.webp",
+    "source": "Oxblood Crocodile Leather Planner Cover.png",
+    "bytes": 625976,
+    "sha256": "11a067ad22944827210610e99c985d8a227ea8febca16301d38734e47df75a34"
+  },
+  {
+    "id": 43,
+    "file": "assets/collection/cover-43.webp",
+    "source": "Ivory ostrich leather planner cover.png",
+    "bytes": 588240,
+    "sha256": "b9b03d3087de547b15e40778435bf3d586583fab5fa27717079efbabb8679d4e"
+  },
+  {
+    "id": 44,
+    "file": "assets/collection/cover-44.webp",
+    "source": "Velvet suede luxury planner cover.png",
+    "bytes": 636946,
+    "sha256": "202b85ef0d394be240f6bba6d5ab0e4ad53b740ab6e13205c9201b95ebb73484"
+  },
+  {
+    "id": 45,
+    "file": "assets/collection/cover-45.webp",
+    "source": "Quilted Midnight Leather Planner Cover.png",
+    "bytes": 590134,
+    "sha256": "f91eb44a3e01567e642d8f00d3069df5dd2b77570e573561d568b3588520429d"
+  },
+  {
+    "id": 46,
+    "file": "assets/collection/cover-46.webp",
+    "source": "Hand-tooled forest leather cover.png",
+    "bytes": 783410,
+    "sha256": "bb620b98eed32eab42a62007ad67b7efffbee06e85cb74badf29d842627a9dab"
+  },
+  {
+    "id": 47,
+    "file": "assets/collection/cover-47.webp",
+    "source": "Saffiano Burgundy Planner Cover.png",
+    "bytes": 769786,
+    "sha256": "9d5fca3780dd26fbee2fff03c98949c89f98bdf05ff30b11c3fb6214640d6d28"
+  },
+  {
+    "id": 48,
+    "file": "assets/collection/cover-48.webp",
+    "source": "Brushed Titanium Luxury Planner Cover.png",
+    "bytes": 624582,
+    "sha256": "750ba84d761c755a626cc89257e634b784aba8fb9cccfb732d00480ab78fab16"
+  },
+  {
+    "id": 49,
+    "file": "assets/collection/cover-49.webp",
+    "source": "Polished chrome luxury planner cover.png",
+    "bytes": 142232,
+    "sha256": "744c6edbf8279d9e4d24d0b1f344eb870662e211538388439c532099fc9645a6"
+  },
+  {
+    "id": 50,
+    "file": "assets/collection/cover-50.webp",
+    "source": "Luxury hammered copper planner cover.png",
+    "bytes": 604468,
+    "sha256": "9dc3d854720801b6e323957b98c90cdaf4c66362d0a000dc69ffdcd1a2297197"
+  },
+  {
+    "id": 51,
+    "file": "assets/collection/cover-51.webp",
+    "source": "Aged Bronze Luxury Planner Cover.png",
+    "bytes": 718112,
+    "sha256": "0fe80dc0723767f050e06668f36a6874d82ac6e11b67665f49628a819634ca93"
+  },
+  {
+    "id": 52,
+    "file": "assets/collection/cover-52.webp",
+    "source": "Forged Damascus Steel Planner Cover.png",
+    "bytes": 654072,
+    "sha256": "b553d6c0e374d48eb4fcbadd813cf4935cbeaf248bc20a9c6b27271565a2bd82"
+  },
+  {
+    "id": 53,
+    "file": "assets/collection/cover-53.webp",
+    "source": "Rose gold luxury planner cover.png",
+    "bytes": 626236,
+    "sha256": "4983b2c458fa1b62ddd23c126b558e0dd415ce2a4bb053c51fbc8f21e6172851"
+  },
+  {
+    "id": 54,
+    "file": "assets/collection/cover-54.webp",
+    "source": "Oxidized Silver Luxury Planner Cover.png",
+    "bytes": 706298,
+    "sha256": "ae89429a248f3c22f74cedbe4ba013b873b6556f6c8bc928509c564454ab4ab3"
+  },
+  {
+    "id": 55,
+    "file": "assets/collection/cover-55.webp",
+    "source": "Champagne Brass Luxury Planner Cover.png",
+    "bytes": 651018,
+    "sha256": "911b9e70c5303112d7ff4acc47cc5ecb521b226cddd9ab2a4d9dcc3464587387"
+  },
+  {
+    "id": 56,
+    "file": "assets/collection/cover-56.webp",
+    "source": "Luxury cathedral stained glass cover.png",
+    "bytes": 756426,
+    "sha256": "12ebb45b0191b2cb7bd37c0e7d96c3703618065d7495213b5ba4938a8bd0a9af"
+  },
+  {
+    "id": 57,
+    "file": "assets/collection/cover-57.webp",
+    "source": "Frosted sea glass planner cover.png",
+    "bytes": 623106,
+    "sha256": "b1585d07f9bf74096b6aa5bd1c670942cc43b0692cc2d5671ead3611a33c6dce"
+  },
+  {
+    "id": 58,
+    "file": "assets/collection/cover-58.webp",
+    "source": "Dichroic prism artisan glass cover.png",
+    "bytes": 690286,
+    "sha256": "ab59b75689a4316b0bf3cfe0ed1842e32f13f367d2382ef8df07c11dbca9784b"
+  },
+  {
+    "id": 59,
+    "file": "assets/collection/cover-59.webp",
+    "source": "Murano Lagoon Glass Planner Cover.png",
+    "bytes": 719082,
+    "sha256": "f97f09e4c02d109abef0f4fcd0ac6e75fcb08efd4242c5fc8bc6edd4ae59fbe0"
+  },
+  {
+    "id": 60,
+    "file": "assets/collection/cover-60.webp",
+    "source": "Luminous cut crystal planner cover.png",
+    "bytes": 635954,
+    "sha256": "a60ce9cbf8063aed080742172de94c005d356d16e7bc115ea6522aad335f86b0"
+  },
+  {
+    "id": 61,
+    "file": "assets/collection/cover-61.webp",
+    "source": "Art Nouveau Glass Planner Cover.png",
+    "bytes": 642104,
+    "sha256": "9ff9f047d2e6036aeba47ccf5128f7542001d6b5296c51d5438779c7e54f58cb"
+  },
+  {
+    "id": 62,
+    "file": "assets/collection/cover-62.webp",
+    "source": "Smoked glass artisan planner cover.png",
+    "bytes": 471094,
+    "sha256": "2ad33f3b421421f576598ee89fa82db01c7d6cc9372e2621ae06d454d8b028cd"
+  },
+  {
+    "id": 63,
+    "file": "assets/collection/cover-63.webp",
+    "source": "Amber mosaic glass cover.png",
+    "bytes": 549708,
+    "sha256": "dee1ff1521decaf6e72296e485e338d5aa37fbf1c14de87336b30485226d5501"
+  },
+  {
+    "id": 64,
+    "file": "assets/collection/cover-64.webp",
+    "source": "Emerald facets gemstone planner cover.png",
+    "bytes": 681460,
+    "sha256": "d0a9554b78affa5cec033a2c2f904ed64e03c52327ab8d88b3bc229c74e9689e"
+  },
+  {
+    "id": 65,
+    "file": "assets/collection/cover-65.webp",
+    "source": "Sapphire Midnight Gemstone Planner Cover.png",
+    "bytes": 618234,
+    "sha256": "54afa4bd45aed83dace3ce1f4a91084993ab50a23360aac58e27267d9760283b"
+  },
+  {
+    "id": 66,
+    "file": "assets/collection/cover-66.webp",
+    "source": "Ruby cabochon luxury planner cover.png",
+    "bytes": 621936,
+    "sha256": "e2a351ecdb917c172d8cee9ddfbccf0c0c76a32edb9e593336a3eb63657a5888"
+  },
+  {
+    "id": 67,
+    "file": "assets/collection/cover-67.webp",
+    "source": "Amethyst geode luxury planner cover.png",
+    "bytes": 734212,
+    "sha256": "2016736b321d014e47e62415050b98254de8ff9d56cabff52a20f42c328ab219"
+  },
+  {
+    "id": 68,
+    "file": "assets/collection/cover-68.webp",
+    "source": "Opal fire gemstone planner cover.png",
+    "bytes": 627830,
+    "sha256": "344856510ada0a7599875df3fa33f4e0b5621b08d293479cef4c17625f1b6325"
+  },
+  {
+    "id": 69,
+    "file": "assets/collection/cover-69.webp",
+    "source": "Lapis Constellations Gemstone Planner Cover.png",
+    "bytes": 728858,
+    "sha256": "3f2d0ca7e85c11bafcc8201f40929455f57428b829ce1a7f273dbf5b85367dc1"
+  },
+  {
+    "id": 70,
+    "file": "assets/collection/cover-70.webp",
+    "source": "Luxury planner cover with malachite bands.png",
+    "bytes": 644924,
+    "sha256": "cdd4945e6026fc613d2d1cb499dc22221584c35c01f8ab89fce43d37530d7fe7"
+  },
+  {
+    "id": 71,
+    "file": "assets/collection/cover-71.webp",
+    "source": "Iridescent mother-of-pearl planner cover.png",
+    "bytes": 614496,
+    "sha256": "e1130113af64df313f30439fd2be3269a190739d4d4f999f548d2c0f22a4d8b8"
+  },
+  {
+    "id": 72,
+    "file": "assets/collection/cover-72.webp",
+    "source": "Polished walnut burl planner cover.png",
+    "bytes": 586490,
+    "sha256": "d9ee2a9a72e625abf9e627dd9bfc3e3084f0aa06890d4c2fc168d1481d4bf602"
+  },
+  {
+    "id": 73,
+    "file": "assets/collection/cover-73.webp",
+    "source": "Polished ebony grain planner cover.png",
+    "bytes": 389786,
+    "sha256": "9a5267d700479fc099bd3d54c4b803939c7b8e6061e3a21d8db0e4e170194f6d"
+  },
+  {
+    "id": 74,
+    "file": "assets/collection/cover-74.webp",
+    "source": "Polished Rosewood Planner Cover.png",
+    "bytes": 456528,
+    "sha256": "40de191e15ea5f0b30a87cc7339201e1628fb0360640d7bee264bb2ac28ce981"
+  },
+  {
+    "id": 75,
+    "file": "assets/collection/cover-75.webp",
+    "source": "Polished olive wood planner cover.png",
+    "bytes": 448648,
+    "sha256": "6d383593121959713393c7bbd721c119432ffee1884082b182c44c8dfe1fc0de"
+  },
+  {
+    "id": 76,
+    "file": "assets/collection/cover-76.webp",
+    "source": "Luxury bamboo veneer cover.png",
+    "bytes": 299116,
+    "sha256": "99e610bfeb74181d839e0ebdae201cc676d723a43bc5bf37fb230f310eca27ea"
+  },
+  {
+    "id": 77,
+    "file": "assets/collection/cover-77.webp",
+    "source": "Luxury cork grain planner cover.png",
+    "bytes": 763392,
+    "sha256": "246e14634a6848e0fe688c9ef1b9cdb5e9edc88832ebf9eba104836195dc5a47"
+  },
+  {
+    "id": 78,
+    "file": "assets/collection/cover-78.webp",
+    "source": "Florentine marquetry luxury planner cover.png",
+    "bytes": 450656,
+    "sha256": "afb33929e958d62d6cf0277b171f70d62734a46f981b435eb57456b418de05ba"
+  },
+  {
+    "id": 79,
+    "file": "assets/collection/cover-79.webp",
+    "source": "Birch inlay luxury planner cover.png",
+    "bytes": 408080,
+    "sha256": "99de649e8ea5d990f7f5b020bdd54c624ed4b532e5a6f0682cffd14b637bbf6e"
+  },
+  {
+    "id": 80,
+    "file": "assets/collection/cover-80.webp",
+    "source": "Midnight velvet luxury planner cover.png",
+    "bytes": 601510,
+    "sha256": "c552a8934fdb956fc749c73a86b38b8761a067155d387d95d2ee0cbd4815cbc6"
+  },
+  {
+    "id": 81,
+    "file": "assets/collection/cover-81.webp",
+    "source": "Champagne Silk Planner Cover.png",
+    "bytes": 728502,
+    "sha256": "a29c0b659ae32e1d0dc5ce8e8ba9ec90166b67fd04dd2b2cd42430bd46027103"
+  },
+  {
+    "id": 82,
+    "file": "assets/collection/cover-82.webp",
+    "source": "Natural linen luxury planner cover.png",
+    "bytes": 702290,
+    "sha256": "76b7252871c393324aa802b9bfe8931d1d2852d7e8bdfcbb6bdb4718f0cb6470"
+  },
+  {
+    "id": 83,
+    "file": "assets/collection/cover-83.webp",
+    "source": "Royal brocade planner cover.png",
+    "bytes": 930226,
+    "sha256": "f3c8a23f7d52d44b1682da7fa4866a683c5611c0989790cf6c85f2882cf3cb6c"
+  },
+  {
+    "id": 84,
+    "file": "assets/collection/cover-84.webp",
+    "source": "Sage damask luxury planner cover.png",
+    "bytes": 757824,
+    "sha256": "f715f3348c8fd5974ed1711140717e86c1b708247b3356bf71cdb518b251777b"
+  },
+  {
+    "id": 85,
+    "file": "assets/collection/cover-85.webp",
+    "source": "Highland tweed luxury planner cover.png",
+    "bytes": 843194,
+    "sha256": "a4f95949f1ee56c9f56a1ca1d5aa90a4e8ccc4f630879ae1652487a2a6f85dc4"
+  },
+  {
+    "id": 86,
+    "file": "assets/collection/cover-86.webp",
+    "source": "Luxury embroidered tapestry cover.png",
+    "bytes": 648298,
+    "sha256": "45e4c013c8609e90bfdb448d50f3f8b1527d344d673c5a402eddd2715bf371b8"
+  },
+  {
+    "id": 87,
+    "file": "assets/collection/cover-87.webp",
+    "source": "Luxury Kimono Silk Planner Cover.png",
+    "bytes": 853272,
+    "sha256": "d2161f1f80102f49eab289a02af845a907a5906f1cfbb89760d87d9848fd3d44"
+  },
+  {
+    "id": 88,
+    "file": "assets/collection/cover-88.webp",
+    "source": "Nero gold marble planner cover.png",
+    "bytes": 339932,
+    "sha256": "523051661a8c88533cb244d86a6585647deaa67edfc73f56cca16ee06f0c62e3"
+  },
+  {
+    "id": 89,
+    "file": "assets/collection/cover-89.webp",
+    "source": "Luxury Carrara marble planner cover.png",
+    "bytes": 113984,
+    "sha256": "b7f0abe37f5a898617619f7890fa115fb32442bc6aa1521f21363193103f409a"
+  },
+  {
+    "id": 90,
+    "file": "assets/collection/cover-90.webp",
+    "source": "Polished honey onyx planner cover.png",
+    "bytes": 282406,
+    "sha256": "bd8ba9d7fb989d1345089a9667d0a83266ab4652088ea66ccb95e345c51d173e"
+  },
+  {
+    "id": 91,
+    "file": "assets/collection/cover-91.webp",
+    "source": "Polished jade stone planner cover.png",
+    "bytes": 415904,
+    "sha256": "41a5cccbd6eae12bf060fa333395f1906615332aa8c1a169ae2b83126537f60f"
+  },
+  {
+    "id": 92,
+    "file": "assets/collection/cover-92.webp",
+    "source": "Midnight granite luxury planner cover.png",
+    "bytes": 625942,
+    "sha256": "6ea42687f9fd61820aaa4aeccee2fd91bc2139021e57cd2efc42bb33714b71d8"
+  },
+  {
+    "id": 93,
+    "file": "assets/collection/cover-93.webp",
+    "source": "Polished alabaster planner cover.png",
+    "bytes": 166932,
+    "sha256": "0b12ab7c6a82d5735a04950de51ca1b469639e61d2479650eaad6f0e77604317"
+  },
+  {
+    "id": 94,
+    "file": "assets/collection/cover-94.webp",
+    "source": "Polished travertine planner cover.png",
+    "bytes": 586680,
+    "sha256": "da34b01aab5dda18bbb3a294501bf1bc91229fef21da1a01e80136fdf2d28181"
+  },
+  {
+    "id": 95,
+    "file": "assets/collection/cover-95.webp",
+    "source": "Polished blue sodalite planner cover.png",
+    "bytes": 636008,
+    "sha256": "5e626f1bf2d62792379858d398e3813b81f22e623caccba16e57981fd26cce1c"
+  },
+  {
+    "id": 96,
+    "file": "assets/collection/cover-96.webp",
+    "source": "Art Deco sunburst gold-tooled planner cover.png",
+    "bytes": 745814,
+    "sha256": "1f006229494b3c6b2224e46076858675f95e40bba8f8c3f2bddde62b0647642a"
+  },
+  {
+    "id": 97,
+    "file": "assets/collection/cover-97.webp",
+    "source": "Art Nouveau Vinework in Gold.png",
+    "bytes": 780214,
+    "sha256": "ee2d5a39a78d5545c511cf33d0bb8836269b0acefeddb21595e705476de39be9"
+  },
+  {
+    "id": 98,
+    "file": "assets/collection/cover-98.webp",
+    "source": "Victorian atelier gilded leather cover.png",
+    "bytes": 708282,
+    "sha256": "5aae98d45f4f2a09a815d372ea1efbee783521de0724f827204f497bdcc1235f"
+  },
+  {
+    "id": 99,
+    "file": "assets/collection/cover-99.webp",
+    "source": "Baroque Gilded Leather Planner Cover.png",
+    "bytes": 713382,
+    "sha256": "1a2269d2ef15c4fe5ec9e4c9c501c038795c257e0898e8582270656aad21f29b"
+  },
+  {
+    "id": 100,
+    "file": "assets/collection/cover-100.webp",
+    "source": "Rococo blush gilded planner cover.png",
+    "bytes": 674952,
+    "sha256": "19e0fef7eeb4ad81696e3378a2cf2cb5706d08f28621827f08356385fb64fb7a"
+  },
+  {
+    "id": 101,
+    "file": "assets/collection/cover-101.webp",
+    "source": "Renaissance Medallion Gilded Leather Planner.png",
+    "bytes": 816940,
+    "sha256": "2c8c365eb91ab41e49fd3f7d9ec2a89ae31722c8344fe24ba4280efeadd798b7"
+  },
+  {
+    "id": 102,
+    "file": "assets/collection/cover-102.webp",
+    "source": "Gothic tracery luxury planner cover.png",
+    "bytes": 801342,
+    "sha256": "ab1afff1a7cb1f4c81469e901a4f7306a1ac90356bf8ce80d42d9dad69948048"
+  },
+  {
+    "id": 103,
+    "file": "assets/collection/cover-103.webp",
+    "source": "Byzantine Mosaic Luxury Planner Cover.png",
+    "bytes": 840526,
+    "sha256": "220bc9d42c9ae55ec882357224e96c65bf3db7e503bbdb09d36a16855e4c3804"
+  },
+  {
+    "id": 104,
+    "file": "assets/collection/cover-104.webp",
+    "source": "Midnight brass steampunk observatory.png",
+    "bytes": 770892,
+    "sha256": "0dcdefad1d79de7f1412ffdf899e13fcf09d4abf31e61b75b26688f8a3e246ae"
+  },
+  {
+    "id": 105,
+    "file": "assets/collection/cover-105.webp",
+    "source": "Celestial atlas on midnight leather.png",
+    "bytes": 770424,
+    "sha256": "3d2a3c4c9255de6574bbc576256384a04dc0582087cc770ac18e9ecb74505f7f"
+  },
+  {
+    "id": 106,
+    "file": "assets/collection/cover-106-premium-v4.webp",
+    "source": "Targeted photorealistic replacement, 26 October 2026",
+    "bytes": 803034,
+    "sha256": "e6640630b57f78cd919ccdf1b33e32ef582a26417f0ab5c3276344137d0452c3"
+  },
+  {
+    "id": 107,
+    "file": "assets/collection/cover-107-premium-v4.webp",
+    "source": "Targeted photorealistic replacement, 26 October 2026",
+    "bytes": 713056,
+    "sha256": "8231afe18e4ade1d8a6d40c26e1b99284a525f6653f6c17ce35e964372925eb8"
+  },
+  {
+    "id": 108,
+    "file": "assets/collection/cover-108-premium-v4.webp",
+    "source": "Targeted photorealistic replacement, 26 October 2026",
+    "bytes": 757530,
+    "sha256": "194d31da6cf556260baced8a299b3bc2d78074e0a7405758449fe81bd4543ed8"
+  },
+  {
+    "id": 109,
+    "file": "assets/collection/cover-109-premium-v4.webp",
+    "source": "Targeted photorealistic replacement, 26 October 2026",
+    "bytes": 730702,
+    "sha256": "6e7a20c79a0f5113cd4d2e564246291e4a12e62c7f6f67b0ac2399e53b529e30"
+  },
+  {
+    "id": 110,
+    "file": "assets/collection/cover-110.webp",
+    "source": "Luminous cosmic nebula planner cover.png",
+    "bytes": 737474,
+    "sha256": "201604856076e3e8948dd408cf051fe419e94a8c4257918f938ffb35090c657c"
+  },
+  {
+    "id": 111,
+    "file": "assets/collection/cover-111-premium-v4.webp",
+    "source": "Targeted photorealistic replacement, 26 October 2026",
+    "bytes": 562552,
+    "sha256": "0fae78d0881f013de216d019cf6e10baf2197fb039c4eaec93f7f9f6c06e0626"
+  },
+  {
+    "id": 112,
+    "file": "assets/collection/cover-112.svg",
+    "source": "Existing procedural SVG",
+    "bytes": 25021,
+    "sha256": "a10108f204e86aac06b0fcc94daf9f4ef37355b3be89dcde907abd92b4292150"
+  },
+  {
+    "id": 113,
+    "file": "assets/collection/cover-113.svg",
+    "source": "Existing procedural SVG",
+    "bytes": 26911,
+    "sha256": "cd7f3da6fbad0f6636190ac8b3b1d9943043ec0fe99338ea5f064e1584a889b2"
+  },
+  {
+    "id": 114,
+    "file": "assets/collection/cover-114.svg",
+    "source": "Existing procedural SVG",
+    "bytes": 2342,
+    "sha256": "c81223e750d5d627f0c97fe43b4aaf058a6cb242336a78b7cf578ff76202dc00"
+  },
+  {
+    "id": 115,
+    "file": "assets/collection/cover-115.svg",
+    "source": "Existing procedural SVG",
+    "bytes": 8787,
+    "sha256": "e15c571944a01607bbbb5214dd240042f11759082c71980006b5d6a87a79af8b"
+  },
+  {
+    "id": 116,
+    "file": "assets/collection/cover-116.svg",
+    "source": "Existing procedural SVG",
+    "bytes": 8785,
+    "sha256": "426a9abc91dad719917710096a09144f5d0ff8cb544721b445ee5fe25ec2b663"
+  },
+  {
+    "id": 117,
+    "file": "assets/collection/cover-117.svg",
+    "source": "Existing procedural SVG",
+    "bytes": 6131,
+    "sha256": "510b4b3064687b9fa513f89986819eaa111364b340d35704339e43e2dec3e563"
+  },
+  {
+    "id": 118,
+    "file": "assets/collection/cover-118.svg",
+    "source": "Existing procedural SVG",
+    "bytes": 5260,
+    "sha256": "c0654bee1d2a0f42f3be8303777b72860b70a25423eb6a933cce8c974dd96698"
+  },
+  {
+    "id": 119,
+    "file": "assets/collection/cover-119.svg",
+    "source": "Existing procedural SVG",
+    "bytes": 63162,
+    "sha256": "449ec4d3af4391b6f346e09f874fad1f970b341b21c0edcdbee2d9099c41f2b4"
+  },
+  {
+    "id": 120,
+    "file": "assets/collection/cover-120.svg",
+    "source": "Existing procedural SVG",
+    "bytes": 2736,
+    "sha256": "80ff32a685f686946010171ef0c2695620b6102b815fe5b5d59db6809c7e4789"
+  },
+  {
+    "id": 121,
+    "file": "assets/collection/cover-121.svg",
+    "source": "Existing procedural SVG",
+    "bytes": 1172,
+    "sha256": "602aff551b2f1b1af4882d39b825a452e7d8586d0c826dc6da460755b6a9d7c5"
+  },
+  {
+    "id": 122,
+    "file": "assets/collection/cover-122.svg",
+    "source": "Existing procedural SVG",
+    "bytes": 10285,
+    "sha256": "28366081434763a983e0662b7e995d8dde57568fc93a18df569e198d08666072"
+  },
+  {
+    "id": 123,
+    "file": "assets/collection/cover-123.svg",
+    "source": "Existing procedural SVG",
+    "bytes": 2735,
+    "sha256": "12ee2f4e0ceb6e50b830d0e4a41b29c81a51ac72f7fef766942631345ee41773"
+  },
+  {
+    "id": 124,
+    "file": "assets/collection/cover-124.svg",
+    "source": "Existing procedural SVG",
+    "bytes": 7978,
+    "sha256": "45ad496de2543cd9429095e327860d41280fe3517a91d581a6797f038cdffaab"
+  },
+  {
+    "id": 125,
+    "file": "assets/collection/cover-125.svg",
+    "source": "Existing procedural SVG",
+    "bytes": 2490,
+    "sha256": "188044af8ce2bdbddcbeddc2e6ea65ee904cc86dc537cafbe5e08032e553e476"
+  },
+  {
+    "id": 126,
+    "file": "assets/collection/cover-126.svg",
+    "source": "Existing procedural SVG",
+    "bytes": 3196,
+    "sha256": "178911cdec010be7b5273a8f62988d1bd5efed3b1c848c642b53c0f03f598681"
+  },
+  {
+    "id": 127,
+    "file": "assets/collection/cover-127.svg",
+    "source": "Existing procedural SVG",
+    "bytes": 7915,
+    "sha256": "5bdd5ab8b4cfad98838920a46cf461f1de36da29e041cba5c0ee425bae7bb2c3"
+  },
+  {
+    "id": 128,
+    "file": "assets/collection/cover-128.svg",
+    "source": "Existing procedural SVG",
+    "bytes": 7464,
+    "sha256": "96fc6578b274bdb943c09843913eec7fd11774ac65f369cef388ea0f692402b8"
+  },
+  {
+    "id": 129,
+    "file": "assets/collection/cover-129.svg",
+    "source": "Existing procedural SVG",
+    "bytes": 1849,
+    "sha256": "58f08f5b1ea71ec80508661c151f32276626d3134f1b5edafea9c9aa3d6710b0"
+  },
+  {
+    "id": 130,
+    "file": "assets/collection/cover-130.svg",
+    "source": "Existing procedural SVG",
+    "bytes": 7496,
+    "sha256": "b8f0d9196e5c146be01bd3f6eee9de2da498e6a2415ed86904e8dd3fc0d8f68e"
+  },
+  {
+    "id": 131,
+    "file": "assets/collection/cover-131.svg",
+    "source": "Existing procedural SVG",
+    "bytes": 6119,
+    "sha256": "4cfabef8a9b1726ee0fa8722c63617664d2ddbc5d539e6c8edd317639b29d2c0"
+  },
+  {
+    "id": 132,
+    "file": "assets/collection/cover-132.svg",
+    "source": "Existing procedural SVG",
+    "bytes": 2697,
+    "sha256": "3fcfec94c1dd6272ad215e4c8b1f2c20d052fc2a74e9ba316d207bbe048d0a29"
+  },
+  {
+    "id": 133,
+    "file": "assets/collection/cover-133.svg",
+    "source": "Existing procedural SVG",
+    "bytes": 1760,
+    "sha256": "c77212de9296dd00d7bf2168e870481ec14fe3006a82f3ee1553ecfd81037326"
+  },
+  {
+    "id": 134,
+    "file": "assets/collection/cover-134.svg",
+    "source": "Existing procedural SVG",
+    "bytes": 3463,
+    "sha256": "c08231182622653465ee43342acb538ba2d93ba19c0f30a81f3da03b6a2585c0"
+  },
+  {
+    "id": 135,
+    "file": "assets/collection/cover-135.svg",
+    "source": "Existing procedural SVG",
+    "bytes": 17274,
+    "sha256": "eab2c8fe8ec1a5b9eef1e40f37a56b1cb0b3af2655461205d705afc3c863c29a"
+  }
+]

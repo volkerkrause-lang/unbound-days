@@ -3,7 +3,7 @@ import {newCovers,artwork} from '../cover-library.js';
 import {readFile,mkdir} from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-const recovered=JSON.parse(await readFile(new URL('../docs/recovered-cover-artwork.json',import.meta.url),'utf8'));
+const recovered=JSON.parse(await readFile(new URL('../docs/cover-asset-manifest.json',import.meta.url),'utf8'));
 const browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||undefined,args:process.env.CHROMIUM_EXECUTABLE_PATH?['--no-sandbox','--disable-dev-shm-usage','--no-zygote','--single-process']:[]});
 try{
  const page=await browser.newPage({viewport:{width:1440,height:1440}});await page.goto(process.env.UNBOUND_TEST_URL||'http://127.0.0.1:4173/');
