@@ -19,8 +19,8 @@ export const coverById=id=>newCovers.find(c=>c.id===Number(id));
 export const defaultOptions=Object.freeze({finish:'natural',decoration:'none',clasp:'none',lettering:'full',tint:'original'});
 export const optionChoices={finish:['natural','matte','glossy','brushed','distressed','iridescent'],decoration:['none','gold corners','embossed border','filigree','gemstones'],clasp:['none','leather strap','magnetic','antique brass','silver'],lettering:['full','initials','name','year','none'],tint:['original','warm','cool','rose']};
 export function readCoverOptions(entries){let raw;try{raw=JSON.parse(entries?.['cover:personalisation']||'{}');}catch{raw={};}return Object.fromEntries(Object.entries(defaultOptions).map(([k,v])=>[k,optionChoices[k].includes(raw?.[k])?raw[k]:v]));}
-export function coverAttributes(o){return `data-finish="${o.finish}" data-decoration="${o.decoration}" data-clasp="${o.clasp}" data-lettering="${o.lettering}" data-tint="${o.tint}"`;}
-export function ornaments(){return '<span class="cover-decoration" aria-hidden="true"></span><span class="cover-clasp" aria-hidden="true"></span>';}
+export function coverAttributes(){return 'data-finish="natural" data-decoration="none" data-clasp="none" data-lettering="full" data-tint="original"';}
+export function ornaments(){return '';}
 // Individual palettes and motifs are intentional: category membership must not
 // turn differently named materials into recoloured copies of one placeholder.
 const materialPalettes=[
@@ -142,5 +142,5 @@ export function coverInscription({id,owner='',title='',year,escape:esc}){
  const press=g===0?'deboss':g===1?'engraved':g===5?'woven':'foil';
  const ornate=design&&![0,4,6].includes(g);
  const initials=owner.trim().split(/\s+/).map(n=>n[0]||'').slice(0,3).join('')||'U';
- return `<span class="cover-inscription" data-press="${press}" data-placement="${ornate?'left':'centre'}"><span class="cover-year">${year}</span>${title?`<span class="cover-title">${esc(title)}</span>`:''}${owner?`<span class="cover-owner">${esc(owner)}</span>`:''}<span class="cover-initials">${esc(initials)}</span><span class="emboss-logo">unbound</span></span>`;
+ return `<span class="cover-inscription" data-press="${press}" data-placement="${ornate?'left':'centre'}"><span class="cover-year">${year}</span>${owner?`<span class="cover-owner">${esc(owner)}</span>`:''}${title?`<span class="cover-title">${esc(title)}</span>`:''}<span class="cover-initials">${esc(initials)}</span></span><span class="emboss-logo cover-brand" data-press="${press}" data-placement="${ornate?'left':'centre'}" aria-label="Unbound">unbound</span>`;
 }
