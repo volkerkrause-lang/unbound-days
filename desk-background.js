@@ -126,3 +126,29 @@ style.textContent+=`
  }
 }
 `;
+
+/* Final composition guardrails: a flattened photograph cannot be safely
+   rearranged at every aspect ratio. Use the existing clean desk artwork when
+   the crop would put a solid accessory under the notebook. */
+style.textContent+=`
+body.desk-enabled:not(.desk-custom) .cover-scene>.cover-book{left:clamp(-120px,-6vw,-60px)}
+@media (orientation:portrait) and (min-width:701px){
+ body.desk-enabled:not(.desk-custom) .cover-scene{
+  background-image:url("./assets/desk-oak.svg")!important;
+  background-size:cover!important;
+  background-position:center!important;
+ }
+ body.desk-enabled:not(.desk-custom) .cover-scene>.cover-book{left:0}
+}
+@media (max-width:767px){
+ body.desk-enabled:not(.desk-custom) .cover-scene{
+  background-image:url("./assets/desk-oak.svg")!important;
+  background-size:cover!important;
+  background-position:center!important;
+ }
+ body.desk-enabled:not(.desk-custom) .cover-scene>.cover-book{left:0}
+}
+@media (min-width:768px) and (max-width:1199px) and (orientation:landscape){
+ body.desk-enabled:not(.desk-custom) .cover-scene>.cover-book{left:-100px}
+}
+`;
