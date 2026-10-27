@@ -28,7 +28,7 @@ document.body.append(button,menu);
 const input=menu.querySelector('input[type=file]');
 const x=menu.querySelector('[data-desk-x]'),y=menu.querySelector('[data-desk-y]');
 function setPosition(){document.body.style.setProperty('--desk-position',x.value+'% '+y.value+'%');try{localStorage.setItem(KEY+'-position',JSON.stringify([x.value,y.value]));}catch{}}
-[x,y].forEach(el=>el.addEventListener('input',setPosition));
+[x,y].forEach(el=>el.addEventListener('input',()=>{setPosition();const current=document.body.classList.contains('desk-custom')?'custom':document.body.classList.contains('desk-enabled')?'wood':'none';if(current!=='custom')broadcast(current);else if(lastRemote){try{const prior=JSON.parse(lastRemote);broadcast('custom',prior.data||'');}catch{}}}));
 try{const saved=JSON.parse(localStorage.getItem(KEY+'-position')||'null');if(Array.isArray(saved)){x.value=saved[0];y.value=saved[1];}}catch{}setPosition();
 function apply(mode,blob){if(imageURL){URL.revokeObjectURL(imageURL);imageURL=null;}document.body.classList.toggle('desk-enabled',mode!=='none');document.body.classList.toggle('desk-custom',mode==='custom'&&!!blob);if(blob){imageURL=URL.createObjectURL(blob);document.body.style.setProperty('--desk-image',`url("${imageURL}")`);}try{localStorage.setItem(KEY,mode);}catch{}}
 let lastRemote='';
