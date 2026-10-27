@@ -780,3 +780,38 @@ body:has(dialog[open]) .task-widget,body:has(.dictation-review) .task-widget,bod
     9px 16px 12px #160b0860,
     14px 23px 22px #160b0830;
 }
+
+/* Bound-book spine: retain the cover artwork while giving the existing
+   spine element a rounded, dimensional leather/cloth hinge. */
+.cover-book .spine{
+ left:0;top:0;bottom:0;
+ width:clamp(26px,7.5%,48px);
+ z-index:3;
+ border-radius:8px 4px 4px 8px;
+ background:
+  linear-gradient(90deg,
+   #100c0b9c 0%,#fff8 9%,#0004 17%,#fff3 32%,
+   #0002 49%,#0008 75%,#fff3 85%,#0009 96%,transparent 100%);
+ box-shadow:
+  inset 3px 0 4px #0008,
+  inset 8px 0 8px #fff2,
+  inset -5px 0 6px #0008,
+  3px 0 4px #0006,
+  -2px 2px 3px #0005;
+ pointer-events:none;
+}
+.cover-book .spine::after{
+ content:"";position:absolute;
+ top:7px;bottom:7px;left:15%;right:10%;
+ border-left:1px solid #fff4;
+ border-right:2px solid #0007;
+ border-radius:35% 22% 22% 35%;
+ box-shadow:inset 3px 0 4px #fff2,2px 0 2px #0004;
+}
+.cover-book .spine::before{
+ content:"";position:absolute;
+ top:0;bottom:0;left:0;right:0;
+ border-radius:inherit;
+ background:linear-gradient(180deg,#fff3,transparent 5%,transparent 94%,#0007);
+ pointer-events:none;
+}
