@@ -7,7 +7,7 @@ import {createTaskSync} from './google-tasks.js';
 import {lists as taskLists,restoreTask} from './tasks.js';
 import {createTaskView} from './task-view.js';
 import {createTaskWidget} from './task-widget.js?v=0.4.17';
-import {createDictation} from './dictation.js?v=0.4.18';
+import {createDictation} from './dictation.js?v=0.4.19';
 import * as Accounts from './accounts.js';
 import {mountAccounts} from './account-ui.js';
 import {scopeKey} from './account-sync.js';

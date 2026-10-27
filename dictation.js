@@ -26,8 +26,8 @@ export function createDictation({toast,identity,Recognition=()=>window.SpeechRec
     if(action==='undo'){stop();if(s.field.value!==s.lastValue){toast('Your manual edits have been kept. Select words to correct them.');return;}commit(s,s.before,s.start,s.end);dismiss();s.field.focus({preventScroll:true});}
    });document.body.append(panel);
   }
-  panel.querySelector('[data-dictation-status]').textContent=session?(session.interim||'Listening…'):'Check your dictation';
-  panel.querySelector('[data-dictation-hint]').textContent=session?'Stop to correct your words. Typing also stops the microphone.':'Select incorrect words, then tap Replace selection and say the correction.';
+  panel.querySelector('[data-dictation-status]').textContent=(session?(session.interim||'Listening…'):'Check your dictation')+' · 0.4.19';
+  panel.querySelector('[data-dictation-hint]').textContent=session?'Speak one phrase. A pause finishes capture; tap the microphone again to continue.':'Select incorrect words, then tap Replace selection and say the correction.';
   panel.querySelector('[data-dictation="stop"]').hidden=!session;
   panel.querySelector('[data-dictation="select"]').disabled=review.insertEnd<=review.start;
   panel.querySelector('[data-dictation="replace"]').disabled=!!session||review.field.selectionStart===review.field.selectionEnd;
@@ -40,22 +40,21 @@ export function createDictation({toast,identity,Recognition=()=>window.SpeechRec
   if(!field?.isConnected){toast('Tap a writing field first, then Dictate.');return;}
   const Constructor=Recognition();if(!Constructor){toast('Use the microphone on your device keyboard. Select incorrect words to replace them.');field.focus();return;}
   const before=field.value,start=field.selectionStart??before.length,end=field.selectionEnd??start;
-  const s={field,button,before,start,end,lastValue:before,insertEnd:start,identity:identity(),results:[],interim:"",recognition:new Constructor()};review=session=s;
-  s.recognition.lang='en-GB';s.recognition.continuous=true;s.recognition.interimResults=true;
+  const s={field,button,before,start,end,lastValue:before,insertEnd:start,identity:identity(),interim:"",recognition:new Constructor()};review=session=s;
+  s.recognition.lang='en-GB';// One utterance per recognition instance avoids cumulative continuous-mode
+  // results being presented as separate final segments by some recognizers.
+  s.recognition.continuous=false;s.recognition.interimResults=false;
   s.recognition.onresult=e=>{
    if(session!==s)return;
    if(!valid(s)){dismiss();return;}
    if(field.value!==s.lastValue){stop();return;}
-   // Result slots are revised in place. Final slots are immutable and consumed once.
-   // Provisional hypotheses belong in the review panel, never in saved writing.
-   for(let i=e.resultIndex??0;i<e.results.length;i++){
-    if(s.results[i]?.final)continue;
-    const result=e.results[i];
-    s.results[i]={text:result[0]?.transcript||'',final:result.isFinal===true};
+   // In single-utterance mode the latest final transcript is the whole phrase,
+   // including intentional repetitions. Never concatenate result-list entries.
+   // Scan backwards: recognizers may resend/revise even a supposedly final slot.
+   let text='';
+   for(let i=e.results.length-1;i>=0;i--){
+    if(e.results[i].isFinal===true){text=(e.results[i][0]?.transcript||'').trim();break;}
    }
-   s.results.length=e.results.length;
-   s.interim=s.results.filter(r=>!r.final).map(r=>r.text).join(' ').trim();
-   let text=s.results.filter(r=>r.final).map(r=>r.text.trim()).filter(Boolean).join(' ');
    if(!text){update();return;}
    if(!before.slice(0,start).trim()||/[.!?]\s*$/.test(before.slice(0,start)))text=text.replace(/\p{L}/u,c=>c.toLocaleUpperCase('en-GB'));
    // Keep recognition from joining neighbouring words when inserting at a caret.

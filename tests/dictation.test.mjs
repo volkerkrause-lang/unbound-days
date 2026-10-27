@@ -12,13 +12,16 @@ test('dictation inserts finals once, honours changed slots, keeps deliberate rep
  class Recognition{constructor(){rec=this;}start(){}stop(){this.onend?.();}}
  const options={toast(){},identity:()=>user,Recognition:()=>Recognition};let api=createDictation(options);
  const emit=(slots,resultIndex=0)=>rec.onresult?.({resultIndex,results:slots.map(([transcript,isFinal])=>Object.assign([{transcript}],{isFinal}))});
- api.start(field,button);
+ api.start(field,button);assert.equal(rec.continuous,false);assert.equal(rec.interimResults,false);
  emit([['this',false]]);emit([['this is',false]]);emit([['this is testing',false]]);assert.equal(field.value,'');
  emit([['this is testing',true]]);assert.equal(field.value,'This is testing');const count=writes;
  emit([['this is testing',true]]);assert.equal(writes,count);
- emit([['this is testing',true],['again',false]],1);assert.equal(field.value,'This is testing');
- emit([['this is testing',true],['again',true]],1);emit([['this is testing',true],['again',true],['again',true]],2);assert.equal(field.value,'This is testing again again');
- const stale=rec.onresult;api.stop();stale({results:[],resultIndex:0});assert.equal(field.value,'This is testing again again');
+ // Reproduce the growing-prefix final arrays seen in the user's screenshots.
+ emit([['this',true],['this is',true],['this is testing',true]],2);assert.equal(field.value,'This is testing');
+ emit([['this is testing again again',true]],0);assert.equal(field.value,'This is testing again again');
+ emit([['so',true]],0);emit([['so is',true]],0);emit([['so is it possible to dictate',true]],0);assert.equal(field.value,'So is it possible to dictate');
+ emit([['so is it possible to dictate',true],['unfinished',false]],1);assert.equal(field.value,'So is it possible to dictate');
+ const stale=rec.onresult;api.stop();stale({results:[],resultIndex:0});assert.equal(field.value,'So is it possible to dictate');
  api.start(field,button);const previous=rec;api=createDictation(options);assert.equal(previous.onresult,null);
  field.value='Manual';field.setSelectionRange(6,6);api.start(field,button);user='two';emit([['wrong account',true]]);assert.equal(field.value,'Manual');api.destroy();
 });

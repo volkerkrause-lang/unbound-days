@@ -9,7 +9,7 @@ for(const [device,width,height] of [['desktop',1366,1024],['ipad-landscape',1180
   page.on('pageerror',e=>errors.push(e.message));
   await page.route('**/*',r=>new URL(r.request().url()).hostname===new URL(process.env.UNBOUND_TEST_URL||'http://localhost:4173').hostname?r.continue():r.abort());
   await page.addInitScript(()=>{
-   class Recognition{constructor(){window.testRecognition=this;}start(){this.running=true;}stop(){this.running=false;this.onend?.();}emit(text){this.onresult?.({resultIndex:0,results:[Object.assign([{transcript:text}],{isFinal:true})]});}}
+   class Recognition{constructor(){window.testRecognition=this;}start(){this.running=true;}stop(){this.running=false;this.onend?.();}emitSlots(texts){this.onresult?.({resultIndex:texts.length-1,results:texts.map(transcript=>Object.assign([{transcript}],{isFinal:true}))});}emit(text){this.onresult?.({resultIndex:0,results:[Object.assign([{transcript:text}],{isFinal:true})]});}}
    window.SpeechRecognition=Recognition;
   });
   await page.goto(process.env.UNBOUND_TEST_URL||'http://localhost:4173');
@@ -21,6 +21,14 @@ for(const [device,width,height] of [['desktop',1366,1024],['ipad-landscape',1180
   await page.locator('.task-widget-rows input').click();assert.equal(await page.locator('.task-widget-rows button').count(),0);
   await page.reload();await page.locator('[data-action="open"]').click();await page.locator('[data-task-widget="toggle"]').click();assert.equal(await page.locator('[data-task-widget-list]').inputValue(),'work');
   await page.locator('[data-task-widget-list]').selectOption('today');await page.locator('[data-task-widget="close"]').click();
+  // Reproduce the reported growing-prefix results through the actual To-do field.
+  await page.locator('[data-section="tasks"]').first().click();
+  const quick=page.locator('#task-quick input[name="title"]');await quick.focus();
+  await page.getByRole('button',{name:'Dictate',exact:true}).click();
+  await page.evaluate(()=>window.testRecognition.emitSlots(['alright','alright let’s','alright let’s dictate a task']));
+  assert.equal(await quick.inputValue(),'Alright let’s dictate a task');
+  await page.locator('[data-dictation="done"]').click();await page.locator('#task-quick button').click();
+  assert.ok(await page.evaluate(()=>JSON.parse(localStorage.getItem('unbound-days-v1')).tasks.some(t=>t.title==='Alright let’s dictate a task')));
   await page.locator('[data-section="goals"]').first().click();await page.locator('[data-planner-choice="custom"]').click();await page.locator('[data-custom-new]').click();
   await page.locator('[data-custom-add="note"]').click();const field=page.locator('.custom-note');await field.fill('Bring the blue folder tomorrow.');
   await field.evaluate(el=>{el.focus();el.setSelectionRange(10,14);});await page.getByRole('button',{name:'Dictate',exact:true}).click();await page.evaluate(()=>window.testRecognition.emit('green'));
