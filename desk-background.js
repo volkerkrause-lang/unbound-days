@@ -53,7 +53,7 @@ let lastRemote='';
 let selectedData='';
 async function ensureSelectedData(){if(selectedData)return;try{const saved=await readImage();if(saved){selectedData=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result));reader.onerror=()=>reject(reader.error);reader.readAsDataURL(saved);});}}catch{}}
 function broadcast(mode,data=''){if(mode==='custom'&&data)selectedData=data;/* Image bytes live in IndexedDB, never in the notebook's localStorage/sync state. */const detail={mode,x:Number(x.value),y:Number(y.value)};lastRemote=JSON.stringify(detail);window.dispatchEvent(new CustomEvent('unbound:desk-change',{detail}));}
-async function compactImage(file){const bitmap=await createImageBitmap(file);try{const scale=Math.min(1,1600/Math.max(bitmap.width,bitmap.height));const canvas=document.createElement('canvas');canvas.width=Math.round(bitmap.width*scale);canvas.height=Math.round(bitmap.height*scale);canvas.getContext('2d').drawImage(bitmap,0,0,canvas.width,canvas.height);return canvas.toDataURL('image/jpeg',.78);}finally{bitmap.close();}}
+async function compactImage(file){let bitmap;let objectURL;try{try{bitmap=await createImageBitmap(file);}catch{objectURL=URL.createObjectURL(file);bitmap=await new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=reject;img.src=objectURL;});}const w=bitmap.width,h=bitmap.height;const scale=Math.min(1,1600/Math.max(w,h));const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(w*scale));canvas.height=Math.max(1,Math.round(h*scale));canvas.getContext('2d').drawImage(bitmap,0,0,canvas.width,canvas.height);return canvas.toDataURL('image/jpeg',.78);}finally{if(bitmap&&typeof bitmap.close==='function')bitmap.close();if(objectURL)URL.revokeObjectURL(objectURL);}}
 window.addEventListener('unbound:desk-state',async e=>{const d=e.detail;if(!d||!['wood','none','custom'].includes(d.mode))return;const signature=JSON.stringify(d);if(signature===lastRemote)return;lastRemote=signature;if(Number.isFinite(d.x))x.value=d.x;if(Number.isFinite(d.y))y.value=d.y;setPosition();if(d.mode==='custom'&&typeof d.data==='string'&&d.data.startsWith('data:image/jpeg;base64,')&&d.data.length<2200000){try{const blob=await(await fetch(d.data)).blob();await storeImage(blob);selectedData=d.data;apply('custom',blob);}catch{}}else if(d.mode==='custom'){try{const local=await readImage();apply(local?'custom':'wood',local);}catch{apply('wood');}}else apply(d.mode);});
 function toggleMenu(){menu.hidden=!menu.hidden;const expanded=String(!menu.hidden);button.setAttribute('aria-expanded',expanded);}
 button.onclick=toggleMenu;
@@ -92,4 +92,12 @@ body.desk-enabled:not(.desk-custom) .cover-scene::before{content:"";position:abs
 style.textContent+=`
 body.desk-enabled:not(.desk-custom) .cover-scene>.cover-book,body.desk-enabled:not(.desk-custom) .cover-scene>.cover-controls{position:relative;z-index:1}
 body.desk-enabled:not(.desk-custom) .cover-scene>.cover-controls{position:absolute}
+`;
+
+/* Reliable desk painting: render on the scene, not behind it or on body. */
+style.textContent+=`
+body.desk-enabled .cover-scene{background-color:#dfc49d!important;background-image:url("./a_clean_warmly_lit_top_down_angled_overhead_stil.png")!important;background-size:cover!important;background-position:var(--desk-position,50% 50%)!important;background-repeat:no-repeat!important}
+body.desk-enabled.desk-custom .cover-scene{background-image:var(--desk-image)!important}
+body.desk-enabled .cover-scene::before{content:none!important;display:none!important}
+@media(max-width:700px){body.desk-enabled:not(.desk-custom) .cover-scene{background-position:85% center!important}}
 `;
