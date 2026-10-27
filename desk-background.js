@@ -7,7 +7,7 @@ async function readImage(){const db=await openDB();const result=await new Promis
 let imageURL;
 const style=document.createElement('style');
 style.textContent=`
-body.desk-enabled{background:#dfc49d!important;background-image:url('https://cdn.budgetpixel.com/image-library/light-oak-desk-top-down-background-59d8d0d8.jpg'),url('assets/desk-oak.svg')!important;background-size:cover!important;background-position:var(--desk-position,50% 50%)!important;background-attachment:fixed!important}
+body.desk-enabled{background:#dfc49d!important;background-image:url('a_clean_warmly_lit_top_down_angled_overhead_stil.png')!important;background-size:cover!important;background-position:var(--desk-position,50% 50%)!important;background-attachment:fixed!important}
 body.desk-custom{background-image:var(--desk-image)!important;background-size:cover!important;background-position:var(--desk-position,50% 50%)!important}
 body.desk-enabled:before{content:'';position:fixed;inset:0;pointer-events:none;background:linear-gradient(115deg,#fff9e62b,transparent 48%,#63401a16);z-index:0}
 body.desk-enabled #app{isolation:isolate}
@@ -23,7 +23,7 @@ body.desk-enabled .desk-button{touch-action:manipulation}
 document.head.append(style);
 const button=document.createElement('button');button.className='desk-button';button.textContent='Desk background';button.setAttribute('aria-label','Choose desk background');
 const menu=document.createElement('div');menu.className='desk-menu';menu.hidden=true;
-menu.innerHTML='<strong>Desk background</strong><button data-desk="wood">Light wooden table</button><button data-desk="upload">Choose your own photograph</button><button data-desk="none">No background</button><input type="file" accept="image/jpeg,image/png,image/webp" hidden><label>Horizontal position <input type="range" data-desk-x min="0" max="100" value="50"></label><label>Vertical position <input type="range" data-desk-y min="0" max="100" value="50"></label><small>Backgrounds do not change notebook dimensions. Default photo: Light Oak Desk Top Down Slide Background by BudgetPixel AI, CC BY 4.0.</small>';
+menu.innerHTML='<strong>Desk background</strong><button data-desk="wood">Light wooden table</button><button data-desk="upload">Choose your own photograph</button><button data-desk="none">No background</button><input type="file" accept="image/jpeg,image/png,image/webp" hidden><label>Horizontal position <input type="range" data-desk-x min="0" max="100" value="50"></label><label>Vertical position <input type="range" data-desk-y min="0" max="100" value="50"></label><small>Backgrounds do not change notebook dimensions. Default: Unbound sunlit wooden desk photograph.</small>';
 document.body.append(button,menu);
 // Mount the existing selector beside Personalise cover whenever the cover renders.
 button.type='button';
@@ -74,4 +74,9 @@ html,body{max-width:100%;overflow-x:clip}
 body.desk-enabled{background-repeat:no-repeat!important}
 .cover-controls{max-width:100%;box-sizing:border-box;min-width:0}
 @media(max-width:700px){.cover-controls{width:100%;justify-content:flex-end!important;padding-inline:8px;gap:6px!important}.cover-controls .desk-button,.cover-controls .quiet-button[data-action="gallery"]{max-width:calc(50vw - 14px);font-size:clamp(10px,2.7vw,12px)!important;padding:6px 8px!important;white-space:normal;line-height:1.25}.desk-menu{max-width:calc(100vw - 16px);box-sizing:border-box}}
+`;
+
+/* Keep the cup and pen on the right edge when the photo is cropped on phones. */
+style.textContent+=`
+@media(max-width:700px){body.desk-enabled:not(.desk-custom){background-position:85% 50%!important}}
 `;
