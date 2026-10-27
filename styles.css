@@ -758,3 +758,25 @@ body:has(dialog[open]) .task-widget,body:has(.dictation-review) .task-widget,bod
 /* Pressed leather: crisp recessed edge and lower lip, with a CSS-pixel floor
    so small names retain depth on high-density iPad/mobile displays too. */
 .cover-book .cover-inscription[data-surface=leather] :is(.cover-year,.cover-owner,.cover-title){color:var(--cover-ink,#704a2d)!important;text-shadow:0 clamp(-2px,-.025em,-.7px) clamp(.3px,.006em,.8px) #210e08e6,clamp(-1px,-.012em,-.4px) 0 .35px #30130bcc,0 clamp(.8px,.025em,2px) clamp(.25px,.005em,.6px) #fff0c7e6,clamp(.4px,.012em,1px) clamp(1.2px,.04em,3px) clamp(.5px,.012em,1.5px) #160905a6;letter-spacing:.04em}
+
+/* Rear board: the page block must be enclosed by a substantial hard cover,
+   rather than ending in bare paper. No change to cover size or page layout. */
+.cover-book{
+  --rear-board:#28352d;
+  --rear-board-edge:#15221d;
+}
+.cover-book[data-material="leather"]{--rear-board:#30372e;--rear-board-edge:#17221d}
+.cover-book[data-material="cloth"]{--rear-board:#3e4440;--rear-board-edge:#242b28}
+.cover-book[data-material="gloss"],.cover-book[data-material="foil"]{--rear-board:#353436;--rear-board-edge:#202023}
+.cover-book[data-material="metal"]{--rear-board:#55545a;--rear-board-edge:#2d2d31}
+.cover-book .page-block{
+  border-right:3px solid #b5a98f;
+  border-bottom:3px solid #b5a98f;
+  box-shadow:
+    1px 2px 1px #fff8,
+    3px 5px 0 var(--rear-board-edge),
+    4px 8px 0 2px var(--rear-board),
+    5px 10px 0 3px var(--rear-board-edge),
+    9px 16px 12px #160b0860,
+    14px 23px 22px #160b0830;
+}
