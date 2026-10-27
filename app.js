@@ -44,6 +44,10 @@ try{const saved=localStorage.getItem(KEY);if(saved){const data=JSON.parse(saved)
 try{const recovery=await readMirror(KEY);const chosen=chooseRecovery(storageCorrupt?null:state,recovery);if(chosen){state={...emptyState(),...chosen,settings:{...emptyState().settings,...chosen.settings}};if(storageCorrupt){storageCorrupt=false;storageError=false;localStorage.setItem(KEY,JSON.stringify(state));}}}catch{}
 let date=TODAY,section='calendar',view='week',closed=true,noteId=state.notes[0]?.id||null,focusField=null,lastSnapshot=0,previousView='',googleBusy=false,onlyFavorites=false;
 const app=document.querySelector('#app'),modal=document.querySelector('#modal');
+// Desk preferences travel with the existing account notebook sync; no notebook layout changes.
+window.addEventListener('unbound:desk-change',e=>{if(accountLocked)return;const next=e.detail;if(!next||typeof next!=='object')return;state.settings.deskBackground=next;save();});
+window.addEventListener('unbound:desk-request',()=>{window.dispatchEvent(new CustomEvent('unbound:desk-state',{detail:state.settings.deskBackground||null}));});
+
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const id=()=>crypto.randomUUID();
 const entry=k=>state.entries[k]||'';
