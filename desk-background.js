@@ -31,9 +31,9 @@ const headerButton=document.createElement('button');
 headerButton.type='button';headerButton.className='icon-button desk-header-button';
 headerButton.textContent='▤';headerButton.title='Desk background / upload photo';
 headerButton.setAttribute('aria-label','Desk background / upload photo');
-if(headerActions)headerActions.append(headerButton);
+// Place the shortcut outside the app header, which may be inert while the cover is closed.\ndocument.body.append(headerButton);
 headerButton.addEventListener('click',e=>e.stopPropagation());
-style.textContent+='\n.desk-header-button{position:relative;z-index:2147483000;flex-shrink:0}.desk-menu{max-height:min(75vh,540px);overflow:auto}@media(max-width:700px){.desk-menu{top:72px;bottom:auto;right:8px}}';
+style.textContent+='\n.desk-header-button{position:fixed!important;top:calc(10px + env(safe-area-inset-top, 0px));right:12px;z-index:2147483000!important;display:block!important;min-width:38px;min-height:38px;background:#fffaf0!important;border:1px solid #b9a88e!important;border-radius:20px!important;box-shadow:0 2px 8px #0002!important}.desk-menu{max-height:min(75vh,540px);overflow:auto}@media(max-width:700px){.desk-menu{top:72px;bottom:auto;right:8px}}';
 const input=menu.querySelector('input[type=file]');
 const x=menu.querySelector('[data-desk-x]'),y=menu.querySelector('[data-desk-y]');
 function setPosition(){document.body.style.setProperty('--desk-position',x.value+'% '+y.value+'%');try{localStorage.setItem(KEY+'-position',JSON.stringify([x.value,y.value]));}catch{}}
@@ -47,7 +47,7 @@ async function compactImage(file){const bitmap=await createImageBitmap(file);try
 window.addEventListener('unbound:desk-state',async e=>{const d=e.detail;if(!d||!['wood','none','custom'].includes(d.mode))return;const signature=JSON.stringify(d);if(signature===lastRemote)return;lastRemote=signature;if(Number.isFinite(d.x))x.value=d.x;if(Number.isFinite(d.y))y.value=d.y;setPosition();if(d.mode==='custom'&&typeof d.data==='string'&&d.data.startsWith('data:image/jpeg;base64,')&&d.data.length<500000){try{const blob=await(await fetch(d.data)).blob();await storeImage(blob);selectedData=d.data;apply('custom',blob);}catch{}}else if(d.mode==='custom'){try{const local=await readImage();apply(local?'custom':'wood',local);}catch{apply('wood');}}else apply(d.mode);});
 function toggleMenu(){menu.hidden=!menu.hidden;const expanded=String(!menu.hidden);button.setAttribute('aria-expanded',expanded);headerButton.setAttribute('aria-expanded',expanded);}
 button.onclick=toggleMenu;headerButton.onclick=toggleMenu;
-menu.onclick=e=>{const action=e.target.closest('[data-desk]')?.dataset.desk;if(!action)return;if(action==='upload'){input.click();return;}apply(action);broadcast(action);menu.hidden=true;button.setAttribute('aria-expanded','false');};
+menu.onclick=e=>{const action=e.target.closest('[data-desk]')?.dataset.desk;if(!action)return;if(action==='upload'){input.click();return;}apply(action);broadcast(action);menu.hidden=true;button.setAttribute('aria-expanded','false');headerButton.setAttribute('aria-expanded','false');};
 input.onchange=async()=>{const file=input.files?.[0];if(!file)return;if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>12*1024*1024){alert('Choose a JPG, PNG or WebP image smaller than 12 MB.');return;}try{const data=await compactImage(file);if(data.length>500000)throw Error('Image too large after resizing');const blob=await(await fetch(data)).blob();await storeImage(blob);apply('custom',blob);broadcast('custom',data);menu.hidden=true;button.setAttribute('aria-expanded','false');}catch{alert('Unable to save background on this device.');}input.value='';};
 document.addEventListener('click',e=>{if(!menu.contains(e.target)&&e.target!==button&&e.target!==headerButton)menu.hidden=true;});
 (async()=>{let mode='wood';try{mode=localStorage.getItem(KEY)||'wood';}catch{}if(mode==='custom'){try{const blob=await readImage();apply(blob?'custom':'wood',blob);}catch{apply('wood');}}else apply(mode);window.dispatchEvent(new Event('unbound:desk-request'));})();
