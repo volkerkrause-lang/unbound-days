@@ -114,6 +114,7 @@ function coverStyle(c=state.settings.cover){const design=coverById(c);if(design)
 function coverMaterial(c=state.settings.cover){if(coverById(c))return coverById(c).material;const n=Number(c);if([0,1,11,12,20,21,22,23,24,25,26,32,33,34,35,36,37,39].includes(n))return 'leather';if([5,8,10,13,14,19,28,31].includes(n))return 'cloth';if([16,18].includes(n))return 'foil';if([3,4,7,9,27,30,38].includes(n))return 'gloss';if([2,6,15,29].includes(n))return 'relief';return 'printed';}
 function applyTheme(){document.documentElement.style.setProperty('--ink',state.settings.ink);document.documentElement.style.setProperty('--hand',`'${state.settings.font}', 'Segoe Print', 'Bradley Hand', cursive`);}
 function render(){
+ window.dispatchEvent(new CustomEvent('unbound:desk-state',{detail:state.settings.deskBackground||null}));
  dictation.dismiss();
  taskView.capture();
  if(inkDrawing){saveIdeaInk();inkDrawing=null;}
