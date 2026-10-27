@@ -9,7 +9,7 @@ for(const [device,width,height] of [['desktop',1366,1024],['ipad-landscape',1180
   page.on('pageerror',e=>errors.push(e.message));
   await page.route('**/*',r=>new URL(r.request().url()).hostname===new URL(process.env.UNBOUND_TEST_URL||'http://localhost:4173').hostname?r.continue():r.abort());
   await page.addInitScript(()=>{
-   class Recognition{constructor(){window.testRecognition=this;}start(){this.running=true;}stop(){this.running=false;this.onend?.();}emit(text){this.onresult?.({results:[[{transcript:text}]]});}}
+   class Recognition{constructor(){window.testRecognition=this;}start(){this.running=true;}stop(){this.running=false;this.onend?.();}emit(text){this.onresult?.({resultIndex:0,results:[Object.assign([{transcript:text}],{isFinal:true})]});}}
    window.SpeechRecognition=Recognition;
   });
   await page.goto(process.env.UNBOUND_TEST_URL||'http://localhost:4173');
