@@ -847,3 +847,29 @@ body:has(dialog[open]) .task-widget,body:has(.dictation-review) .task-widget,bod
  box-shadow:none;
 }
 .cover-book .spine::after{top:7px;bottom:7px;border-radius:35% 22% 22% 35%}
+
+/* Bookbinding is one continuous structure: a rear board behind the paper
+   and a rounded hinge running into that board. Both share the same material. */
+.cover-book .book-binding{
+ position:absolute;inset:0;z-index:-4;pointer-events:none;
+ --binding-base:var(--rear-board,#31332d);
+ --binding-dark:var(--rear-board-edge,#161b18);
+}
+.cover-book .binding-rear{
+ position:absolute;left:0;right:-15px;top:8px;bottom:-19px;
+ border-radius:13px 15px 16px 14px;
+ background:linear-gradient(180deg,#ffffff25 0%,var(--binding-base) 8%,var(--binding-base) 88%,var(--binding-dark) 100%);
+ border:2px solid var(--binding-dark);
+ box-shadow:3px 5px 4px #160d0c55,10px 13px 16px #160d0c38;
+}
+.cover-book .binding-round{
+ position:absolute;left:-7px;top:3px;bottom:-19px;width:45px;
+ border-radius:20px 8px 11px 18px;
+ background:linear-gradient(90deg,
+  var(--binding-dark) 0%,#ffffff30 14%,var(--binding-base) 36%,
+  #ffffff20 52%,var(--binding-base) 72%,var(--binding-dark) 100%);
+ border-left:2px solid #ffffff40;
+ border-bottom:3px solid var(--binding-dark);
+ box-shadow:inset 5px 0 6px #0006,inset -6px 0 8px #0005,-3px 5px 8px #0004;
+}
+.cover-book .spine{bottom:0!important;overflow:hidden!important}
