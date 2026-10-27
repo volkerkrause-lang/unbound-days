@@ -100,3 +100,17 @@ body.desk-enabled.desk-custom .cover-scene{background-image:var(--desk-image)!im
 body.desk-enabled .cover-scene::before{content:none!important;display:none!important}
 @media(max-width:700px){body.desk-enabled:not(.desk-custom) .cover-scene{background-position:85% center!important}}
 `;
+
+/* Verify the actual asset and expose failures rather than silently showing beige. */
+const deskAsset='./a_clean_warmly_lit_top_down_angled_overhead_stil.png';
+let deskAssetStatus='pending';
+const deskNotice=document.createElement('small');
+deskNotice.setAttribute('role','status');
+deskNotice.style.cssText='display:block;margin-top:7px;color:#805126;overflow-wrap:anywhere';
+menu.append(deskNotice);
+const deskProbe=new Image();
+deskProbe.onload=()=>{deskAssetStatus='ready';deskNotice.textContent='';};
+deskProbe.onerror=()=>{deskAssetStatus='missing';deskNotice.textContent='The built-in desk photograph could not be loaded. The image file may be missing from the published site.';};
+deskProbe.src=deskAsset+'?asset=20261027';
+const oldMenuClick=menu.onclick;
+menu.onclick=e=>{oldMenuClick(e);if(e.target.closest('[data-desk="wood"]')&&deskAssetStatus==='missing'){menu.hidden=false;deskNotice.textContent='The built-in desk photograph is not available at '+deskAsset;}};
