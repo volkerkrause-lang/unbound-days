@@ -520,9 +520,6 @@ accountManager=mountAccounts({getState:()=>state,empty:emptyState,
 });
 
 // Resolve the account notebook before showing its cover, including first use on a device.
-// Paint the locally-known cover immediately. Account recovery and artwork
-// hydration may take longer, but should never leave the desk visible alone.
-renderCover();
 await accountManager.ready;
 try{const draft=JSON.parse(localStorage.getItem(KEY+'-active-ink')||'null');if(draft&&Array.isArray(draft.paths)&&(state.notes.some(n=>n.id===draft.key)||draft.key.startsWith('planner:'))&&draft.updatedAt>(Date.parse(state.savedAt)||0)){state.ink[draft.key]=draft.paths;save();}if(!storageError)localStorage.removeItem(KEY+'-active-ink');}catch{}
 
