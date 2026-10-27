@@ -7,7 +7,7 @@ async function readImage(){const db=await openDB();const result=await new Promis
 let imageURL;
 const style=document.createElement('style');
 style.textContent=`
-body.desk-enabled{background:#dfc49d!important;background-image:repeating-linear-gradient(91deg,transparent 0 88px,#8b5d3520 90px,#fff9e533 93px,transparent 97px 190px),linear-gradient(105deg,#ecd7b4,#d9b88e 53%,#e8d0ab)!important;background-attachment:fixed!important}
+body.desk-enabled{background:#dfc49d!important;background-image:url('assets/desk-oak.svg')!important;background-size:cover!important;background-position:center!important;background-attachment:fixed!important}
 body.desk-custom{background-image:var(--desk-image)!important;background-size:cover!important;background-position:var(--desk-position,50% 50%)!important}
 body.desk-enabled:before{content:'';position:fixed;inset:0;pointer-events:none;background:linear-gradient(115deg,#fff9e62b,transparent 48%,#63401a16);z-index:0}
 body.desk-enabled #app,body.desk-enabled .app-bar{position:relative;z-index:1}\nbody.desk-enabled .desk-button{touch-action:manipulation}\n@media(prefers-reduced-motion:reduce){body.desk-enabled{background-attachment:scroll!important}}
