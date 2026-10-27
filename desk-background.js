@@ -80,3 +80,10 @@ body.desk-enabled{background-repeat:no-repeat!important}
 style.textContent+=`
 @media(max-width:700px){body.desk-enabled:not(.desk-custom){background-position:85% 50%!important}}
 `;
+
+/* Paint the photograph on the cover scene itself, above any app-level desk tint. */
+style.textContent+=`
+body.desk-enabled:not(.desk-custom) .cover-scene{isolation:isolate;background:transparent!important}
+body.desk-enabled:not(.desk-custom) .cover-scene::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background-image:url("./a_clean_warmly_lit_top_down_angled_overhead_stil.png");background-repeat:no-repeat;background-size:cover;background-position:center center}
+@media(max-width:700px){body.desk-enabled:not(.desk-custom) .cover-scene::before{background-position:85% center}}
+`;
