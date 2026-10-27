@@ -151,7 +151,7 @@ body.desk-enabled:not(.desk-custom) .cover-scene>.cover-book{left:0}
    the right side of the desk photograph. Portrait framing stays centred. */
 style.textContent+=`
 @media (orientation:landscape) and (min-width:768px){
- body.desk-enabled:not(.desk-custom) .cover-scene>.cover-book{
+ body.desk-enabled .cover-scene>.cover-book{
   left:clamp(-220px,-14vw,-90px);
  }
 }
