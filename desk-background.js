@@ -7,7 +7,7 @@ async function readImage(){const db=await openDB();const result=await new Promis
 let imageURL;
 const style=document.createElement('style');
 style.textContent=`
-body.desk-enabled{background:#dfc49d!important;background-image:url('assets/desk-oak.svg')!important;background-size:cover!important;background-position:var(--desk-position,50% 50%)!important;background-attachment:fixed!important}
+body.desk-enabled{background:#dfc49d!important;background-image:url('https://cdn.budgetpixel.com/image-library/light-oak-desk-top-down-background-59d8d0d8.jpg'),url('assets/desk-oak.svg')!important;background-size:cover!important;background-position:var(--desk-position,50% 50%)!important;background-attachment:fixed!important}
 body.desk-custom{background-image:var(--desk-image)!important;background-size:cover!important;background-position:var(--desk-position,50% 50%)!important}
 body.desk-enabled:before{content:'';position:fixed;inset:0;pointer-events:none;background:linear-gradient(115deg,#fff9e62b,transparent 48%,#63401a16);z-index:0}
 body.desk-enabled #app{isolation:isolate}
@@ -23,7 +23,7 @@ body.desk-enabled .desk-button{touch-action:manipulation}
 document.head.append(style);
 const button=document.createElement('button');button.className='desk-button';button.textContent='Desk background';button.setAttribute('aria-label','Choose desk background');
 const menu=document.createElement('div');menu.className='desk-menu';menu.hidden=true;
-menu.innerHTML='<strong>Desk background</strong><button data-desk="wood">Light wooden table</button><button data-desk="upload">Choose your own photograph</button><button data-desk="none">No background</button><input type="file" accept="image/jpeg,image/png,image/webp" hidden><label>Horizontal position <input type="range" data-desk-x min="0" max="100" value="50"></label><label>Vertical position <input type="range" data-desk-y min="0" max="100" value="50"></label><small>Backgrounds do not change notebook dimensions.</small>';
+menu.innerHTML='<strong>Desk background</strong><button data-desk="wood">Light wooden table</button><button data-desk="upload">Choose your own photograph</button><button data-desk="none">No background</button><input type="file" accept="image/jpeg,image/png,image/webp" hidden><label>Horizontal position <input type="range" data-desk-x min="0" max="100" value="50"></label><label>Vertical position <input type="range" data-desk-y min="0" max="100" value="50"></label><small>Backgrounds do not change notebook dimensions. Default photo: Light Oak Desk Top Down Slide Background by BudgetPixel AI, CC BY 4.0.</small>';
 document.body.append(button,menu);
 // Keep an accessible entry point in the existing top toolbar, even if the bottom control is covered by the notebook.
 const headerActions=document.querySelector('.app-bar .bar-actions');
