@@ -25,16 +25,24 @@ const button=document.createElement('button');button.className='desk-button';but
 const menu=document.createElement('div');menu.className='desk-menu';menu.hidden=true;
 menu.innerHTML='<strong>Desk background</strong><button data-desk="wood">Light wooden table</button><button data-desk="upload">Choose your own photograph</button><button data-desk="none">No background</button><input type="file" accept="image/jpeg,image/png,image/webp" hidden><label>Horizontal position <input type="range" data-desk-x min="0" max="100" value="50"></label><label>Vertical position <input type="range" data-desk-y min="0" max="100" value="50"></label><small>Backgrounds do not change notebook dimensions. Default photo: Light Oak Desk Top Down Slide Background by BudgetPixel AI, CC BY 4.0.</small>';
 document.body.append(button,menu);
-// Keep an accessible entry point in the existing top toolbar, even if the bottom control is covered by the notebook.
-const headerActions=document.querySelector('.app-bar .bar-actions');
-const headerButton=document.createElement('button');
-headerButton.type='button';headerButton.className='icon-button desk-header-button';
-headerButton.textContent='▤';headerButton.title='Desk background / upload photo';
-headerButton.setAttribute('aria-label','Desk background / upload photo');
-// Place the shortcut outside the app header, which may be inert while the cover is closed.
-document.body.append(headerButton);
-headerButton.addEventListener('click',e=>e.stopPropagation());
-style.textContent+='\n.desk-header-button{position:fixed!important;top:calc(10px + env(safe-area-inset-top, 0px));right:12px;z-index:2147483000!important;display:block!important;min-width:38px;min-height:38px;background:#fffaf0!important;border:1px solid #b9a88e!important;border-radius:20px!important;box-shadow:0 2px 8px #0002!important}.desk-menu{max-height:min(75vh,540px);overflow:auto}@media(max-width:700px){.desk-menu{top:72px;bottom:auto;right:8px}}';
+// Mount the existing selector beside Personalise cover whenever the cover renders.
+button.type='button';
+button.className='quiet-button desk-button';
+function mountDeskButton(){
+  const controls=document.querySelector('.cover-controls');
+  if(controls&&button.parentElement!==controls)controls.append(button);
+}
+const coverObserver=new MutationObserver(mountDeskButton);
+coverObserver.observe(document.querySelector('#app')||document.body,{childList:true,subtree:true});
+mountDeskButton();
+style.textContent+=`
+.desk-button{position:static!important;right:auto!important;bottom:auto!important;z-index:auto!important;background:transparent!important;border:inherit;box-shadow:inherit;font:inherit;padding:inherit;white-space:nowrap}
+.cover-controls{display:flex!important;justify-content:flex-end;align-items:center;gap:8px;flex-wrap:wrap}
+.cover-controls .desk-button{background:#f3eee4!important;border:1px solid #d4c8b7!important;border-radius:24px!important;padding:8px 13px!important;box-shadow:0 2px 5px #34241718!important;font:inherit!important;color:#50483f!important}
+.cover-controls .quiet-button[data-action="gallery"]{background:#f3eee4!important;border:1px solid #d4c8b7!important;border-radius:24px!important;padding:8px 13px!important;box-shadow:0 2px 5px #34241718!important;color:#50483f!important}
+.desk-menu{top:unset;bottom:calc(76px + env(safe-area-inset-bottom,0px));max-height:min(75vh,540px);overflow:auto}
+@media(max-width:700px){.cover-controls{gap:6px}.cover-controls .desk-button,.cover-controls .quiet-button[data-action="gallery"]{padding:7px 10px!important;font-size:12px!important}.desk-menu{top:90px;bottom:auto;right:8px}}
+`;
 const input=menu.querySelector('input[type=file]');
 const x=menu.querySelector('[data-desk-x]'),y=menu.querySelector('[data-desk-y]');
 function setPosition(){document.body.style.setProperty('--desk-position',x.value+'% '+y.value+'%');try{localStorage.setItem(KEY+'-position',JSON.stringify([x.value,y.value]));}catch{}}
@@ -47,9 +55,9 @@ async function ensureSelectedData(){if(selectedData)return;try{const saved=await
 function broadcast(mode,data=''){if(mode==='custom'&&data)selectedData=data;const detail={mode,data:mode==='custom'?(data||selectedData):'',x:Number(x.value),y:Number(y.value)};lastRemote=JSON.stringify(detail);window.dispatchEvent(new CustomEvent('unbound:desk-change',{detail}));}
 async function compactImage(file){const bitmap=await createImageBitmap(file);try{const scale=Math.min(1,1200/Math.max(bitmap.width,bitmap.height));const canvas=document.createElement('canvas');canvas.width=Math.round(bitmap.width*scale);canvas.height=Math.round(bitmap.height*scale);canvas.getContext('2d').drawImage(bitmap,0,0,canvas.width,canvas.height);return canvas.toDataURL('image/jpeg',.68);}finally{bitmap.close();}}
 window.addEventListener('unbound:desk-state',async e=>{const d=e.detail;if(!d||!['wood','none','custom'].includes(d.mode))return;const signature=JSON.stringify(d);if(signature===lastRemote)return;lastRemote=signature;if(Number.isFinite(d.x))x.value=d.x;if(Number.isFinite(d.y))y.value=d.y;setPosition();if(d.mode==='custom'&&typeof d.data==='string'&&d.data.startsWith('data:image/jpeg;base64,')&&d.data.length<500000){try{const blob=await(await fetch(d.data)).blob();await storeImage(blob);selectedData=d.data;apply('custom',blob);}catch{}}else if(d.mode==='custom'){try{const local=await readImage();apply(local?'custom':'wood',local);}catch{apply('wood');}}else apply(d.mode);});
-function toggleMenu(){menu.hidden=!menu.hidden;const expanded=String(!menu.hidden);button.setAttribute('aria-expanded',expanded);headerButton.setAttribute('aria-expanded',expanded);}
-button.onclick=toggleMenu;headerButton.onclick=toggleMenu;
-menu.onclick=e=>{const action=e.target.closest('[data-desk]')?.dataset.desk;if(!action)return;if(action==='upload'){input.click();return;}apply(action);broadcast(action);menu.hidden=true;button.setAttribute('aria-expanded','false');headerButton.setAttribute('aria-expanded','false');};
+function toggleMenu(){menu.hidden=!menu.hidden;const expanded=String(!menu.hidden);button.setAttribute('aria-expanded',expanded);}
+button.onclick=toggleMenu;
+menu.onclick=e=>{const action=e.target.closest('[data-desk]')?.dataset.desk;if(!action)return;if(action==='upload'){input.click();return;}apply(action);broadcast(action);menu.hidden=true;button.setAttribute('aria-expanded','false');};
 input.onchange=async()=>{const file=input.files?.[0];if(!file)return;if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>12*1024*1024){alert('Choose a JPG, PNG or WebP image smaller than 12 MB.');return;}try{const data=await compactImage(file);if(data.length>500000)throw Error('Image too large after resizing');const blob=await(await fetch(data)).blob();await storeImage(blob);apply('custom',blob);broadcast('custom',data);menu.hidden=true;button.setAttribute('aria-expanded','false');}catch{alert('Unable to save background on this device.');}input.value='';};
-document.addEventListener('click',e=>{if(!menu.contains(e.target)&&e.target!==button&&e.target!==headerButton){menu.hidden=true;button.setAttribute('aria-expanded','false');headerButton.setAttribute('aria-expanded','false');}});
+document.addEventListener('click',e=>{if(!menu.contains(e.target)&&e.target!==button){menu.hidden=true;button.setAttribute('aria-expanded','false');}});
 (async()=>{let mode='wood';try{mode=localStorage.getItem(KEY)||'wood';}catch{}if(mode==='custom'){try{const blob=await readImage();apply(blob?'custom':'wood',blob);if(blob)await ensureSelectedData();}catch{apply('wood');}}else apply(mode);window.dispatchEvent(new Event('unbound:desk-request'));})();
