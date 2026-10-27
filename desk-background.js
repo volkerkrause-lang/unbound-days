@@ -31,7 +31,8 @@ const headerButton=document.createElement('button');
 headerButton.type='button';headerButton.className='icon-button desk-header-button';
 headerButton.textContent='▤';headerButton.title='Desk background / upload photo';
 headerButton.setAttribute('aria-label','Desk background / upload photo');
-// Place the shortcut outside the app header, which may be inert while the cover is closed.\ndocument.body.append(headerButton);
+// Place the shortcut outside the app header, which may be inert while the cover is closed.
+document.body.append(headerButton);
 headerButton.addEventListener('click',e=>e.stopPropagation());
 style.textContent+='\n.desk-header-button{position:fixed!important;top:calc(10px + env(safe-area-inset-top, 0px));right:12px;z-index:2147483000!important;display:block!important;min-width:38px;min-height:38px;background:#fffaf0!important;border:1px solid #b9a88e!important;border-radius:20px!important;box-shadow:0 2px 8px #0002!important}.desk-menu{max-height:min(75vh,540px);overflow:auto}@media(max-width:700px){.desk-menu{top:72px;bottom:auto;right:8px}}';
 const input=menu.querySelector('input[type=file]');
