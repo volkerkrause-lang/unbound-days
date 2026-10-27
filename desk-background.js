@@ -13,12 +13,12 @@ body.desk-enabled:before{content:'';position:fixed;inset:0;pointer-events:none;b
 body.desk-enabled #app{isolation:isolate}
 body.desk-enabled .desk-button{touch-action:manipulation}
 @media(prefers-reduced-motion:reduce){body.desk-enabled{background-attachment:scroll!important}}
-.desk-button{position:fixed;right:12px;bottom:12px;z-index:2147483000;background:#fffaf0eF;border:1px solid #9c866b;border-radius:24px;padding:8px 13px;box-shadow:0 3px 12px #34241733;font:13px system-ui;cursor:pointer}
-.desk-menu{position:fixed;right:12px;bottom:55px;z-index:2147483001;background:#fffaf2;padding:16px;border-radius:12px;box-shadow:0 5px 24px #34241755;max-width:min(300px,calc(100vw - 24px));font:14px system-ui}
+.desk-button{position:fixed;right:12px;bottom:calc(76px + env(safe-area-inset-bottom, 0px));z-index:2147483000;background:#fffaf0eF;border:1px solid #9c866b;border-radius:24px;padding:8px 13px;box-shadow:0 3px 12px #34241733;font:13px system-ui;cursor:pointer}
+.desk-menu{position:fixed;right:12px;bottom:calc(120px + env(safe-area-inset-bottom, 0px));z-index:2147483001;background:#fffaf2;padding:16px;border-radius:12px;box-shadow:0 5px 24px #34241755;max-width:min(300px,calc(100vw - 24px));font:14px system-ui}
 .desk-menu[hidden]{display:none!important}
 .desk-menu label{display:block;margin:10px 0 4px}.desk-menu input[type=range]{width:100%}
 .desk-menu button{display:block;padding:9px;margin:3px 0;width:100%;text-align:left;border-radius:6px;background:#eee4d6}
-@media(max-width:700px){.desk-button{right:6px;bottom:6px;padding:5px 8px;font-size:11px}}
+@media(max-width:700px){.desk-button{right:8px;bottom:calc(76px + env(safe-area-inset-bottom, 0px));padding:5px 8px;font-size:11px}}
 `;
 document.head.append(style);
 const button=document.createElement('button');button.className='desk-button';button.textContent='Desk background';button.setAttribute('aria-label','Choose desk background');
@@ -31,8 +31,8 @@ const headerButton=document.createElement('button');
 headerButton.type='button';headerButton.className='icon-button desk-header-button';
 headerButton.textContent='▤';headerButton.title='Desk background / upload photo';
 headerButton.setAttribute('aria-label','Desk background / upload photo');
-if(headerActions)headerActions.append(headerButton);
-style.textContent+='\\n.desk-header-button{position:relative;z-index:2147483000;flex-shrink:0}.desk-menu{max-height:min(75vh,540px);overflow:auto}@media(max-width:700px){.desk-menu{top:72px;bottom:auto;right:8px}}';
+if(headerActions)headerActions.append(headerButton);\nheaderButton.addEventListener('click',e=>e.stopPropagation());
+style.textContent+='\n.desk-header-button{position:relative;z-index:2147483000;flex-shrink:0}.desk-menu{max-height:min(75vh,540px);overflow:auto}@media(max-width:700px){.desk-menu{top:72px;bottom:auto;right:8px}}';
 const input=menu.querySelector('input[type=file]');
 const x=menu.querySelector('[data-desk-x]'),y=menu.querySelector('[data-desk-y]');
 function setPosition(){document.body.style.setProperty('--desk-position',x.value+'% '+y.value+'%');try{localStorage.setItem(KEY+'-position',JSON.stringify([x.value,y.value]));}catch{}}
