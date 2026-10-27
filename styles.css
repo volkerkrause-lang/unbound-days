@@ -753,8 +753,9 @@ body:has(dialog[open]) .task-widget,body:has(.dictation-review) .task-widget,bod
 
 /* Stage 2. One upper-left studio light; short contact edges, no glow. */
 .cover-book .cover-inscription :is(.cover-year,.cover-owner,.cover-title){background:none!important;color:var(--cover-ink,#dfc68f)!important;filter:none!important;opacity:1!important;-webkit-text-stroke:0;paint-order:stroke fill}
-/* Cut leather: a dark upper cut and a fine highlight on the lower lip. */
-.cover-book .cover-inscription[data-surface=leather] :is(.cover-year,.cover-owner,.cover-title){color:var(--cover-ink,#704a2d)!important;text-shadow:-.012em -.022em .018em #1d0b08b3,.012em .026em .012em #ffe4b480,0 .05em .025em #b47c4359;letter-spacing:.04em}
+/* Pressed leather: crisp recessed edge and lower lip, with a CSS-pixel floor
+   so small names retain depth on high-density iPad/mobile displays too. */
+.cover-book .cover-inscription[data-surface=leather] :is(.cover-year,.cover-owner,.cover-title){color:var(--cover-ink,#704a2d)!important;text-shadow:0 clamp(-2px,-.025em,-.7px) clamp(.3px,.006em,.8px) #210e08e6,clamp(-1px,-.012em,-.4px) 0 .35px #30130bcc,0 clamp(.8px,.025em,2px) clamp(.25px,.005em,.6px) #fff0c7e6,clamp(.4px,.012em,1px) clamp(1.2px,.04em,3px) clamp(.5px,.012em,1.5px) #160905a6;letter-spacing:.04em}
 .cover-book .cover-inscription[data-surface=parchment] :is(.cover-year,.cover-owner,.cover-title){color:var(--cover-ink,#67513b)!important;text-shadow:-.012em -.018em .008em #39251680,0 .025em .01em #fff1cba6;letter-spacing:.045em}
 /* Solid metal letters: bevel, narrow extrusion and an attached lower-right edge. */
 .cover-book:not([style*="--cover-ink"]) .cover-inscription[data-surface=metal] :is(.cover-year,.cover-owner,.cover-title){background:linear-gradient(154deg,#fff2ba 0%,#d3af5c 19%,#fff7cc 32%,#ad8030 48%,#ebcd81 62%,#a2772c 78%,#f1d58e 100%)!important;background-clip:text!important;-webkit-background-clip:text!important;color:transparent!important}
