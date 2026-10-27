@@ -835,3 +835,27 @@ body:has(dialog[open]) .task-widget,body:has(.dictation-review) .task-widget,bod
   filter:drop-shadow(.01em .025em 0 color-mix(in srgb,var(--cover-ink,var(--cover-match-ink,#d9cbb0)),black 40%)) drop-shadow(.018em .03em .014em #16121199)!important;
  }
 }
+
+/* Physical spine wrap: the rounded left hinge continues below the front board,
+   curves around the paper thickness, and meets the rear board. */
+.cover-book .spine{overflow:visible}
+.cover-book .spine::before{
+ content:"";position:absolute;z-index:2;
+ left:1px;right:0;top:auto;bottom:-19px;height:26px;
+ border-radius:0 0 11px 16px;
+ background:
+  linear-gradient(180deg,#fff2 0%,#0006 17%,#241b17 43%,#403128 64%,#171512 91%);
+ box-shadow:
+  inset 4px 0 5px #fff2,
+  inset -5px 0 7px #0009,
+  1px 5px 5px #0006;
+ transform:skewX(-4deg);
+ pointer-events:none;
+}
+.cover-book .spine::after{
+ top:7px;bottom:-15px;
+ border-radius:30% 22% 30% 40%;
+}
+.cover-book .page-block{
+ border-bottom-color:#bcb29c;
+}
