@@ -10,10 +10,10 @@ style.textContent=`
 body.desk-enabled{background:#dfc49d!important;background-image:repeating-linear-gradient(91deg,transparent 0 88px,#8b5d3520 90px,#fff9e533 93px,transparent 97px 190px),linear-gradient(105deg,#ecd7b4,#d9b88e 53%,#e8d0ab)!important;background-attachment:fixed!important}
 body.desk-custom{background-image:var(--desk-image)!important;background-size:cover!important;background-position:center!important}
 body.desk-enabled:before{content:'';position:fixed;inset:0;pointer-events:none;background:linear-gradient(115deg,#fff9e62b,transparent 48%,#63401a16);z-index:0}
-body.desk-enabled #app,body.desk-enabled .app-bar{position:relative;z-index:1}
+body.desk-enabled #app,body.desk-enabled .app-bar{position:relative;z-index:1}\nbody.desk-enabled .desk-button{touch-action:manipulation}\n@media(prefers-reduced-motion:reduce){body.desk-enabled{background-attachment:scroll!important}}
 .desk-button{position:fixed;right:12px;bottom:12px;z-index:100;background:#fffaf0eF;border:1px solid #9c866b;border-radius:24px;padding:8px 13px;box-shadow:0 3px 12px #34241733;font:13px system-ui;cursor:pointer}
 .desk-menu{position:fixed;right:12px;bottom:55px;z-index:101;background:#fffaf2;padding:16px;border-radius:12px;box-shadow:0 5px 24px #34241755;max-width:min(300px,calc(100vw - 24px));font:14px system-ui}
-.desk-menu button{display:block;padding:9px;margin:3px 0;width:100%;text-align:left;border-radius:6px;background:#eee4d6}
+.desk-menu[hidden]{display:none!important}\n.desk-menu button{display:block;padding:9px;margin:3px 0;width:100%;text-align:left;border-radius:6px;background:#eee4d6}
 @media(max-width:700px){.desk-button{right:6px;bottom:6px;padding:5px 8px;font-size:11px}}
 `;
 document.head.append(style);
@@ -24,7 +24,7 @@ document.body.append(button,menu);
 const input=menu.querySelector('input');
 function apply(mode,blob){if(imageURL){URL.revokeObjectURL(imageURL);imageURL=null;}document.body.classList.toggle('desk-enabled',mode!=='none');document.body.classList.toggle('desk-custom',mode==='custom'&&!!blob);if(blob){imageURL=URL.createObjectURL(blob);document.body.style.setProperty('--desk-image',`url("${imageURL}")`);}try{localStorage.setItem(KEY,mode);}catch{}}
 button.onclick=()=>{menu.hidden=!menu.hidden;button.setAttribute('aria-expanded',String(!menu.hidden));};
-menu.onclick=e=>{const action=e.target.closest('[data-desk]')?.dataset.desk;if(!action)return;if(action==='upload'){input.click();return;}apply(action);menu.hidden=true;};
+menu.onclick=e=>{const action=e.target.closest('[data-desk]')?.dataset.desk;if(!action)return;if(action==='upload'){input.click();return;}apply(action);menu.hidden=true;button.setAttribute('aria-expanded','false');};
 input.onchange=async()=>{const file=input.files?.[0];if(!file)return;if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>12*1024*1024){alert('Choose a JPG, PNG or WebP image smaller than 12 MB.');return;}try{await storeImage(file);apply('custom',file);menu.hidden=true;}catch{alert('Unable to save background on this device.');}input.value='';};
 document.addEventListener('click',e=>{if(!menu.contains(e.target)&&e.target!==button)menu.hidden=true;});
 (async()=>{let mode='wood';try{mode=localStorage.getItem(KEY)||'wood';}catch{}if(mode==='custom'){try{const blob=await readImage();apply(blob?'custom':'wood',blob);}catch{apply('wood');}}else apply(mode);})();
