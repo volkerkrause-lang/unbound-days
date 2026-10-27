@@ -114,3 +114,15 @@ deskProbe.onerror=()=>{deskAssetStatus='missing';deskNotice.textContent='The bui
 deskProbe.src=deskAsset+'?asset=20261027';
 const oldMenuClick=menu.onclick;
 menu.onclick=e=>{oldMenuClick(e);if(e.target.closest('[data-desk="wood"]')&&deskAssetStatus==='missing'){menu.hidden=false;deskNotice.textContent='The built-in desk photograph is not available at '+deskAsset;}};
+
+/* Phone composition: crop to the unobstructed left-hand wood area.
+   Keep the notebook size and position unchanged; retain full photo on tablets. */
+style.textContent+=`
+@media(max-width:700px){
+ body.desk-enabled:not(.desk-custom){background-size:auto 180%!important;background-position:left center!important}
+ body.desk-enabled:not(.desk-custom) .cover-scene{
+  background-size:auto 180%!important;
+  background-position:left center!important;
+ }
+}
+`;
