@@ -7,10 +7,10 @@ async function readImage(){const db=await openDB();const result=await new Promis
 let imageURL;
 const style=document.createElement('style');
 style.textContent=`
-body.desk-enabled{background:#dfc49d!important;background-image:url('assets/desk-oak.svg')!important;background-size:cover!important;background-position:center!important;background-attachment:fixed!important}
+body.desk-enabled{background:#dfc49d!important;background-image:url('assets/desk-oak.svg')!important;background-size:cover!important;background-position:var(--desk-position,50% 50%)!important;background-attachment:fixed!important}
 body.desk-custom{background-image:var(--desk-image)!important;background-size:cover!important;background-position:var(--desk-position,50% 50%)!important}
 body.desk-enabled:before{content:'';position:fixed;inset:0;pointer-events:none;background:linear-gradient(115deg,#fff9e62b,transparent 48%,#63401a16);z-index:0}
-body.desk-enabled #app,body.desk-enabled .app-bar{position:relative;z-index:1}
+body.desk-enabled #app{isolation:isolate}
 body.desk-enabled .desk-button{touch-action:manipulation}
 @media(prefers-reduced-motion:reduce){body.desk-enabled{background-attachment:scroll!important}}
 .desk-button{position:fixed;right:12px;bottom:12px;z-index:100;background:#fffaf0eF;border:1px solid #9c866b;border-radius:24px;padding:8px 13px;box-shadow:0 3px 12px #34241733;font:13px system-ui;cursor:pointer}
@@ -28,13 +28,14 @@ document.body.append(button,menu);
 const input=menu.querySelector('input[type=file]');
 const x=menu.querySelector('[data-desk-x]'),y=menu.querySelector('[data-desk-y]');
 function setPosition(){document.body.style.setProperty('--desk-position',x.value+'% '+y.value+'%');try{localStorage.setItem(KEY+'-position',JSON.stringify([x.value,y.value]));}catch{}}
-[x,y].forEach(el=>el.addEventListener('input',()=>{setPosition();const current=document.body.classList.contains('desk-custom')?'custom':document.body.classList.contains('desk-enabled')?'wood':'none';if(current!=='custom')broadcast(current);else if(lastRemote){try{const prior=JSON.parse(lastRemote);broadcast('custom',prior.data||'');}catch{}}}));
+[x,y].forEach(el=>el.addEventListener('input',()=>{setPosition();const current=document.body.classList.contains('desk-custom')?'custom':document.body.classList.contains('desk-enabled')?'wood':'none';broadcast(current)}));
 try{const saved=JSON.parse(localStorage.getItem(KEY+'-position')||'null');if(Array.isArray(saved)){x.value=saved[0];y.value=saved[1];}}catch{}setPosition();
 function apply(mode,blob){if(imageURL){URL.revokeObjectURL(imageURL);imageURL=null;}document.body.classList.toggle('desk-enabled',mode!=='none');document.body.classList.toggle('desk-custom',mode==='custom'&&!!blob);if(blob){imageURL=URL.createObjectURL(blob);document.body.style.setProperty('--desk-image',`url("${imageURL}")`);}try{localStorage.setItem(KEY,mode);}catch{}}
 let lastRemote='';
-function broadcast(mode,data=''){const detail={mode,data,x:Number(x.value),y:Number(y.value)};lastRemote=JSON.stringify(detail);window.dispatchEvent(new CustomEvent('unbound:desk-change',{detail}));}
+let selectedData='';
+function broadcast(mode,data=''){if(mode==='custom'&&data)selectedData=data;const detail={mode,data:mode==='custom'?(data||selectedData):'',x:Number(x.value),y:Number(y.value)};lastRemote=JSON.stringify(detail);window.dispatchEvent(new CustomEvent('unbound:desk-change',{detail}));}
 async function compactImage(file){const bitmap=await createImageBitmap(file);try{const scale=Math.min(1,1200/Math.max(bitmap.width,bitmap.height));const canvas=document.createElement('canvas');canvas.width=Math.round(bitmap.width*scale);canvas.height=Math.round(bitmap.height*scale);canvas.getContext('2d').drawImage(bitmap,0,0,canvas.width,canvas.height);return canvas.toDataURL('image/jpeg',.68);}finally{bitmap.close();}}
-window.addEventListener('unbound:desk-state',async e=>{const d=e.detail;if(!d||!['wood','none','custom'].includes(d.mode))return;const signature=JSON.stringify(d);if(signature===lastRemote)return;lastRemote=signature;if(Number.isFinite(d.x))x.value=d.x;if(Number.isFinite(d.y))y.value=d.y;setPosition();if(d.mode==='custom'&&typeof d.data==='string'&&d.data.startsWith('data:image/jpeg;base64,')&&d.data.length<500000){try{const blob=await(await fetch(d.data)).blob();await storeImage(blob);apply('custom',blob);}catch{}}else if(d.mode==='custom'){try{const local=await readImage();apply(local?'custom':'wood',local);}catch{apply('wood');}}else apply(d.mode);});
+window.addEventListener('unbound:desk-state',async e=>{const d=e.detail;if(!d||!['wood','none','custom'].includes(d.mode))return;const signature=JSON.stringify(d);if(signature===lastRemote)return;lastRemote=signature;if(Number.isFinite(d.x))x.value=d.x;if(Number.isFinite(d.y))y.value=d.y;setPosition();if(d.mode==='custom'&&typeof d.data==='string'&&d.data.startsWith('data:image/jpeg;base64,')&&d.data.length<500000){try{const blob=await(await fetch(d.data)).blob();await storeImage(blob);selectedData=d.data;apply('custom',blob);}catch{}}else if(d.mode==='custom'){try{const local=await readImage();apply(local?'custom':'wood',local);}catch{apply('wood');}}else apply(d.mode);});
 button.onclick=()=>{menu.hidden=!menu.hidden;button.setAttribute('aria-expanded',String(!menu.hidden));};
 menu.onclick=e=>{const action=e.target.closest('[data-desk]')?.dataset.desk;if(!action)return;if(action==='upload'){input.click();return;}apply(action);broadcast(action);menu.hidden=true;button.setAttribute('aria-expanded','false');};
 input.onchange=async()=>{const file=input.files?.[0];if(!file)return;if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>12*1024*1024){alert('Choose a JPG, PNG or WebP image smaller than 12 MB.');return;}try{const data=await compactImage(file);if(data.length>500000)throw Error('Image too large after resizing');const blob=await(await fetch(data)).blob();await storeImage(blob);apply('custom',blob);broadcast('custom',data);menu.hidden=true;button.setAttribute('aria-expanded','false');}catch{alert('Unable to save background on this device.');}input.value='';};
