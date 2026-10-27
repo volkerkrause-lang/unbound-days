@@ -57,8 +57,9 @@ dialog{border:1px solid #d7cfbf;border-radius:12px;padding:0;width:min(740px,cal
 .cover-book[data-cover="0"] .cover-year{color:#d9b77d;text-shadow:0 -1px 1px #2b1309,0 1px 0 #ffdf9c99,1px 2px 2px #321b1340;filter:drop-shadow(0 .5px .3px #fff2)}
 .cover-book[data-cover="0"] .emboss-logo{color:#452918;text-shadow:0 1px 1px #ffddb05c,0 -1px 1px #230d0b60;opacity:.8}
 .cover-book[data-material="gloss"] .cover-light{background:linear-gradient(115deg,#fff2,transparent 12%,#fff3 31%,#ffffff08 48%,transparent 63%,#0002);box-shadow:inset 1px 2px 3px #fffb,inset -3px -4px 5px #120c0980}
-.spine{z-index:1;width:38px;border-radius:5px 0 0 5px;background:linear-gradient(90deg,#120705cc 0%,#3a1d16b8 18%,#c58b5b42 43%,#1a0b09a8 78%,#fff3 88%,transparent 100%);box-shadow:inset 2px 0 2px #fff2,inset -3px 0 4px #0b050455,2px 0 4px #1c0b0638}
-.spine:after{content:'';position:absolute;inset:7px 5px 7px 8px;border-right:1px solid #f5d2a044;border-left:1px solid #0005;border-radius:3px 0 0 3px;opacity:.75;pointer-events:none}
+.spine{z-index:3;width:52px;border-radius:6px 0 0 6px;background:linear-gradient(90deg,#100604f2 0%,#2d1712e8 15%,#70412aaf 34%,#b77b4b55 47%,#311610d9 69%,#120706ee 88%,#000b 100%);box-shadow:inset 3px 0 3px #fff3,inset -5px 0 7px #080302aa,3px 0 5px #1c0b0666;transform:translateZ(2px)}
+.spine:before{content:'';position:absolute;top:5px;bottom:5px;left:12px;width:13px;border-radius:8px;background:linear-gradient(90deg,#09030399,#b878454d 35%,#f0b87555 52%,#2a100bd1 86%,#050202ee);box-shadow:inset 1px 0 1px #fff3,2px 0 3px #16080599;pointer-events:none}
+.spine:after{content:'';position:absolute;inset:7px 5px 7px 8px;border-right:1px solid #f5d2a066;border-left:1px solid #0008;border-radius:4px 0 0 4px;opacity:.9;pointer-events:none}
 .cover-open{position:relative;z-index:1}
 .page-block{box-shadow:1px 1px 1px #fff8,3px 6px 0 #452818,4px 8px 2px #1e0c0a77,8px 13px 10px #160b0833;border-radius:3px 10px 10px 3px}
 .field-write-tools{justify-content:flex-end;gap:5px;margin:3px 0 7px;position:relative;z-index:2}
@@ -758,60 +759,41 @@ body:has(dialog[open]) .task-widget,body:has(.dictation-review) .task-widget,bod
 /* Pressed leather: crisp recessed edge and lower lip, with a CSS-pixel floor
    so small names retain depth on high-density iPad/mobile displays too. */
 .cover-book .cover-inscription[data-surface=leather] :is(.cover-year,.cover-owner,.cover-title){color:var(--cover-ink,#704a2d)!important;text-shadow:0 clamp(-2px,-.025em,-.7px) clamp(.3px,.006em,.8px) #210e08e6,clamp(-1px,-.012em,-.4px) 0 .35px #30130bcc,0 clamp(.8px,.025em,2px) clamp(.25px,.005em,.6px) #fff0c7e6,clamp(.4px,.012em,1px) clamp(1.2px,.04em,3px) clamp(.5px,.012em,1.5px) #160905a6;letter-spacing:.04em}
+.cover-book .cover-inscription[data-surface=parchment] :is(.cover-year,.cover-owner,.cover-title){color:var(--cover-ink,#67513b)!important;text-shadow:-.012em -.018em .008em #39251680,0 .025em .01em #fff1cba6;letter-spacing:.045em}
+/* Solid metal letters: bevel, narrow extrusion and an attached lower-right edge. */
+.cover-book:not([style*="--cover-ink"]) .cover-inscription[data-surface=metal] :is(.cover-year,.cover-owner,.cover-title){background:linear-gradient(154deg,#fff2ba 0%,#d3af5c 19%,#fff7cc 32%,#ad8030 48%,#ebcd81 62%,#a2772c 78%,#f1d58e 100%)!important;background-clip:text!important;-webkit-background-clip:text!important;color:transparent!important}
+.cover-book .cover-inscription[data-surface=metal] :is(.cover-year,.cover-owner,.cover-title){text-shadow:none;filter:drop-shadow(.012em .022em 0 #92703d) drop-shadow(.012em .022em 0 #745125) drop-shadow(.018em .03em .016em #160f09a6)!important;-webkit-text-stroke:.004em #805e2d66}
+/* Polished hard surfaces: a translucent face and sharp refracting bevel. */
+.cover-book .cover-inscription[data-surface=glass] :is(.cover-year,.cover-owner,.cover-title){color:var(--cover-ink,#e8f3f0d9)!important;text-shadow:-.014em -.025em .006em #fffef0,.017em .025em .005em #3a6c7199,.03em .05em .018em #143d4a80;-webkit-text-stroke:.006em #f7ffff8c}
+.cover-book .cover-inscription[data-surface=gem] :is(.cover-year,.cover-owner,.cover-title){color:var(--cover-ink,#e8cf8e)!important;text-shadow:-.015em -.025em 0 #fff1c2,.015em .03em 0 #8a6329,.025em .055em .018em #1a1715b3;-webkit-text-stroke:.006em #c19a53}
+/* Grain-cut wood lettering and chisel-cut stone mounts. */
+.cover-book .cover-inscription[data-surface=wood] :is(.cover-year,.cover-owner,.cover-title){color:var(--cover-ink,#513521)!important;text-shadow:-.014em -.03em .012em #24120ad9,.014em .035em .012em #f7d6a494;-webkit-text-stroke:.004em #38221566}
+.cover-book .cover-inscription[data-surface=stone] :is(.cover-year,.cover-owner,.cover-title){color:var(--cover-ink,#d2c6ac)!important;text-shadow:-.013em -.02em 0 #fff8dc,.015em .026em 0 #82745d,.025em .05em .018em #171a19b3;-webkit-text-stroke:.005em #85776280}
+/* Embroidery has a ridged thread face, an edge and a small stitch contact. */
+.cover-book:not([style*="--cover-ink"]) .cover-inscription[data-surface=fabric] :is(.cover-year,.cover-owner,.cover-title){background:repeating-linear-gradient(115deg,#ead9b0 0 .025em,#b9a276 .025em .045em,#fff1cf .045em .065em)!important;background-clip:text!important;-webkit-background-clip:text!important;color:transparent!important}
+.cover-book .cover-inscription[data-surface=fabric] :is(.cover-year,.cover-owner,.cover-title){text-shadow:none;filter:drop-shadow(.01em .025em 0 #796649) drop-shadow(.018em .03em .014em #16121199)!important;-webkit-text-stroke:.004em #a28c6770}
+/* The maker's mark never inherits personal foil, colour or extrusion. */
+.cover-book .cover-brand{background:none!important;color:#39291e99!important;filter:none!important;-webkit-text-stroke:0!important;text-shadow:-.3px -.6px .4px #160b0873,.3px .7px .4px #fff5;opacity:.72;letter-spacing:.17em}
+.cover-book .cover-brand[data-surface=metal]{color:#3035348c!important;text-shadow:0 -.5px .2px #20232499,0 .6px .3px #fff9}
+.cover-book .cover-brand:is([data-surface=glass],[data-surface=gem]){color:#e7eeeb80!important;text-shadow:0 -.4px .2px #173c4766,0 .5px .2px #fffc;letter-spacing:.18em}
+.cover-book .cover-brand[data-surface=wood]{color:#47301f94!important;text-shadow:0 -.5px .3px #27170b99,0 .6px .3px #f4d9aa80}
+.cover-book .cover-brand[data-surface=fabric]{color:#a5977b!important;text-shadow:.3px .5px .2px #33291d80;letter-spacing:.13em}
+.cover-book .cover-brand[data-surface=stone]{color:#77776b99!important;text-shadow:0 -.5px .3px #282c2c8c,0 .6px .3px #ffffea94}
 
-/* Rear board: the page block must be enclosed by a substantial hard cover,
-   rather than ending in bare paper. No change to cover size or page layout. */
-.cover-book{
-  --rear-board:#28352d;
-  --rear-board-edge:#15221d;
-}
-.cover-book[data-material="leather"]{--rear-board:#30372e;--rear-board-edge:#17221d}
-.cover-book[data-material="cloth"]{--rear-board:#3e4440;--rear-board-edge:#242b28}
-.cover-book[data-material="gloss"],.cover-book[data-material="foil"]{--rear-board:#353436;--rear-board-edge:#202023}
-.cover-book[data-material="metal"]{--rear-board:#55545a;--rear-board-edge:#2d2d31}
-.cover-book .page-block{
-  border-right:3px solid #b5a98f;
-  border-bottom:3px solid #b5a98f;
-  box-shadow:
-    1px 2px 1px #fff8,
-    3px 5px 0 var(--rear-board-edge),
-    4px 8px 0 2px var(--rear-board),
-    5px 10px 0 3px var(--rear-board-edge),
-    9px 16px 12px #160b0860,
-    14px 23px 22px #160b0830;
-}
-
-/* Bound-book spine: retain the cover artwork while giving the existing
-   spine element a rounded, dimensional leather/cloth hinge. */
-.cover-book .spine{
- left:0;top:0;bottom:0;
- width:clamp(26px,7.5%,48px);
- z-index:3;
- border-radius:8px 4px 4px 8px;
- background:
-  linear-gradient(90deg,
-   #100c0b9c 0%,#fff8 9%,#0004 17%,#fff3 32%,
-   #0002 49%,#0008 75%,#fff3 85%,#0009 96%,transparent 100%);
- box-shadow:
-  inset 3px 0 4px #0008,
-  inset 8px 0 8px #fff2,
-  inset -5px 0 6px #0008,
-  3px 0 4px #0006,
-  -2px 2px 3px #0005;
- pointer-events:none;
-}
-.cover-book .spine::after{
- content:"";position:absolute;
- top:7px;bottom:7px;left:15%;right:10%;
- border-left:1px solid #fff4;
- border-right:2px solid #0007;
- border-radius:35% 22% 22% 35%;
- box-shadow:inset 3px 0 4px #fff2,2px 0 2px #0004;
-}
-.cover-book .spine::before{
- content:"";position:absolute;
- top:0;bottom:0;left:0;right:0;
- border-radius:inherit;
- background:linear-gradient(180deg,#fff3,transparent 5%,transparent 94%,#0007);
- pointer-events:none;
+/* Match the actual artwork; personal ink never colours the independent maker mark. */
+.cover-book .cover-inscription[data-surface] :is(.cover-year,.cover-owner,.cover-title){color:var(--cover-ink,var(--cover-match-ink,#dfc68f))!important}
+.cover-book .cover-brand[data-surface]{color:var(--cover-brand-ink,#39291e99)!important;font-size:clamp(6px,2.3cqw,20px)}
+.cover-book .cover-inscription .cover-owner{font-size:clamp(7px,3.8cqw,34px);max-height:2.6em}
+.cover-book .cover-inscription .cover-title{font-size:clamp(6px,3.2cqw,29px);max-height:2.6em}
+@supports(color:color-mix(in srgb,#000,#fff)){
+ .cover-book[data-cover] .cover-inscription[data-surface=metal] :is(.cover-year,.cover-owner,.cover-title){
+  background:linear-gradient(154deg,color-mix(in srgb,var(--cover-ink,var(--cover-match-ink,#b6b9b8)),white 72%) 0%,var(--cover-ink,var(--cover-match-ink,#b6b9b8)) 21%,color-mix(in srgb,var(--cover-ink,var(--cover-match-ink,#b6b9b8)),white 85%) 34%,color-mix(in srgb,var(--cover-ink,var(--cover-match-ink,#b6b9b8)),black 35%) 49%,color-mix(in srgb,var(--cover-ink,var(--cover-match-ink,#b6b9b8)),white 45%) 65%,var(--cover-ink,var(--cover-match-ink,#b6b9b8)) 100%)!important;
+  background-clip:text!important;-webkit-background-clip:text!important;color:transparent!important;
+  filter:drop-shadow(.012em .022em 0 color-mix(in srgb,var(--cover-ink,var(--cover-match-ink,#b6b9b8)),black 35%)) drop-shadow(.012em .022em 0 color-mix(in srgb,var(--cover-ink,var(--cover-match-ink,#b6b9b8)),black 60%)) drop-shadow(.018em .03em .016em #160f09a6)!important;
+ }
+ .cover-book[data-cover] .cover-inscription[data-surface=fabric] :is(.cover-year,.cover-owner,.cover-title){
+  background:repeating-linear-gradient(115deg,color-mix(in srgb,var(--cover-ink,var(--cover-match-ink,#d9cbb0)),white 32%) 0 .025em,color-mix(in srgb,var(--cover-ink,var(--cover-match-ink,#d9cbb0)),black 24%) .025em .045em,var(--cover-ink,var(--cover-match-ink,#d9cbb0)) .045em .065em)!important;
+  background-clip:text!important;-webkit-background-clip:text!important;color:transparent!important;
+  filter:drop-shadow(.01em .025em 0 color-mix(in srgb,var(--cover-ink,var(--cover-match-ink,#d9cbb0)),black 40%)) drop-shadow(.018em .03em .014em #16121199)!important;
+ }
 }
