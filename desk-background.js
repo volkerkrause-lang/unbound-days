@@ -127,28 +127,9 @@ style.textContent+=`
 }
 `;
 
-/* Final composition guardrails: a flattened photograph cannot be safely
-   rearranged at every aspect ratio. Use the existing clean desk artwork when
-   the crop would put a solid accessory under the notebook. */
-style.textContent+=`
-body.desk-enabled:not(.desk-custom) .cover-scene{
- background:#dfc49d url("./assets/desk-oak.svg") center/cover no-repeat!important;
-}
-body.desk-enabled:not(.desk-custom) .cover-scene>.cover-book{left:0}
-@media (orientation:portrait) and (min-width:701px){
- body.desk-enabled:not(.desk-custom) .cover-scene{
-  background:#dfc49d url("./assets/desk-oak.svg") center/cover no-repeat!important;
- }
-}
-@media (max-width:767px){
- body.desk-enabled:not(.desk-custom) .cover-scene{
-  background:#dfc49d url("./assets/desk-oak.svg") center/cover no-repeat!important;
- }
-}
-`;
-
 /* In landscape, move the notebook left enough to leave the cup visible on
-   the right side of the desk photograph. Portrait framing stays centred. */
+   the right side of the desk photograph. Portrait framing stays centred;
+   all layouts retain the original photograph and its existing responsive crop. */
 style.textContent+=`
 @media (orientation:landscape) and (min-width:768px){
  body.desk-enabled .cover-scene>.cover-book{
