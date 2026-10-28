@@ -3,10 +3,10 @@ import {accountConfig} from './account-config.js';
 import {scopeKey,cloudContent,fingerprint,createSync,validationNotebook} from './account-sync.js';
 import {resolveConflict} from './sync.js';
 export function mountAccounts({getState,empty,apply,persist,render,openModal,closeModal,toast,exportNotebook,snapshot,validateBackup,lock,finishLocal,onStatus=()=>{},blocked=()=>false}){
- let stopped=false,conflicts=null,cloudText=Accounts.user?'Cloud not checked':'Local notebook',timer;
+ let stopped=false,conflicts=null,cloudText=Accounts.user?'checking':'local',cloudError=false,lastConfirmed=null,timer;
  const bootId=Accounts.user?.id||null;
  const active=()=>!stopped&&!!bootId&&!blocked();
- const sync=Accounts.client&&bootId?createSync({client:Accounts.client,getState,empty,apply,persist,active,validate:content=>validateBackup(validationNotebook(content,empty())),conflict:r=>{conflicts=r;},status:text=>{cloudText=text;const el=document.querySelector('#account-cloud-status');if(el)el.textContent=text;onStatus();}}):null;
+ const sync=Accounts.client&&bootId?createSync({client:Accounts.client,getState,empty,apply,persist,active,validate:content=>validateBackup(validationNotebook(content,empty())),conflict:r=>{conflicts=r;},status:text=>{cloudText=text;cloudError=text==='Saved locally · cloud retry needed';if(text==='Saved to cloud')lastConfirmed=new Date();const el=document.querySelector('#account-sync-state');if(el)renderSyncState(el);onStatus();}}):null;
  const buttons=document.createElement('span');buttons.className='account-buttons';document.querySelector('.bar-actions').prepend(buttons);
  buttons.innerHTML=`<button class="text-action" id="account-open">${bootId?'My Account':'Log In'}</button>${bootId?'<button class="text-action" id="account-logout">Log Out</button>':''}`;
  buttons.querySelector('#account-open').onclick=()=>show().catch(e=>toast(e.message));buttons.querySelector('#account-logout')?.addEventListener('click',logout);
@@ -34,14 +34,34 @@ export function mountAccounts({getState,empty,apply,persist,render,openModal,clo
    document.querySelector('#account-signup').onclick=()=>show(signup?'login':'signup').catch(e=>toast(e.message));document.querySelector('#account-reset').onclick=()=>show('reset').catch(e=>toast(e.message));
    document.querySelector('#account-google')?.addEventListener('click',()=>run(()=>Accounts.signInGoogle()));return;
   }
-  openModal('My Account',`<p>${esc(Accounts.user.email||'Signed in')}</p><p id="account-role">Access: checking…</p><p id="account-cloud-status" role="status">${esc(cloudText)}</p><p id="account-message" role="status"></p><div class="account-controls"><button class="secondary" id="account-sync">Sync Now</button><button class="secondary" id="account-export">Export my notebook</button><button class="secondary" id="account-import">Import legacy notebook</button>${conflicts?'<button class="secondary" id="account-conflicts">Review cloud conflict</button>':''}</div><form id="account-form"><label>Email<input name="email" type="email" autocomplete="email" value="${esc(Accounts.user.email||'')}" required></label><label>New password (optional)<input name="password" type="password" autocomplete="new-password" minlength="12"></label><label>Current password (for password change)<input name="current_password" type="password" autocomplete="current-password"></label><button class="primary" type="submit">Save account settings</button></form><button class="text-action" id="account-delete">Delete account</button><p>Legacy notebooks remain separate until explicitly imported. Export before deletion. Existing Google backups require separate removal; Google Calendar, Tasks and Drive reconnect automatically after you grant access.</p>`);
-  Accounts.role().then(r=>{const el=document.querySelector('#account-role');if(el)el.textContent='Access: '+(r==='admin'?'Administrator · all features':'Regular account · Free');}).catch(()=>message('Account role could not be checked.'));
-  document.querySelector('#account-sync').onclick=()=>run(async()=>{const result=await sync.sync();render();if(result?.error)throw result.error;});
+  openModal('My Account',`<div class="account-sections"><section class="account-section"><h3>Personal Details</h3><form id="account-form"><label>Email<input name="email" type="email" autocomplete="email" value="${esc(Accounts.user.email||'')}" required></label><label>New password (optional)<input name="password" type="password" autocomplete="new-password" minlength="12"></label><label>Current password (for password change)<input name="current_password" type="password" autocomplete="current-password"></label><button class="primary" type="submit">Save account settings</button></form></section><section class="account-section"><h3>Security</h3><button class="text-action" id="account-delete">Delete account</button></section><section class="account-section"><h3>Sync &amp; Backup</h3><div id="account-sync-state" role="status"></div><div class="account-controls"><button class="secondary" id="account-export">Export my notebook</button><button class="secondary" id="account-import">Import legacy notebook</button>${conflicts?'<button class="secondary" id="account-conflicts">Review Changes</button>':''}</div><p class="scratch-note">Export before deletion. Existing Google backups require separate removal.</p></section><section class="account-section"><h3>Preferences</h3><p>Account-wide preferences are managed with your account details.</p></section></div><p id="account-message" role="status"></p><p id="account-role" class="account-role"></p>`);
+  const statusEl=document.querySelector('#account-sync-state');if(statusEl)renderSyncState(statusEl);
+  Accounts.role().then(r=>{const el=document.querySelector('#account-role');if(el)el.textContent=r==='admin'?'Access: Administrator':'';}).catch(()=>{});
   document.querySelector('#account-export').onclick=exportNotebook;
   document.querySelector('#account-import').onclick=()=>run(importLegacy);
   document.querySelector('#account-conflicts')?.addEventListener('click',review);
   document.querySelector('#account-form').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);run(async()=>{const updates={};if(f.get('email')!==Accounts.user.email)updates.email=f.get('email');if(f.get('password')){if(!f.get('current_password'))throw Error('Enter your current password. Use the reset email if you do not have one.');updates.password=f.get('password');updates.current_password=f.get('current_password');}if(!Object.keys(updates).length)return;await Accounts.result(Accounts.client.auth.updateUser(updates,{emailRedirectTo:Accounts.redirectURL()}));message(updates.email?'Confirm the email change using the verification emails.':'Password updated.');e.target.reset();});};
   document.querySelector('#account-delete').onclick=()=>deleteForm().catch(e=>toast(e.message));
+ }
+ function renderSyncState(el){
+  const state=typeof cloudText==='string'?cloudText:'';
+  if(conflicts||state==='Cloud conflict · review in My Account'){
+   el.innerHTML='<strong>Some changes need attention</strong><p>Changes on this device and in the cloud differ. Choose which version to keep for each item.</p>';
+   if(conflicts){el.insertAdjacentHTML('beforeend','<button class="secondary" id="account-conflicts">Review Changes</button>');el.querySelector('#account-conflicts').onclick=review;}
+   return;
+  }
+  if(state==='Saved locally · cloud retry needed'){
+   el.innerHTML='<strong>Some changes need attention</strong><p>Your changes are saved on this device, but could not be confirmed in the cloud.</p><button class="secondary" id="account-sync-retry">Try Again</button>';
+   el.querySelector('#account-sync-retry').onclick=()=>run(async()=>{if(!sync)throw Error('Cloud sync is unavailable.');const result=await sync.sync();if(result?.error)throw result.error;});return;
+  }
+  if(state==='local'){el.innerHTML='<strong>Notebook is saved on this device</strong><p class="scratch-note">Sign in to sync changes across devices.</p>';return;}
+  if(state==='New account · import or start writing'){el.innerHTML='<strong>Cloud notebook not created yet</strong><p class="scratch-note">Start writing or import a notebook to create it.</p>';return;}
+  if(state==='Saved to cloud'){
+   const when=lastConfirmed?`<p class="scratch-note">Last confirmed cloud save: ${esc(lastConfirmed.toLocaleString())}</p>`:'';
+   el.innerHTML=`<strong>Everything is up to date</strong>${when}`;return;
+  }
+  const labels={'checking':'Checking cloud…','Checking cloud…':'Checking cloud…','Saved locally · cloud pending':'Changes waiting to sync','Cloud save pending':'Changes waiting to sync','Another device changed this notebook · retrying':'Retrying sync…','Cloud busy · retry shortly':'Waiting to retry sync…'};
+  el.innerHTML=`<strong>${esc(labels[state]||'Cloud sync not confirmed')}</strong>`;
  }
  async function deleteForm(){
   openModal('Delete account',`<p>Export your notebook first. This permanently deletes your live cloud account and planner. Legacy guest notebooks and separate Google backups are retained.</p><button class="secondary" id="delete-export">Export notebook</button><form id="account-form"><label>Type DELETE<input name="confirmation" required pattern="DELETE" autocomplete="off"></label><label>Password<input name="password" type="password" required autocomplete="current-password"></label><p>Google-only account? Use a password reset email first to set a password.</p><div id="account-captcha"></div><p id="account-message" role="status"></p><button class="primary" type="submit">Delete account permanently</button></form>`);
