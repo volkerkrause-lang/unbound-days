@@ -28,7 +28,9 @@ test('renewal failure is visible and retryable',async()=>{
 });
 const key=btoa(String.fromCharCode(...new Uint8Array(32).fill(7)));
 test('refresh credentials use authenticated encryption and reject corruption',async()=>{
- const a=await seal('test-refresh',key),b=await seal('test-refresh',key);assert.notEqual(a,b);assert.equal(await unseal(a,key),'test-refresh');await assert.rejects(unseal(a.slice(0,10)+'A'+a.slice(11),key));
+ const a=await seal('test-refresh',key),b=await seal('test-refresh',key);assert.notEqual(a,b);assert.equal(await unseal(a,key),'test-refresh');
+ const damaged=Uint8Array.from(atob(a),c=>c.charCodeAt(0)),ciphertextByte=12+Math.floor((damaged.length-12)/2),original=damaged[ciphertextByte];damaged[ciphertextByte]^=1;assert.notEqual(damaged[ciphertextByte],original,'Test fixture must actually alter a ciphertext byte');
+ const corrupted=btoa(String.fromCharCode(...damaged));assert.notEqual(corrupted,a,'Corrupted payload must differ from the valid payload');await assert.rejects(unseal(corrupted,key));
 });
 function fixture({sub='google-one',aud='client',scopes=googleScopes,googleError='',existing=null,authenticated=true}={}){
  const calls=[],writes=[];const env={APP_ORIGINS:'https://dev.test',GOOGLE_CLIENT_ID:'client',GOOGLE_CLIENT_SECRET:'secret',GOOGLE_TOKEN_KEY:key};

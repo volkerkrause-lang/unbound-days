@@ -27,6 +27,7 @@ jobs:
         if: startsWith(github.ref, 'refs/heads/development/')
         run: |
           node server.mjs &
+          npm run test:browser:account
           node scripts/mobile-smoke.mjs
           node scripts/cover-artwork-audit.mjs
           node scripts/cover-library-smoke.mjs
