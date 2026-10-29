@@ -1,4 +1,11 @@
 import {test} from 'node:test';import assert from 'node:assert/strict';import {mergeNotebook,resolveConflict,notebookContent,unwrapBackup} from '../sync.js';
+test('cleared task warnings stay cleared when cloud JSON key order changes; actual remote edits still require review',()=>{
+ const base={tasks:[{id:'task',title:'Writing',taskConflict:{reason:'changed',remote:{title:'Google',deleted:true},etag:'1'}}]};
+ const local={tasks:[{id:'task',title:'Writing'}]};
+ const remote={tasks:[{taskConflict:{etag:'1',remote:{deleted:true,title:'Google'},reason:'changed'},title:'Writing',id:'task'}]};
+ const merged=mergeNotebook(base,local,remote);assert.equal(merged.conflicts.length,0);assert.equal(merged.data.tasks[0].taskConflict,undefined);assert.equal(merged.data.tasks[0].title,'Writing');
+ remote.tasks[0].taskConflict.remote.title='Changed in Google';assert.equal(mergeNotebook(base,local,remote).conflicts.length,1);
+});
 test('different fields edited on different devices both survive',()=>{const b={entries:{a:'one',b:'two'}},l={entries:{a:'local',b:'two'}},r={entries:{a:'one',b:'remote'}};assert.deepEqual(mergeNotebook(b,l,r),{data:{entries:{a:'local',b:'remote'}},conflicts:[]});});
 test('conflicting writing stays local until explicit resolution',()=>{const x=mergeNotebook({a:'old'},{a:'local'},{a:'cloud'});assert.equal(x.data.a,'local');assert.equal(x.conflicts.length,1);resolveConflict(x.data,x.conflicts[0],'remote');assert.equal(x.data.a,'cloud');});
 test('entity deletion versus editing is a conflict, not lost writing',()=>{const x=mergeNotebook({notes:[{id:'n',title:'old'}]},{notes:[]},{notes:[{id:'n',title:'new'}]});assert.equal(x.conflicts.length,1);resolveConflict(x.data,x.conflicts[0],'remote');assert.equal(x.data.notes[0].title,'new');});

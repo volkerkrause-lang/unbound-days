@@ -37,3 +37,11 @@ test('Google review batch refuses a changed conflict or switched account after t
  view.click({taskAction:'use-google-reviews'});account='b';view.click({taskAction:'confirm-google-reviews'});
  assert.equal(writes,0);assert.equal(state.tasks[0].title,'Local');assert.ok(state.tasks[0].taskConflict);
 });
+
+test('Google review confirmation tolerates database key reordering without accepting changed values',()=>{
+ const state={tasks:[{id:'review',title:'Local',googleTask:{account:'a',id:'remote'},taskConflict:{remote:{title:'Google',done:true,deleted:false},etag:'1'}}],settings:{}};let writes=0;
+ const view=createTaskView({getState:()=>state,save:()=>writes++,render:()=>{},openModal:()=>{},closeModal:()=>{},toast:()=>{},identity:()=> 'a'});
+ view.click({taskAction:'use-google-reviews'});
+ state.tasks[0].taskConflict={etag:'1',remote:{deleted:false,done:true,title:'Google'}};
+ view.click({taskAction:'confirm-google-reviews'});assert.equal(writes,1);assert.equal(state.tasks[0].title,'Google');assert.equal(state.tasks[0].taskConflict,undefined);
+});

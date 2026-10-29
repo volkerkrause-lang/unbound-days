@@ -5,6 +5,17 @@ import {PGlite} from '@electric-sql/pglite';
 import {scopeKey,reconcile,createSync,fingerprint,cloudContent,validationNotebook} from '../account-sync.js';
 const empty=()=>({version:1,events:[],tasks:[],notes:[],habits:[],entries:{},ink:{},trash:[],bookmarks:[],settings:{}});
 const A='00000000-0000-4000-8000-000000000001',B='00000000-0000-4000-8000-000000000002';
+test('unchanged cloud notebooks with reordered JSON keys confirm saved without another write',async()=>{
+ Object.defineProperty(globalThis,'navigator',{configurable:true,value:{onLine:true}});
+ try{
+  const local={...empty(),tasks:[{id:'task',title:'Writing',done:false}]};
+  const remote={...empty(),tasks:[{done:false,title:'Writing',id:'task'}]};
+  let state={...local,_cloud:{revision:1,base:structuredClone(local)}},writes=0,status='';
+  const client={from:()=>({select:()=>({limit:async()=>({data:[{data:remote,revision:1}]})})}),rpc:async()=>{writes++;return {data:{revision:2}};}};
+  await createSync({client,getState:()=>state,empty,apply:(data,meta)=>state={...data,_cloud:meta},persist:()=>{},status:text=>status=text,conflict:()=>assert.fail('unexpected conflict')}).sync();
+  assert.equal(writes,0);assert.equal(status,'Saved to cloud');assert.equal(state.tasks[0].title,'Writing');
+ }finally{delete globalThis.navigator;}
+});
 test('database denies cross-account access and self-appointed admin; CAS/imports stay atomic',async()=>{
  const db=new PGlite();try{
  await db.exec(`create role anon;create role authenticated;create schema auth;create table auth.users(id uuid primary key);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;grant usage on schema auth to authenticated,anon;grant execute on function auth.uid() to authenticated,anon;`);

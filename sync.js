@@ -1,5 +1,14 @@
 // Three-way merging preserves unrelated edits and exposes same-field conflicts.
-const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+// Database JSON objects can return their keys in a different order. Compare
+// their values, preserving array order and JSON's omission of undefined fields.
+export function sameNotebookValue(a,b){
+ if(a===b)return true;
+ if(!a||!b||typeof a!=='object'||typeof b!=='object')return false;
+ if(Array.isArray(a)||Array.isArray(b))return Array.isArray(a)&&Array.isArray(b)&&a.length===b.length&&a.every((value,i)=>sameNotebookValue(value,b[i]));
+ const keys=Object.keys(a).filter(key=>a[key]!==undefined),otherKeys=Object.keys(b).filter(key=>b[key]!==undefined);
+ return keys.length===otherKeys.length&&keys.every(key=>sameNotebookValue(a[key],b[key]));
+}
+const same=sameNotebookValue;
 const copy=x=>x===undefined?undefined:structuredClone(x);
 export function notebookContent(s){const {googleClientId,selectedCalendars,defaultCalendar,backupProvider,taskView,...settings}=s.settings||{};return {version:1,events:s.events||[],tasks:s.tasks||[],notes:s.notes||[],habits:s.habits||[],entries:s.entries||{},ink:s.ink||{},trash:s.trash||[],bookmarks:s.bookmarks||[],settings};}
 export function mergeNotebook(base,local,remote){
