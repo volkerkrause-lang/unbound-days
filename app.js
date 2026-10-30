@@ -244,7 +244,7 @@ function setupInk(){
  inkCanvas=document.querySelector('#ink-canvas');if(!inkCanvas)return;inkNoteKey=noteId;inkPaths=(state.ink[inkNoteKey]||[]).map(normaliseStroke);if(setupInk.key!==KEY+':'+noteId){inkUndo=[];inkRedo=[];setupInk.key=KEY+':'+noteId;}inkTool=state.settings.noteTool||inkTool;ideaInkSize=state.settings.noteSize||ideaInkSize;ideaSelection=[];ideaLasso=[];ideaDragPoint=null;ideaInkColour=state.settings.noteColour||state.settings.ink||ideaInkColour;
  const resize=()=>{if(!inkCanvas?.isConnected)return;const bounds=inkCanvas.getBoundingClientRect();if(!bounds.width)return;const scale=devicePixelRatio||1;inkCanvas.width=Math.max(1,Math.round(bounds.width*scale));inkCanvas.height=Math.max(1,Math.round(bounds.height*scale));inkContext=inkCanvas.getContext('2d');inkContext.setTransform(scale,0,0,scale,0,0);drawInk();};
  setupInk.observer?.disconnect();setupInk.observer=new ResizeObserver(resize);setupInk.observer.observe(inkCanvas);resize();
- let activePointer=null;
+ let activePointer=null,activePointerType=null,redoBeforeStroke=[];
  // Keep the existing palm-rejection preference for finger input, while always
  // allowing a real stylus (including Samsung S Pen) to draw on the canvas.
  const stylusOnly=navigator.maxTouchPoints>1&&!state.settings.fingerDrawing;
@@ -252,19 +252,29 @@ function setupInk(){
  const point=e=>{const r=inkCanvas.getBoundingClientRect();return {x:Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),y:Math.max(0,Math.min(1,(e.clientY-r.top)/r.height)),p:e.pressure||.5};};
  const remember=()=>{inkUndo.push(structuredClone(inkPaths));if(inkUndo.length>50)inkUndo.shift();inkRedo=[];};
  const insideSelection=p=>{const bounds=selectionBounds(inkPaths,ideaSelection);return bounds&&p.x>=bounds.left&&p.x<=bounds.right&&p.y>=bounds.top&&p.y<=bounds.bottom;};
- inkCanvas.onpointerdown=e=>{const isPenInput=e.pointerType==='pen',isFingerTouch=e.pointerType==='touch';if(e.button>0||activePointer!==null||(stylusOnly&&isFingerTouch&&!isPenInput))return;activePointer=e.pointerId;e.preventDefault();inkCanvas.setPointerCapture(e.pointerId);const p=point(e);
+ inkCanvas.onpointerdown=e=>{const isPenInput=e.pointerType==='pen',isFingerTouch=e.pointerType==='touch';if(e.button>0||(stylusOnly&&isFingerTouch&&!isPenInput))return;
+  if(activePointer!==null){
+   // A palm may land before the S Pen when finger drawing is enabled.
+   if(!isPenInput||activePointerType!=='touch'||!inkDrawing)return;
+   const palmPointer=activePointer;activePointer=null;inkDrawing=null;
+   inkPaths=inkUndo.pop();inkRedo=redoBeforeStroke;
+   if(inkCanvas.hasPointerCapture(palmPointer))inkCanvas.releasePointerCapture(palmPointer);
+  }
+  activePointer=e.pointerId;activePointerType=e.pointerType;redoBeforeStroke=inkRedo.slice();e.preventDefault();inkCanvas.setPointerCapture(e.pointerId);const p=point(e);
   if(inkTool==='lasso'){if(ideaSelection.length&&insideSelection(p)){remember();ideaDragPoint=p;}else{ideaSelection=[];ideaLasso=[p];ideaDragPoint=null;}drawInk();updateIdeaSelectionStatus();return;}
   remember();
   if(inkTool==='eraser'&&ideaEraserMode==='stroke'){inkPaths=eraseWholeStrokes(inkPaths,p,Math.max(.012,ideaInkSize/350));inkDrawing={tool:'stroke-eraser',points:[p]};saveIdeaInk(true);scheduleInkDraw();return;}
   const opacity=inkTool==='highlighter' ? .3 : inkTool==='pencil' ? .72 : 1,size=inkTool==='highlighter'?Math.max(10,ideaInkSize*1.6):inkTool==='eraser'?Math.max(12,ideaInkSize*2):ideaInkSize;
   inkDrawing=normaliseStroke({tool:inkTool,color:ideaInkColour,size,opacity,points:[p]});inkPaths.push(inkDrawing);saveIdeaInk(true);scheduleInkDraw();
  };
- inkCanvas.onpointermove=e=>{if(e.pointerId!==activePointer||!inkCanvas.hasPointerCapture(e.pointerId))return;const p=point(e);
+ inkCanvas.onpointermove=e=>{if(e.pointerId!==activePointer||!inkCanvas.hasPointerCapture(e.pointerId))return;e.preventDefault();const p=point(e);
   if(inkTool==='lasso'){if(ideaDragPoint&&ideaSelection.length){inkPaths=moveStrokes(inkPaths,ideaSelection,p.x-ideaDragPoint.x,p.y-ideaDragPoint.y);ideaDragPoint=p;}else ideaLasso.push(p);drawInk();return;}
   if(inkTool==='eraser'&&ideaEraserMode==='stroke'&&inkDrawing){inkPaths=eraseWholeStrokes(inkPaths,p,Math.max(.012,ideaInkSize/350));saveIdeaInk(true);scheduleInkDraw();return;}
-  if(inkDrawing){for(const sample of (e.getCoalescedEvents?.()?.length?e.getCoalescedEvents():[e]))inkDrawing.points.push(point(sample));saveIdeaInk(true);scheduleInkDraw();}
+  if(inkDrawing){const samples=e.getCoalescedEvents?.();for(const sample of (samples?.length?samples:[e]))inkDrawing.points.push(point(sample));saveIdeaInk(true);scheduleInkDraw();}
  };
- inkCanvas.onpointerup=inkCanvas.onpointercancel=e=>{if(e.pointerId!==activePointer)return;activePointer=null;
+ inkCanvas.onpointerup=inkCanvas.onpointercancel=inkCanvas.onlostpointercapture=e=>{if(e.pointerId!==activePointer)return;
+  if(e.type==='pointerup')inkCanvas.onpointermove(e);
+  activePointer=null;activePointerType=null;
   if(inkCanvas.hasPointerCapture(e.pointerId))inkCanvas.releasePointerCapture(e.pointerId);
   if(inkTool==='lasso'){if(!ideaDragPoint&&ideaLasso.length>2)ideaSelection=selectedStrokeIndexes(inkPaths,ideaLasso);const moved=!!ideaDragPoint;ideaLasso=[];ideaDragPoint=null;if(moved)saveIdeaInk();drawInk();updateIdeaSelectionStatus();return;}
   if(inkDrawing){inkDrawing=null;saveIdeaInk();}
@@ -302,7 +312,7 @@ if(data.editEvent){eventForm(data.editEvent);return;}if(data.editTask){taskForm(
 if(data.goalTask!==undefined){const i=Number(data.goalTask);taskForm(null,entry(`goals:${year()}:${i}`).split('\n')[0]);document.querySelector('[name=goal]').value=`${months[i]} ${year()}`;document.querySelector('#task-form [name=date]').value=`${year()}-${pad(i+1)}-01`;return;}
 if(data.note){noteId=data.note;if(state.notes.find(n=>n.id===noteId)?.idea)section='launchpad';render();return;}if(data.cover!==undefined){state.settings.cover=data.cover==='custom'?'custom':Number(data.cover);save();render();gallery();return;}if(data.fav!==undefined){const i=Number(data.fav);state.settings.favorites=state.settings.favorites.includes(i)?state.settings.favorites.filter(x=>x!==i):[...state.settings.favorites,i];save();gallery();return;}
 if(data.habit){const h=state.habits.find(h=>h.id===data.habit),d=data.habitDate;h.checks=h.checks.includes(d)?h.checks.filter(x=>x!==d):[...h.checks,d];save();render();return;}if(data.editHabit){const h=state.habits.find(h=>h.id===data.editHabit);habitForm(h);return;}
-if(await noteMedia.click(data))return;if('noteFinger'in data){state.settings.fingerDrawing=!state.settings.fingerDrawing;save();render();return;}if(data.noteMode){state.entries[paperEntry(noteId,'mode')]=data.noteMode;save();render();return;}if(data.inkTool){inkTool=data.inkTool;state.settings.noteTool=inkTool;save();if(inkTool!=='lasso'){ideaSelection=[];ideaLasso=[];drawInk();}document.querySelectorAll('[data-ink-tool]').forEach(x=>x.classList.toggle('active',x.dataset.inkTool===inkTool));updateIdeaSelectionStatus();return;}
+if(await noteMedia.click(data))return;if('noteFinger'in data){state.settings.fingerDrawing=!state.settings.fingerDrawing;save();render();return;}if(data.noteMode){state.entries[paperEntry(noteId,'mode')]=data.noteMode;save();render();return;}if(data.inkTool){inkTool=data.inkTool;state.settings.noteTool=inkTool;save();if(inkTool!=='lasso'){ideaSelection=[];ideaLasso=[];drawInk();}document.querySelectorAll('[data-ink-tool]').forEach(x=>{const selected=x.dataset.inkTool===inkTool;x.classList.toggle('active',selected);x.setAttribute('aria-pressed',String(selected));});updateIdeaSelectionStatus();return;}
 if(data.deleteNote){const n=state.notes.find(n=>n.id===data.deleteNote);confirmAction('Delete this page?', `${n.title||'Untitled page'} — this page and its writing will be kept in Recently deleted.`,()=>{removeItem('notes',n);noteId=state.notes[0]?.id||null;render();});return;}
 if(data.deleteTask){const t=state.tasks.find(t=>t.id===data.deleteTask);confirmAction('Delete task?',t.title+(t.googleTask?' — deletes this task in Google after synchronisation. A recovery copy stays in Unbound.':'' ),()=>removeItem('tasks',t));return;}
 if(data.deleteHabit){const h=state.habits.find(h=>h.id===data.deleteHabit);confirmAction('Delete habit?',h.title,()=>removeItem('habits',h));return;}
