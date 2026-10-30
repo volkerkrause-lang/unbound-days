@@ -167,8 +167,8 @@ function setupDayInk(){
  const point=e=>{const r=canvas.getBoundingClientRect();return {x:Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),y:Math.max(0,Math.min(1,(e.clientY-r.top)/r.height)),p:e.pressure||.5};};
  const update=()=>{const enabled=document.body.classList.contains('day-pencil-mode');canvas.style.pointerEvents=enabled?'auto':'none';canvas.style.touchAction=enabled?'none':'auto';};
  new ResizeObserver(draw).observe(surface);draw();update();
- canvas.onpointerdown=e=>{if(canvas.style.pointerEvents!=='auto'||e.button>0||active)return;e.preventDefault();canvas.setPointerCapture(e.pointerId);active=normaliseStroke({tool:'pen',color:state.settings.noteColour||state.settings.ink||'#313a41',size:state.settings.noteSize||3,points:[point(e)]});paths.push(active);state.ink[key]=paths;save();};
- canvas.onpointermove=e=>{if(!active||!canvas.hasPointerCapture(e.pointerId))return;e.preventDefault();for(const sample of (e.getCoalescedEvents?.()?.length?e.getCoalescedEvents():[e]))active.points.push(point(sample));draw();};
+ canvas.onpointerdown=e=>{const isPenInput=e.pointerType==='pen';if(canvas.style.pointerEvents!=='auto'||!isPenInput||e.button>0||active)return;e.preventDefault();canvas.setPointerCapture(e.pointerId);active=normaliseStroke({tool:'pen',color:state.settings.noteColour||state.settings.ink||'#313a41',size:state.settings.noteSize||3,points:[point(e)]});paths.push(active);state.ink[key]=paths;save();};
+ canvas.onpointermove=e=>{if(!active||e.pointerType!=='pen'||!canvas.hasPointerCapture(e.pointerId))return;e.preventDefault();for(const sample of (e.getCoalescedEvents?.()?.length?e.getCoalescedEvents():[e]))active.points.push(point(sample));draw();};
  canvas.onpointerup=canvas.onpointercancel=canvas.onlostpointercapture=e=>{if(!active)return;active=null;if(canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId);state.ink[key]=paths;save();draw();};
  setupDayInk.update=update;
 }
