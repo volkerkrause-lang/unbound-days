@@ -244,11 +244,15 @@ function setupInk(){
  inkCanvas=document.querySelector('#ink-canvas');if(!inkCanvas)return;inkNoteKey=noteId;inkPaths=(state.ink[inkNoteKey]||[]).map(normaliseStroke);if(setupInk.key!==KEY+':'+noteId){inkUndo=[];inkRedo=[];setupInk.key=KEY+':'+noteId;}inkTool=state.settings.noteTool||inkTool;ideaInkSize=state.settings.noteSize||ideaInkSize;ideaSelection=[];ideaLasso=[];ideaDragPoint=null;ideaInkColour=state.settings.noteColour||state.settings.ink||ideaInkColour;
  const resize=()=>{if(!inkCanvas?.isConnected)return;const bounds=inkCanvas.getBoundingClientRect();if(!bounds.width)return;const scale=devicePixelRatio||1;inkCanvas.width=Math.max(1,Math.round(bounds.width*scale));inkCanvas.height=Math.max(1,Math.round(bounds.height*scale));inkContext=inkCanvas.getContext('2d');inkContext.setTransform(scale,0,0,scale,0,0);drawInk();};
  setupInk.observer?.disconnect();setupInk.observer=new ResizeObserver(resize);setupInk.observer.observe(inkCanvas);resize();
- let activePointer=null;const stylusOnly=navigator.maxTouchPoints>1&&!state.settings.fingerDrawing;inkCanvas.style.touchAction='none';
+ let activePointer=null;
+ // Keep the existing palm-rejection preference for finger input, while always
+ // allowing a real stylus (including Samsung S Pen) to draw on the canvas.
+ const stylusOnly=navigator.maxTouchPoints>1&&!state.settings.fingerDrawing;
+ inkCanvas.style.touchAction='none';
  const point=e=>{const r=inkCanvas.getBoundingClientRect();return {x:Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),y:Math.max(0,Math.min(1,(e.clientY-r.top)/r.height)),p:e.pressure||.5};};
  const remember=()=>{inkUndo.push(structuredClone(inkPaths));if(inkUndo.length>50)inkUndo.shift();inkRedo=[];};
  const insideSelection=p=>{const bounds=selectionBounds(inkPaths,ideaSelection);return bounds&&p.x>=bounds.left&&p.x<=bounds.right&&p.y>=bounds.top&&p.y<=bounds.bottom;};
- inkCanvas.onpointerdown=e=>{if(e.button>0||activePointer!==null||(stylusOnly&&e.pointerType==='touch'))return;activePointer=e.pointerId;e.preventDefault();inkCanvas.setPointerCapture(e.pointerId);const p=point(e);
+ inkCanvas.onpointerdown=e=>{const isPenInput=e.pointerType==='pen',isFingerTouch=e.pointerType==='touch';if(e.button>0||activePointer!==null||(stylusOnly&&isFingerTouch&&!isPenInput))return;activePointer=e.pointerId;e.preventDefault();inkCanvas.setPointerCapture(e.pointerId);const p=point(e);
   if(inkTool==='lasso'){if(ideaSelection.length&&insideSelection(p)){remember();ideaDragPoint=p;}else{ideaSelection=[];ideaLasso=[p];ideaDragPoint=null;}drawInk();updateIdeaSelectionStatus();return;}
   remember();
   if(inkTool==='eraser'&&ideaEraserMode==='stroke'){inkPaths=eraseWholeStrokes(inkPaths,p,Math.max(.012,ideaInkSize/350));inkDrawing={tool:'stroke-eraser',points:[p]};saveIdeaInk(true);scheduleInkDraw();return;}
