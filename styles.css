@@ -877,4 +877,25 @@ body:has(dialog[open]) .task-widget,body:has(.dictation-review) .task-widget,bod
 
 .day-ink-clear{position:absolute;z-index:3;top:8px;right:8px;display:grid;place-items:center;width:30px;height:30px;padding:0;border:1px solid #c8c2b3;border-radius:50%;background:#fffdf6;color:#766f5e;opacity:.82;touch-action:manipulation}.day-ink-clear:not(:disabled):hover,.day-ink-clear:not(:disabled):focus-visible{opacity:1}.day-ink-clear:disabled{opacity:.3;cursor:not-allowed}.day-ink-clear svg{width:14px;height:14px;pointer-events:none}
 
-.task-note-writing{position:relative;min-height:38px}.task-note-writing .task-inline-notes{position:relative;z-index:1}.task-note-canvas{position:absolute;inset:0;z-index:2;width:100%;height:100%;pointer-events:none;touch-action:auto}.task-note-writing.ink-active .task-inline-notes{opacity:.16}.task-note-writing.ink-active .task-note-canvas{pointer-events:auto;touch-action:none;cursor:crosshair}
+.task-note-writing{position:relative;min-height:38px}.task-note-writing .task-inline-notes{position:relative;z-index:1}.task-note-canvas{position:absolute;inset:0;z-index:2;width:100%;height:100%;pointer-events:none;touch-action:auto}.task-note-writing.ink-active .task-inline-notes{opacity:.16}.task-note-writing.ink-active .task-note-canvas{pointer-events:auto;touch-action:none;cursor:crosshair}\n
+/* Improve header contrast over desk backgrounds. */
+.app-bar{
+  position:relative;z-index:30;isolation:isolate;color:#fff;
+  background:linear-gradient(110deg,rgba(29,32,31,.78),rgba(42,35,30,.64));
+  border-bottom:1px solid rgba(255,255,255,.24);
+  text-shadow:0 1px 3px rgba(0,0,0,.72);
+  -webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px)
+}
+.app-bar .brand,.app-bar .brand-symbol,.app-bar .beta,
+.app-bar #save-status,.app-bar .text-action,.app-bar .icon-button{color:#fff}
+.app-bar .brand-symbol{border-color:rgba(255,255,255,.8)}
+.app-bar .beta{opacity:.92}
+.app-bar .text-action{text-decoration-color:rgba(255,255,255,.75)}
+.app-bar .icon-button{background:rgba(255,255,255,.08)}
+.app-bar .icon-button:hover{background:rgba(255,255,255,.2)}
+.app-bar [data-action="search"]{
+  border:1px solid rgba(255,255,255,.42);
+  background:rgba(0,0,0,.16)
+}
+.app-bar [data-action="search"]:hover{background:rgba(255,255,255,.18)}
+.app-bar .account-buttons .text-action{border-radius:16px}
