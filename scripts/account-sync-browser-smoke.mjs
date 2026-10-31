@@ -52,7 +52,14 @@ async function scenario({name,initialState,read,holdFirstRead=false,injectUnknow
   await page.goto(origin,{waitUntil:'commit'});
   await page.locator('#account-open').waitFor();
   await page.locator('#account-open').click({force:true});
-  await page.locator('#account-sync-state').waitFor();
+  try{await page.locator('#account-sync-state').waitFor({timeout:8000});}
+  catch(e){
+   const diagnostic=await page.evaluate(()=>({accountButton:document.querySelector('#account-open')?.textContent,modalText:document.querySelector('#modal')?.innerText?.slice(0,1200),statusPresent:!!document.querySelector('#account-sync-state'),sessionKeys:Object.keys(localStorage).filter(k=>k.includes('auth-token'))}));
+   console.error('Account dialog failed to initialise:',JSON.stringify({scenario:name,diagnostic,pageErrors:errors,blockedExternal},null,2));
+   await mkdir('test-results',{recursive:true});
+   await page.screenshot({path:'test-results/account-dialog-failure.png',fullPage:true});
+   throw e;
+  }
   await run({page,context,errors,blockedExternal,releaseFirst,counts:()=>({reads,rpcs}),name});
   assert.deepEqual(errors,[],`${name}: no browser runtime errors`);
   assert.deepEqual(blockedExternal,[],`${name}: no request escaped the synthetic/local origins`);
