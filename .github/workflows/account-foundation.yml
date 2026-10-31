@@ -22,27 +22,42 @@ jobs:
         if: startsWith(github.ref, 'refs/heads/development/')
         timeout-minutes: 5
         run: npx playwright install chromium
-      - name: Verify Classic & Clean mobile layout
-        timeout-minutes: 15
+      - name: Verify browser regressions independently
+        timeout-minutes: 20
         if: startsWith(github.ref, 'refs/heads/development/')
         run: |
           node server.mjs &
-          npm run test:browser:account
-          node scripts/mobile-smoke.mjs
-          node scripts/cover-artwork-audit.mjs
-          node scripts/cover-library-smoke.mjs
-          UNBOUND_DEVICE=ipad node scripts/cover-library-smoke.mjs
-          UNBOUND_DEVICE=portrait node scripts/cover-library-smoke.mjs
-          UNBOUND_DEVICE=mobile node scripts/cover-library-smoke.mjs
-          node scripts/filofax-smoke.mjs
-          node scripts/calendar-responsive-smoke.mjs
-          node scripts/template-colours-smoke.mjs
-          node scripts/polished-forms-smoke.mjs
-          node scripts/dictation-regression.mjs
-          node scripts/mobile-and-dictation-smoke.mjs
-          node scripts/mobile-refinements-smoke.mjs
-          node scripts/voice-recorder-smoke.mjs
-          UNBOUND_DEVICE=desktop node scripts/notebook-stability-smoke.mjs
+          failed=0
+          run_check() {
+            echo "::group::$1"
+            shift
+            if "$@"; then
+              echo "PASS" >> "$GITHUB_STEP_SUMMARY"
+            else
+              code=$?
+              echo "::error::Browser check failed (exit $code): $*"
+              echo "FAIL: $*" >> "$GITHUB_STEP_SUMMARY"
+              failed=1
+            fi
+            echo "::endgroup::"
+          }
+          run_check "Account synchronisation" npm run test:browser:account
+          run_check "Mobile layout" node scripts/mobile-smoke.mjs
+          run_check "Cover artwork" node scripts/cover-artwork-audit.mjs
+          run_check "Cover library" node scripts/cover-library-smoke.mjs
+          run_check "Cover library iPad" env UNBOUND_DEVICE=ipad node scripts/cover-library-smoke.mjs
+          run_check "Cover library portrait" env UNBOUND_DEVICE=portrait node scripts/cover-library-smoke.mjs
+          run_check "Cover library mobile" env UNBOUND_DEVICE=mobile node scripts/cover-library-smoke.mjs
+          run_check "Filofax" node scripts/filofax-smoke.mjs
+          run_check "Responsive calendar" node scripts/calendar-responsive-smoke.mjs
+          run_check "Template colours" node scripts/template-colours-smoke.mjs
+          run_check "Polished forms" node scripts/polished-forms-smoke.mjs
+          run_check "Dictation" node scripts/dictation-regression.mjs
+          run_check "Mobile and dictation" node scripts/mobile-and-dictation-smoke.mjs
+          run_check "Mobile refinements" node scripts/mobile-refinements-smoke.mjs
+          run_check "Voice recorder" node scripts/voice-recorder-smoke.mjs
+          run_check "Notebook stability desktop" env UNBOUND_DEVICE=desktop node scripts/notebook-stability-smoke.mjs
+          exit "$failed"
       - name: Save mobile browser result
         if: always() && startsWith(github.ref, 'refs/heads/development/')
         uses: actions/upload-artifact@v4
