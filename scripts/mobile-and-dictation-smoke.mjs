@@ -9,7 +9,7 @@ for(const [device,width,height] of [['desktop',1366,1024],['ipad-landscape',1180
   page.on('pageerror',e=>errors.push(e.message));
   await page.route('**/*',r=>new URL(r.request().url()).hostname===new URL(process.env.UNBOUND_TEST_URL||'http://localhost:4173').hostname?r.continue():r.abort());
   await page.addInitScript(()=>{
-   class Recognition{constructor(){window.testRecognition=this;}start(){this.running=true;}stop(){this.running=false;this.onend?.();}emitSlots(texts){this.onresult?.({resultIndex:texts.length-1,results:texts.map(transcript=>Object.assign([{transcript}],{isFinal:true}))});}emit(text){this.onresult?.({resultIndex:0,results:[Object.assign([{transcript:text}],{isFinal:true})]});}}
+   class Recognition{constructor(){window.testRecognition=this;}start(){this.running=true;this.onstart?.();}stop(){this.running=false;this.onend?.();}emitSlots(texts){this.onresult?.({resultIndex:texts.length-1,results:texts.map(transcript=>Object.assign([{transcript}],{isFinal:true}))});}emit(text){this.onresult?.({resultIndex:0,results:[Object.assign([{transcript:text}],{isFinal:true})]});}}
    window.SpeechRecognition=Recognition;
   });
   await page.goto(process.env.UNBOUND_TEST_URL||'http://localhost:4173');
@@ -27,15 +27,15 @@ for(const [device,width,height] of [['desktop',1366,1024],['ipad-landscape',1180
   await page.getByRole('button',{name:'Dictate',exact:true}).click();
   await page.evaluate(()=>window.testRecognition.emitSlots(['alright','alright let’s','alright let’s dictate a task']));
   assert.equal(await quick.inputValue(),'Alright let’s dictate a task');
-  await page.locator('[data-dictation="done"]').click();await page.locator('#task-quick button').click();
+  await page.locator('[data-action="dictate"].recording').click();await page.locator('#task-quick button').click();
   assert.ok(await page.evaluate(()=>JSON.parse(localStorage.getItem('unbound-days-v1')).tasks.some(t=>t.title==='Alright let’s dictate a task')));
   await page.locator('[data-section="goals"]').first().click();await page.locator('[data-planner-choice="custom"]').click();await page.locator('[data-custom-new]').click();
   await page.locator('[data-custom-add="note"]').click();const field=page.locator('.custom-note');await field.fill('Bring the blue folder tomorrow.');
   await field.evaluate(el=>{el.focus();el.setSelectionRange(10,14);});await page.getByRole('button',{name:'Dictate',exact:true}).click();await page.evaluate(()=>window.testRecognition.emit('green'));
   assert.equal(await field.inputValue(),'Bring the green folder tomorrow.');
-  await page.locator('[data-dictation="stop"]').click();if(device==='mobile')await page.screenshot({path:'/tmp/unbound-mobile-dictation-panel.png'});await page.locator('[data-dictation="select"]').click();await page.locator('[data-dictation="replace"]').click();await page.evaluate(()=>window.testRecognition.emit('red'));
+  await page.locator('[data-action="dictate"].recording').click();assert.ok(await page.locator('.dictation-tools').isVisible());if(device==='mobile')await page.screenshot({path:'/tmp/unbound-mobile-dictation-panel.png'});await page.locator('[data-dictation="select"]').click();await page.locator('[data-dictation="replace"]').click();await page.evaluate(()=>window.testRecognition.emit('red'));
   assert.equal(await field.inputValue(),'Bring the red folder tomorrow.');
-  await page.locator('[data-dictation="stop"]').click();await page.locator('[data-dictation="undo"]').click();assert.equal(await field.inputValue(),'Bring the green folder tomorrow.');
+  await page.locator('[data-action="dictate"].recording').click();await page.locator('[data-dictation="undo"]').click();assert.equal(await field.inputValue(),'Bring the green folder tomorrow.');
   // Editing while recognition runs must stop it and ignore queued results.
   await field.evaluate(el=>{el.focus();el.setSelectionRange(el.value.length,el.value.length);});await page.getByRole('button',{name:'Dictate',exact:true}).click();await page.evaluate(()=>window.testRecognition.emit('and pen'));
   await field.press('End');await field.press('!');const edited=await field.inputValue();await page.evaluate(()=>window.testRecognition.emit('late result'));assert.equal(await field.inputValue(),edited);assert.equal(await page.evaluate(()=>window.testRecognition.running),false);await page.locator('[data-dictation="done"]').click();
@@ -46,7 +46,7 @@ for(const [device,width,height] of [['desktop',1366,1024],['ipad-landscape',1180
   const toolbar=page.locator('.planner-toolbar').first();assert.ok((await toolbar.boundingBox()).height<50);assert.ok(await page.locator('.form-action-label').first().isVisible());
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+2),false);
   await page.screenshot({path:`/tmp/unbound-${device}-improvements.png`,fullPage:true});
-  await page.reload();await page.locator('[data-action="open"]').click();if(device==='mobile'){await page.locator('.mobile-pinned-tab').first().click();}else{await page.locator('[data-section="myforms"]').first().click();await page.locator('.planner-card[data-planner-open]').first().click();}assert.equal(await field.inputValue(),edited);assert.equal(await page.locator('.polished-form').count(),1);
+  await page.reload();await page.locator('[data-action="open"]').click();assert.ok(await page.locator('.home-button').isVisible());await page.locator('.home-button').click();assert.ok(await page.locator('.cover-book').isVisible());await page.locator('[data-action="open"]').click();if(device==='mobile'){await page.locator('.mobile-pinned-tab').first().click();}else{await page.locator('[data-section="myforms"]').first().click();await page.locator('.planner-card[data-planner-open]').first().click();}assert.equal(await field.inputValue(),edited);assert.equal(await page.locator('.polished-form').count(),1);
   assert.deepEqual(errors,[]);console.log(`${device}: widget filtering/completion, dictation replacement/undo/manual edits, drawing slider, record button, pin/save and reload passed`);
  }finally{await browser.close();}
 }

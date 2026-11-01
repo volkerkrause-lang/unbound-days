@@ -1,79 +1,58 @@
 const owners=new WeakMap();
-// Recognition is bound to the original field and notebook. Manual edits always win.
+
+// Browser speech recognition is intentionally optional. Permission to use the
+// microphone does not imply that the browser provides a recognition engine.
 export function createDictation({toast,identity,Recognition=()=>window.SpeechRecognition||window.webkitSpeechRecognition}){
  owners.get(document)?.destroy();
  const controller=new AbortController(),signal=controller.signal;
- let session=null,review=null,panel=null,writing=false;
+ let session=null,review=null,toolbar=null,writing=false;
  const valid=s=>s?.field.isConnected&&s.identity===identity();
- function stop(){const s=session;if(!s)return;session=null;s.recognition.onresult=s.recognition.onerror=s.recognition.onend=null;s.interim="";s.button?.classList.remove('recording');try{s.recognition.stop();}catch{}update();}
- function dismiss(){stop();review=null;panel?.remove();panel=null;}
- function commit(s,value,start,end){
-  writing=true;
-  try{s.field.value=value;s.field.setSelectionRange(start,end);s.field.dispatchEvent(new Event('input',{bubbles:true}));s.lastValue=s.field.value;}finally{writing=false;}
- }
+ const icons={select:'<path d="M4 5h16v14H4zM8 9h8M8 12h6"/>',replace:'<path d="M4 7h16M7 4 4 7l3 3M17 14v6M14 17h6"/>',undo:'<path d="M9 5 4 10l5 5M4 10h10a6 6 0 0 1 0 12"/>'};
+ function action(name,label){return `<button type="button" data-dictation="${name}" aria-label="${label}" title="${label}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[name]}</svg></button>`;}
+ function ensureToolbar(){if(toolbar?.isConnected)return;toolbar=document.createElement('div');toolbar.className='dictation-tools';toolbar.setAttribute('role','toolbar');toolbar.setAttribute('aria-label','Dictation corrections');toolbar.innerHTML=action('select','Select dictated phrase')+action('replace','Replace selected words')+action('undo','Undo dictation');toolbar.addEventListener('pointerdown',e=>{if(e.target.closest('button'))e.preventDefault();});toolbar.addEventListener('click',e=>{
+  const name=e.target.closest('[data-dictation]')?.dataset.dictation,s=review;if(!name||!valid(s))return;
+  if(name==='select'){stop();s.field.focus({preventScroll:true});s.field.setSelectionRange(s.start,s.insertEnd);update();return;}
+   if(name==='replace'){const a=s.field.selectionStart,b=s.field.selectionEnd;if(a===b){toast('Select words to replace first.');return;}stop();review={...s,before:s.field.value,start:a,end:b,lastValue:s.field.value,insertEnd:a,inserted:false};start(s.field,s.button);return;}
+  if(name==='undo'){stop();if(s.field.value!==s.lastValue){toast('Manual edits are kept.');return;}commit(s,s.before,s.start,s.end);dismiss();s.field.focus({preventScroll:true});}
+ });document.body.append(toolbar);}
  function update(){
-  if(!valid(review)){dismiss();return;}
-  if(!panel){
-   panel=document.createElement('section');panel.className='dictation-review';panel.setAttribute('aria-label','Dictation corrections');
-   panel.innerHTML='<div><strong data-dictation-status role="status"></strong><button type="button" data-dictation="done" aria-label="Finish dictation">Done</button></div><p data-dictation-hint></p><div class="dictation-actions"><button type="button" data-dictation="stop">Stop</button><button type="button" data-dictation="select">Select phrase</button><button type="button" data-dictation="replace">Replace selection</button><button type="button" data-dictation="undo">Undo dictation</button></div>';
-   panel.addEventListener('pointerdown',e=>{if(e.target.closest('button'))e.preventDefault();});
-   panel.addEventListener('click',e=>{
-    const action=e.target.closest('[data-dictation]')?.dataset.dictation,s=review;if(!valid(s)){dismiss();return;}
-    if(action==='done'){dismiss();s.field.focus({preventScroll:true});return;}
-    if(action==='stop'){stop();s.field.focus({preventScroll:true});return;}
-    if(action==='select'){stop();s.field.focus({preventScroll:true});s.field.setSelectionRange(s.start,s.insertEnd);update();return;}
-    if(action==='replace'){const start=s.field.selectionStart,end=s.field.selectionEnd;if(start===end){toast('Select the words to replace in your text first.');return;}stop();startDictation(s.field,s.button);return;}
-    if(action==='undo'){stop();if(s.field.value!==s.lastValue){toast('Your manual edits have been kept. Select words to correct them.');return;}commit(s,s.before,s.start,s.end);dismiss();s.field.focus({preventScroll:true});}
-   });document.body.append(panel);
-  }
-  panel.querySelector('[data-dictation-status]').textContent=(session?(session.interim||'Listening…'):'Check your dictation')+' · 0.4.19';
-  panel.querySelector('[data-dictation-hint]').textContent=session?'Speak one phrase. A pause finishes capture; tap the microphone again to continue.':'Select incorrect words, then tap Replace selection and say the correction.';
-  panel.querySelector('[data-dictation="stop"]').hidden=!session;
-  panel.querySelector('[data-dictation="select"]').disabled=review.insertEnd<=review.start;
-  panel.querySelector('[data-dictation="replace"]').disabled=!!session||review.field.selectionStart===review.field.selectionEnd;
-  panel.querySelector('[data-dictation="undo"]').disabled=review.field.value!==review.lastValue;
-  const viewport=window.visualViewport;
-  panel.style.bottom=Math.max(10,innerHeight-((viewport?.offsetTop||0)+(viewport?.height||innerHeight))+10)+'px';
+  if(!valid(review)){dismiss();return;}ensureToolbar();
+  toolbar.classList.toggle('is-recording',!!session);
+  toolbar.querySelector('[data-dictation="select"]').disabled=review.insertEnd<=review.start;
+  toolbar.querySelector('[data-dictation="replace"]').disabled=!!session||review.field.selectionStart===review.field.selectionEnd;
+  toolbar.querySelector('[data-dictation="undo"]').disabled=review.field.value!==review.lastValue;
  }
- function startDictation(field,button){
+ function stop(){const s=session;if(!s)return;session=null;s.stopped=true;s.button?.classList.remove('recording');try{s.recognition.stop();}catch{}update();}
+ function dismiss(){const s=session;stop();if(s)s.recognition.onresult=s.recognition.onerror=s.recognition.onend=s.recognition.onstart=null;review=null;toolbar?.remove();toolbar=null;}
+ function commit(s,value,start,end){writing=true;try{s.field.value=value;s.field.setSelectionRange(start,end);s.field.dispatchEvent(new Event('input',{bubbles:true}));s.lastValue=s.field.value;}finally{writing=false;}}
+ function start(field,button){
   if(session){stop();return;}
-  if(!field?.isConnected){toast('Tap a writing field first, then Dictate.');return;}
-  const Constructor=Recognition();if(!Constructor){toast('Use the microphone on your device keyboard. Select incorrect words to replace them.');field.focus();return;}
-  const before=field.value,start=field.selectionStart??before.length,end=field.selectionEnd??start;
-  const s={field,button,before,start,end,lastValue:before,insertEnd:start,identity:identity(),interim:"",recognition:new Constructor()};review=session=s;
-  s.recognition.lang='en-GB';// One utterance per recognition instance avoids cumulative continuous-mode
-  // results being presented as separate final segments by some recognizers.
-  s.recognition.continuous=false;s.recognition.interimResults=false;
+  if(!field?.isConnected){toast('Tap a writing field first.');return;}
+  let Constructor;try{Constructor=Recognition();}catch{}
+  if(!Constructor){toast('Speech dictation is unavailable in this browser. Use the keyboard microphone.');field.focus({preventScroll:true});return;}
+  const previous=review?.field===field?review:null,before=field.value,startAt=field.selectionStart??field.value.length,end=field.selectionEnd??startAt;
+  const s={field,button,before,start:startAt,end,lastValue:field.value,insertEnd:startAt,identity:identity(),recognition:new Constructor(),inserted:false};review=session=s;
+  s.recognition.lang='en-GB';s.recognition.continuous=false;s.recognition.interimResults=true;
+  s.recognition.onstart=()=>{if(session!==s)return;s.started=true;button?.classList.add('recording');update();};
   s.recognition.onresult=e=>{
-   if(session!==s)return;
-   if(!valid(s)){dismiss();return;}
-   if(field.value!==s.lastValue){stop();return;}
-   // In single-utterance mode the latest final transcript is the whole phrase,
-   // including intentional repetitions. Never concatenate result-list entries.
-   // Scan backwards: recognizers may resend/revise even a supposedly final slot.
-   let text='';
-   for(let i=e.results.length-1;i>=0;i--){
-    if(e.results[i].isFinal===true){text=(e.results[i][0]?.transcript||'').trim();break;}
-   }
-   if(!text){update();return;}
-   if(!before.slice(0,start).trim()||/[.!?]\s*$/.test(before.slice(0,start)))text=text.replace(/\p{L}/u,c=>c.toLocaleUpperCase('en-GB'));
-   // Keep recognition from joining neighbouring words when inserting at a caret.
-   if(start===end&&start>0&&!/\s$/.test(before.slice(0,start))&&!/^[,.;:!?]/.test(text))text=' '+text;
+   if((session!==s&&!s.stopped)||s.inserted)return;if(!valid(s)){dismiss();return;}if(field.value!==s.lastValue){stop();return;}
+   let finalText='',interim='';for(let i=e.resultIndex||0;i<e.results.length;i++){const result=e.results[i],text=result[0]?.transcript||'';if(result.isFinal)finalText+=text;else interim+=text;}
+   if(interim){toolbar?.setAttribute('aria-label',`Dictation in progress: ${interim.trim()}`);}
+   if(!finalText.trim()){update();return;}
+   let text=finalText.trim();if(!before.slice(0,startAt).trim()||/[.!?]\s*$/.test(before.slice(0,startAt)))text=text.replace(/\p{L}/u,c=>c.toLocaleUpperCase('en-GB'));
+   if(startAt===end&&startAt>0&&!/\s$/.test(before.slice(0,startAt))&&!/^[,.;:!?]/.test(text))text=' '+text;
    if(end<before.length&&!/^\s|^[,.;:!?]/.test(before.slice(end)))text+=' ';
-   s.insertEnd=start+text.length;const value=before.slice(0,start)+text+before.slice(end);if(value!==s.lastValue)commit(s,value,s.insertEnd,s.insertEnd);update();
+   s.inserted=true;s.insertEnd=startAt+text.length;commit(s,before.slice(0,startAt)+text+before.slice(end),s.insertEnd,s.insertEnd);stop();update();
   };
-  s.recognition.onerror=e=>{if(session===s){stop();toast(e.error==='not-allowed'?'Microphone permission is needed for dictation.':'Dictation stopped. Your text has been kept.');}};
-  s.recognition.onend=()=>{if(session===s){session=null;s.interim='';s.recognition.onresult=s.recognition.onerror=s.recognition.onend=null;button?.classList.remove('recording');update();}};
-  button?.classList.add('recording');field.focus({preventScroll:true});
-  try{s.recognition.start();update();}catch(e){stop();dismiss();toast(e.message);}
+  s.recognition.onerror=e=>{if(session!==s)return;const message=e.error==='not-allowed'||e.error==='service-not-allowed'?'Allow microphone and speech recognition in browser settings, then try again.':e.error==='audio-capture'?'No microphone is available. Check the device input.':e.error==='network'?'Speech recognition needs a working network connection.':'Speech recognition could not start in this browser. Use the keyboard microphone.';stop();toast(message);};
+  s.recognition.onend=()=>{if(session!==s)return;session=null;button?.classList.remove('recording');update();if(!s.started)toast('Speech recognition did not start. Use the keyboard microphone.');};
+  field.focus({preventScroll:true});ensureToolbar();update();
+  try{s.recognition.start();}catch(e){session=null;review=null;toolbar?.remove();toolbar=null;button?.classList.remove('recording');toast(e.name==='NotAllowedError'?'Allow microphone and speech recognition in browser settings.':'Speech recognition could not start. Use the keyboard microphone.');}
  }
  document.addEventListener('beforeinput',e=>{if(!writing&&session?.field===e.target)stop();},{capture:true,signal});
  document.addEventListener('input',e=>{if(!writing&&review?.field===e.target){stop();update();}},{capture:true,signal});
  document.addEventListener('selectionchange',()=>{if(review&&!session)update();},{signal});
- document.addEventListener('focusin',e=>{if(review&&e.target!==review.field&&!panel?.contains(e.target))dismiss();},{signal});
+ document.addEventListener('focusin',e=>{if(review&&e.target!==review.field&&!toolbar?.contains(e.target))dismiss();},{signal});
  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')stop();},{signal});
- window.visualViewport?.addEventListener('resize',()=>{if(review)update();},{signal});
- window.visualViewport?.addEventListener('scroll',()=>{if(review)update();},{signal});
- const api={start:startDictation,stop,dismiss,destroy(){dismiss();controller.abort();if(owners.get(document)===api)owners.delete(document);}};
- owners.set(document,api);return api;
+ const api={start,stop,dismiss,destroy(){dismiss();controller.abort();if(owners.get(document)===api)owners.delete(document);}};owners.set(document,api);return api;
 }

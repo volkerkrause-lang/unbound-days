@@ -7,7 +7,7 @@ import {createTaskSync} from './google-tasks.js';
 import {lists as taskLists,restoreTask} from './tasks.js';
 import {createTaskView} from './task-view.js';
 import {createTaskWidget} from './task-widget.js?v=0.4.17';
-import {createDictation} from './dictation.js?v=0.4.19';
+import {createDictation} from './dictation.js?v=0.4.20';
 import * as Accounts from './accounts.js';
 import {mountAccounts} from './account-ui.js';
 import {scopeKey} from './account-sync.js';
@@ -482,7 +482,7 @@ function plannerRecords(){return Object.keys(state.entries).filter(k=>/^form:[a-
 function deleteFormButton(key){return `<button class="form-delete" data-planner-delete="${key}" aria-label="Delete form" title="Delete form"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"/></svg><span class="form-delete-label">Delete</span></button>`;}
 function plannerKey(field){return `form:${plannerPage}:${field}`;}
 function plannerTitle(){if(plannerPage==='legacy')return 'Your existing goals';const r=plannerRecords().find(r=>r.key===plannerPage);return r?r.title:plannerPinned?'My forms':plannerMode==='custom'?'Build Your Own':plannerMode==='forms'?'Choose from Forms':'Planning Tools';}
-function plannerField(field,label,type='text'){const k=plannerKey(field);return `<label class="planner-label">${esc(label)}<input type="${type}" data-entry="${k}" data-no-writing-tools data-no-quick-delete aria-label="${esc(label)}" value="${esc(entry(k))}"></label>`;}
+function plannerField(field,label,type='text'){const k=plannerKey(field),defaultTitle=field==='title'&&entry(k)==='My Planning Page';return `<label class="planner-label">${esc(label)}<input type="${type}" data-entry="${k}" ${defaultTitle?'data-select-default-title="true"':''} data-no-writing-tools data-no-quick-delete aria-label="${esc(label)}" value="${esc(entry(k))}"></label>`;}
 const gym=Gym.createGymController({entries:()=>state.entries,form:()=>plannerPage,esc,save,render,id,openModal,closeModal,toast,confirmAction,snapshot,download,select:key=>{plannerPage=key;},fileInput:()=>document.querySelector('#gym-routine-file')});
 document.addEventListener('change',async e=>{if(e.target.id==='gym-routine-file'){try{await gym.importFile(e.target.files[0]);}catch(err){toast(err.message);}e.target.value='';}else if(plannerRecords().find(r=>r.key===plannerPage)?.template.id==='gym')gym.changed(e.target);});
 const packing=PackGo.createPackingController({entries:()=>state.entries,form:()=>plannerPage,esc,save,render,id,openModal,closeModal,toast,select:key=>{plannerPage=key;}});
@@ -540,6 +540,7 @@ function plannerClick(data){
  return false;
 }
 document.addEventListener('input',e=>{if(e.target.id==='planner-search'){plannerSearch=e.target.value;document.querySelector('#planner-catalogue').innerHTML=plannerCatalogue();plannerFilterSaved();}customBuilder.input(e.target);if(e.target.dataset.entry?.startsWith('form:')&&e.target.dataset.entry.endsWith(':title')){const h=app.querySelector('.book-head h1');if(h)h.textContent=e.target.value||'Planning Tools';}});
+document.addEventListener('focusin',e=>{const field=e.target;if(field.matches('[data-select-default-title="true"]')&&field.value==='My Planning Page')queueMicrotask(()=>{if(document.activeElement===field&&field.value==='My Planning Page')field.select();});});
 
 document.addEventListener('input',e=>templateLibrary.input(e.target));
 
