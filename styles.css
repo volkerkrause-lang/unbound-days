@@ -900,6 +900,12 @@ body:has(dialog[open]) .task-widget,body:has(.dictation-review) .task-widget,bod
 .app-bar [data-action="search"]:hover{background:rgba(255,255,255,.18)}
 .app-bar .account-buttons .text-action{border-radius:16px}
 
+/* The mic itself shows capture; reconnecting stays quiet and distinct. */
+.write-tools button.recording,.shared-write-tools button.recording{color:#a8323d!important;background:#f9e4e5!important;box-shadow:0 0 0 4px #bf4e4930,0 0 13px #bf4e4938!important;animation:dictation-recording-pulse 1.6s ease-in-out infinite!important}
+.write-tools button.reconnecting,.shared-write-tools button.reconnecting{color:#927c5b!important;background:#f2eddf!important;box-shadow:0 0 0 2px #b7a77b33!important;animation:none!important}
+@keyframes dictation-recording-pulse{50%{box-shadow:0 0 0 7px #bf4e4920,0 0 17px #bf4e4930!important}}
+@media(prefers-reduced-motion:reduce){.write-tools button.recording,.shared-write-tools button.recording{animation:none!important}}
+
 /* Compact shared dictation feedback and persistent Home navigation. */
 .brand-stack{display:flex;flex-direction:column;align-items:center;gap:1px}.home-button{font-size:11px;padding:3px 12px;min-height:24px}.dictation-tools{position:fixed;z-index:100;right:14px;bottom:calc(14px + env(safe-area-inset-bottom));display:flex;gap:3px;padding:4px;border:1px solid #b9ab8e;border-radius:22px;background:#fffcf4eF;box-shadow:0 3px 14px #30271928}.dictation-tools button{display:grid;place-items:center;width:36px;height:36px;min-height:36px;padding:7px;border:1px solid transparent;border-radius:50%;background:transparent;color:#586b59;touch-action:manipulation}.dictation-tools button svg{width:18px;height:18px}.dictation-tools button:disabled{display:none}.dictation-tools.is-recording button[aria-label="Select dictated phrase"]{animation:dictation-pulse 1.25s ease-in-out infinite;background:#e8eee3}.dictation-tools.is-recording button[aria-label="Select dictated phrase"]::after{content:"";position:absolute;width:6px;height:6px;margin:0 0 0 22px;border-radius:50%;background:#b55a50;animation:dictation-pulse 1s ease-in-out infinite}.write-tools button.recording,.shared-write-tools button.recording{background:#e8eee3!important;color:#586b59!important;animation:dictation-pulse 1.25s ease-in-out infinite}@keyframes dictation-pulse{50%{opacity:.48;transform:scale(.92)}}
 @media(prefers-reduced-motion:reduce){.dictation-tools *{animation:none!important}}

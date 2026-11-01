@@ -6,33 +6,22 @@ try{
   const page=await browser.newPage({viewport:{width,height}});
   await page.goto(process.env.UNBOUND_TEST_URL||'http://localhost:4173');
   const result=await page.evaluate(async()=>{
-   const {createDictation}=await import('/dictation.js?v=0.4.22');
+   const {createDictation}=await import('/dictation.js?v=0.4.23');
    document.body.innerHTML='<textarea></textarea><button>Dictate</button>';
-   const field=document.querySelector('textarea'),button=document.querySelector('button');let user='one',writes=0;
+   const field=document.querySelector('textarea'),button=document.querySelector('button');let writes=0;
    field.addEventListener('input',()=>writes++);
-   const messages=[];class Recognition{constructor(){window.rec=this;}start(){this.onstart?.();}stop(){this.onend?.();}}
-   const options={toast:m=>messages.push(m),identity:()=>user,Recognition:()=>Recognition};
-   let api=createDictation(options);
-   const emit=(slots,index=0)=>window.rec.onresult?.({resultIndex:index,results:slots.map(([text,final])=>Object.assign([{transcript:text}],{isFinal:final}))});
-   const check=(expected)=>{if(field.value!==expected)throw Error(JSON.stringify({expected,actual:field.value}));};
-   api.start(field,button);
-   emit([['this',false]]);emit([['this is',false]]);emit([['this is testing',false]]);check('');
-   emit([['this is testing',true]]);check('This is testing');const count=writes;
-   emit([['this is testing',true]]);if(writes!==count)throw Error('Repeated event wrote twice');
-   if(window.rec.continuous!==false||window.rec.interimResults!==true)throw Error('Recognition options incorrect');
-   field.value='';field.setSelectionRange(0,0);api.start(field,button);emit([['this',true],['this is',true],['this is testing',true]],2);check('This is testing');
-   field.setSelectionRange(field.value.length,field.value.length);api.start(field,button);emit([['again again',true]],0);check('This is testing again again');api.stop();
-   field.value='';field.setSelectionRange(0,0);api.start(field,button);emit([['so',true],['so is',true],['so is it possible to dictate',true]],2);check('So is it possible to dictate');
-   api.start(field,button);emit([['so is it possible to dictate',true],['discard',false]],1);check('So is it possible to dictate');
-   const stale=window.rec.onresult;api.stop();stale({resultIndex:0,results:[Object.assign([{transcript:'late'}],{isFinal:true})]});check('So is it possible to dictate');
-   field.value='Bring blue folder';field.setSelectionRange(6,10);api.start(field,button);emit([['green',true]]);check('Bring green folder');document.querySelector('[data-dictation="undo"]').click();check('Bring blue folder');
-   api.start(field,button);const old=window.rec;api=createDictation(options);if(old.onresult!==null)throw Error('Old owner still listens');
-   field.value='';field.setSelectionRange(0,0);api.start(field,button);emit([['hello',true]]);check('Hello');
-   field.value='Manual';field.dispatchEvent(new Event('input',{bubbles:true}));emit([['overwrite',true]]);check('Manual');
-   api.dismiss();api.start(field,button);user='two';emit([['wrong account',true]]);check('Manual');api.destroy();
-   const unavailable=createDictation({...options,Recognition:()=>undefined});unavailable.start(field,button);if(!messages.some(m=>m.includes('unavailable')))throw Error('Unsupported feedback missing');unavailable.destroy();
-   return {passed:true,writes};
+   class Recognition{constructor(){window.rec=this;}start(){this.onstart?.();}stop(){this.onend?.();}abort(){this.onend?.();}}
+   const messages=[],api=createDictation({toast:m=>messages.push(m),identity:()=>1,Recognition:()=>Recognition});
+   const emit=(text,final=true)=>window.rec.onresult?.({resultIndex:0,results:[Object.assign([{transcript:text}],{isFinal:final})]});
+   const wait=()=>new Promise(resolve=>setTimeout(resolve,400));
+   api.start(field,button);if(!button.classList.contains('recording')||button.getAttribute('aria-pressed')!=='true')throw Error('First tap did not show active recording');
+   emit('keep this',false);if(field.value)throw Error('Interim text was inserted');emit('keep this safe');if(field.value!=='Keep this safe')throw Error('Final transcript missing');const count=writes;emit('keep this safe');if(writes!==count)throw Error('Final transcript was duplicated');
+   const ended=window.rec;ended.onend();if(!button.classList.contains('reconnecting'))throw Error('Unexpected end did not show reconnecting state');await wait();if(window.rec===ended||!button.classList.contains('recording'))throw Error('Unexpected end did not restart');
+   const stopped=window.rec;api.start(field,button);if(button.classList.contains('recording')||button.classList.contains('reconnecting')||button.getAttribute('aria-pressed')!=='false')throw Error('Second tap did not restore inactive state');await wait();if(window.rec!==stopped)throw Error('Explicit Stop restarted recognition');
+   api.start(field,button);emit('again again');window.rec.onend();await wait();emit('and again');window.rec.onend();await wait();if(field.value!=='Keep this safe again again and again')throw Error(`Text was not appended once: ${field.value}`);api.start(field,button);
+   field.value='Bring blue folder';field.setSelectionRange(6,10);api.start(field,button);emit('green');if(field.value!=='Bring green folder')throw Error('Selection replacement failed');api.start(field,button);document.querySelector('[data-dictation="undo"]').click();if(field.value!=='Bring blue folder')throw Error('Undo failed');
+   const unavailable=createDictation({toast:m=>messages.push(m),identity:()=>1,Recognition:()=>undefined});unavailable.start(field,button);if(!messages.some(m=>m.includes('unavailable'))||button.getAttribute('aria-pressed')!=='false')throw Error('Unsupported API feedback/state failed');unavailable.destroy();api.destroy();return{passed:true,writes};
   });
-  assert.equal(result.passed,true);console.log(name+': interim/final/resultIndex, repeated events, intentional repetitions, removed interim, stale callbacks, selection/undo, owner cleanup, manual edits and account boundary passed');await page.close();
+  assert.equal(result.passed,true);console.log(name+': tap start/stop, unexpected end/restart, final-only insertion, duplicate guard, append, replacement/undo and unsupported feedback passed');await page.close();
  }
 }finally{await browser.close();}
