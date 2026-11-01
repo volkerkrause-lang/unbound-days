@@ -969,3 +969,29 @@ body:has(dialog[open]) .task-widget,body:has(.dictation-review) .task-widget,bod
 .shared-write-tools button[data-action="dictate"].recording::after,
 .write-tools button[data-action="dictate"].reconnecting::after,
 .shared-write-tools button[data-action="dictate"].reconnecting::after{content:"Stop"}
+
+/* Restore a compact, single-row phone header over the desk scene. */
+@media(max-width:760px){
+  .app-bar{
+    height:52px!important;min-height:52px;padding:0 10px!important;
+    gap:8px;flex-wrap:nowrap;overflow:hidden
+  }
+  .brand-stack{flex:0 0 auto;flex-direction:row;align-items:center;gap:0}
+  .brand{font-size:17px;gap:5px;line-height:1}
+  .brand-symbol{font-size:25px;line-height:23px}
+  .home-button{
+    position:absolute;left:14px;top:35px;margin:0!important;
+    min-height:0;padding:0;border:0;background:transparent;
+    font-size:9px;line-height:1;color:#fff!important;text-decoration:underline
+  }
+  .bar-actions{flex:0 0 auto;gap:1px;margin-left:auto;min-width:0}
+  .app-bar [data-action="search"]{
+    width:38px;height:38px;min-width:38px;padding:0;
+    border:0;background:transparent;box-shadow:none;border-radius:50%
+  }
+  .app-bar [data-action="search"] .mobile-search-label{display:none}
+  .app-bar [data-action="gallery"],.app-bar #save-status{display:none!important}
+  .app-bar [data-action="settings"]{width:36px;height:38px}
+  #app{min-height:calc(100dvh - 52px)}
+  .cover-controls{top:2px}
+}
