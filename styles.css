@@ -995,3 +995,17 @@ body:has(dialog[open]) .task-widget,body:has(.dictation-review) .task-widget,bod
   #app{min-height:calc(100dvh - 52px)}
   .cover-controls{top:2px}
 }
+
+/* Ensure the compact phone header keeps its dark glass background. */
+@media(max-width:760px){
+  .app-bar{
+    background:rgba(35,29,25,.82)!important;
+    color:#fff!important;
+    border-bottom:1px solid rgba(255,255,255,.22)!important;
+    -webkit-backdrop-filter:blur(10px);
+    backdrop-filter:blur(10px)
+  }
+  .app-bar .brand,.app-bar .brand-symbol,.app-bar .beta,
+  .app-bar .icon-button,.app-bar .text-action,.app-bar #save-status,
+  .app-bar .home-button{color:#fff!important}
+}
