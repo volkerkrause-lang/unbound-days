@@ -938,3 +938,28 @@ body:has(dialog[open]) .task-widget,body:has(.dictation-review) .task-widget,bod
   .write-tools button[data-action="dictate"].recording,
   .shared-write-tools button[data-action="dictate"].recording{animation:none!important}
 }
+
+/* Matching compact captions for all three writing tools. */
+.write-tools button[data-action="pencil"],
+.write-tools button[data-action="keyboard"],
+.shared-write-tools button[data-action="pencil"],
+.shared-write-tools button[data-action="keyboard"]{
+  display:inline-flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:1px;min-height:44px;overflow:visible;
+}
+.write-tools button[data-action="pencil"] .writing-tool-label,
+.shared-write-tools button[data-action="pencil"] .writing-tool-label{display:none}
+.write-tools button[data-action="pencil"]::after,
+.shared-write-tools button[data-action="pencil"]::after{
+  content:"Pen";display:block;font:500 9px/1.1 var(--ui,sans-serif);white-space:nowrap;
+}
+.write-tools button[data-action="keyboard"]::after,
+.shared-write-tools button[data-action="keyboard"]::after{
+  content:"Type";display:block;font:500 9px/1.1 var(--ui,sans-serif);white-space:nowrap;
+}
+.write-tools button[data-action="dictate"]::after,
+.shared-write-tools button[data-action="dictate"]::after{content:"Dictate"}
+.write-tools button[data-action="dictate"].recording::after,
+.shared-write-tools button[data-action="dictate"].recording::after,
+.write-tools button[data-action="dictate"].reconnecting::after,
+.shared-write-tools button[data-action="dictate"].reconnecting::after{content:"Stop"}
