@@ -20,10 +20,10 @@ try{
    emit([['this is testing',true]]);check('This is testing');const count=writes;
    emit([['this is testing',true]]);if(writes!==count)throw Error('Repeated event wrote twice');
    if(window.rec.continuous!==false||window.rec.interimResults!==true)throw Error('Recognition options incorrect');
-   emit([['this',true],['this is',true],['this is testing',true]],2);check('This is testing');
-   emit([['this is testing again again',true]],0);check('This is testing again again');
-   emit([['so',true]],0);emit([['so is',true]],0);emit([['so is it possible to dictate',true]],0);check('So is it possible to dictate');
-   emit([['so is it possible to dictate',true],['discard',false]],1);check('So is it possible to dictate');
+   field.value='';field.setSelectionRange(0,0);api.start(field,button);emit([['this',true],['this is',true],['this is testing',true]],2);check('This is testing');
+   field.setSelectionRange(field.value.length,field.value.length);api.start(field,button);emit([['again again',true]],0);check('This is testing again again');api.stop();
+   field.value='';field.setSelectionRange(0,0);api.start(field,button);emit([['so',true],['so is',true],['so is it possible to dictate',true]],2);check('So is it possible to dictate');
+   api.start(field,button);emit([['so is it possible to dictate',true],['discard',false]],1);check('So is it possible to dictate');
    const stale=window.rec.onresult;api.stop();stale({resultIndex:0,results:[Object.assign([{transcript:'late'}],{isFinal:true})]});check('So is it possible to dictate');
    field.value='Bring blue folder';field.setSelectionRange(6,10);api.start(field,button);emit([['green',true]]);check('Bring green folder');document.querySelector('[data-dictation="undo"]').click();check('Bring blue folder');
    api.start(field,button);const old=window.rec;api=createDictation(options);if(old.onresult!==null)throw Error('Old owner still listens');
