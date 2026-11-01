@@ -22,7 +22,7 @@ export function createDictation({toast,identity,Recognition=()=>window.SpeechRec
   toolbar.querySelector('[data-dictation="replace"]').disabled=!!session||review.field.selectionStart===review.field.selectionEnd;
   toolbar.querySelector('[data-dictation="undo"]').disabled=review.field.value!==review.lastValue;
  }
- function stop(){const s=session;if(!s)return;session=null;s.stopped=true;clearTimeout(s.startTimer);s.button?.classList.remove('recording');try{s.recognition.stop();}catch{}update();}
+ function stop(){const s=session;if(!s)return;session=null;s.stopped=true;clearTimeout(s.startTimer);clearTimeout(s.resultTimer);s.button?.classList.remove('recording');try{s.recognition.stop();}catch{}update();}
  function dismiss(){const s=session;stop();if(s)s.recognition.onresult=s.recognition.onerror=s.recognition.onend=s.recognition.onstart=null;review=null;toolbar?.remove();toolbar=null;}
  function commit(s,value,start,end){writing=true;try{s.field.value=value;s.field.setSelectionRange(start,end);s.field.dispatchEvent(new Event('input',{bubbles:true}));s.lastValue=s.field.value;}finally{writing=false;}}
  function start(field,button){
@@ -33,9 +33,10 @@ export function createDictation({toast,identity,Recognition=()=>window.SpeechRec
   const previous=review?.field===field?review:null,before=field.value,startAt=field.selectionStart??field.value.length,end=field.selectionEnd??startAt;
   const s={field,button,before,start:startAt,end,lastValue:field.value,insertEnd:startAt,identity:identity(),recognition:new Constructor(),inserted:false};review=session=s;
   s.recognition.lang='en-GB';s.recognition.continuous=false;s.recognition.interimResults=true;
-  s.recognition.onstart=()=>{if(session!==s)return;s.started=true;clearTimeout(s.startTimer);button?.classList.add('recording');update();};
+  s.recognition.onstart=()=>{if(session!==s)return;s.started=true;clearTimeout(s.startTimer);button?.classList.add('recording');s.resultTimer=setTimeout(()=>{if(session!==s)return;stop();toast('No transcription was received. Check Siri and Speech Recognition settings, or use the keyboard microphone.');},12000);update();};
   s.recognition.onresult=e=>{
    if((session!==s&&!s.stopped)||s.inserted)return;if(!valid(s)){dismiss();return;}if(field.value!==s.lastValue){stop();return;}
+   clearTimeout(s.resultTimer);s.resultTimer=setTimeout(()=>{if(session!==s)return;stop();toast('No transcription was received. Check Siri and Speech Recognition settings, or use the keyboard microphone.');},12000);
    let finalText='',interim='';for(let i=e.resultIndex||0;i<e.results.length;i++){const result=e.results[i],text=result[0]?.transcript||'';if(result.isFinal)finalText+=text;else interim+=text;}
    if(interim){toolbar?.setAttribute('aria-label',`Dictation in progress: ${interim.trim()}`);}
    if(!finalText.trim()){update();return;}
