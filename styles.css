@@ -910,3 +910,31 @@ body:has(dialog[open]) .task-widget,body:has(.dictation-review) .task-widget,bod
 .brand-stack{display:flex;flex-direction:column;align-items:center;gap:1px}.home-button{font-size:11px;padding:3px 12px;min-height:24px}.dictation-tools{position:fixed;z-index:100;right:14px;bottom:calc(14px + env(safe-area-inset-bottom));display:flex;gap:3px;padding:4px;border:1px solid #b9ab8e;border-radius:22px;background:#fffcf4eF;box-shadow:0 3px 14px #30271928}.dictation-tools button{display:grid;place-items:center;width:36px;height:36px;min-height:36px;padding:7px;border:1px solid transparent;border-radius:50%;background:transparent;color:#586b59;touch-action:manipulation}.dictation-tools button svg{width:18px;height:18px}.dictation-tools button:disabled{display:none}.dictation-tools.is-recording button[aria-label="Select dictated phrase"]{animation:dictation-pulse 1.25s ease-in-out infinite;background:#e8eee3}.dictation-tools.is-recording button[aria-label="Select dictated phrase"]::after{content:"";position:absolute;width:6px;height:6px;margin:0 0 0 22px;border-radius:50%;background:#b55a50;animation:dictation-pulse 1s ease-in-out infinite}.write-tools button.recording,.shared-write-tools button.recording{background:#e8eee3!important;color:#586b59!important;animation:dictation-pulse 1.25s ease-in-out infinite}@keyframes dictation-pulse{50%{opacity:.48;transform:scale(.92)}}
 @media(prefers-reduced-motion:reduce){.dictation-tools *{animation:none!important}}
 @media(max-width:760px){.app-bar{height:68px}.brand-stack{align-items:flex-start}.brand{gap:7px}.home-button{margin-left:32px}.dictation-tools{right:9px;bottom:calc(9px + env(safe-area-inset-bottom))}}
+
+
+/* Compact, stateful label for existing dictation controls. */
+.write-tools button[data-action="dictate"],
+.shared-write-tools button[data-action="dictate"]{
+  display:inline-flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:1px;overflow:visible;min-height:44px;
+}
+.write-tools button[data-action="dictate"] .writing-tool-label,
+.shared-write-tools button[data-action="dictate"] .writing-tool-label{display:none}
+.write-tools button[data-action="dictate"]::after,
+.shared-write-tools button[data-action="dictate"]::after{
+  content:"Record";display:block;font:500 9px/1.1 var(--ui, sans-serif);
+  letter-spacing:.01em;white-space:nowrap;
+}
+.write-tools button[data-action="dictate"].recording::after,
+.shared-write-tools button[data-action="dictate"].recording::after,
+.write-tools button[data-action="dictate"].reconnecting::after,
+.shared-write-tools button[data-action="dictate"].reconnecting::after{content:"Stop"}
+.write-tools button[data-action="dictate"].recording,
+.shared-write-tools button[data-action="dictate"].recording{
+  color:#a8323d!important;background:#f9e4e5!important;
+  animation:dictation-recording-pulse 1.6s ease-in-out infinite!important;
+}
+@media(prefers-reduced-motion:reduce){
+  .write-tools button[data-action="dictate"].recording,
+  .shared-write-tools button[data-action="dictate"].recording{animation:none!important}
+}
