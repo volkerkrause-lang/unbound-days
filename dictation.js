@@ -22,7 +22,7 @@ export function createDictation({toast,identity,Recognition=()=>window.SpeechRec
   toolbar.querySelector('[data-dictation="replace"]').disabled=!!session||review.field.selectionStart===review.field.selectionEnd;
   toolbar.querySelector('[data-dictation="undo"]').disabled=review.field.value!==review.lastValue;
  }
- function stop(){const s=session;if(!s)return;session=null;s.stopped=true;s.button?.classList.remove('recording');try{s.recognition.stop();}catch{}update();}
+ function stop(){const s=session;if(!s)return;session=null;s.stopped=true;clearTimeout(s.startTimer);s.button?.classList.remove('recording');try{s.recognition.stop();}catch{}update();}
  function dismiss(){const s=session;stop();if(s)s.recognition.onresult=s.recognition.onerror=s.recognition.onend=s.recognition.onstart=null;review=null;toolbar?.remove();toolbar=null;}
  function commit(s,value,start,end){writing=true;try{s.field.value=value;s.field.setSelectionRange(start,end);s.field.dispatchEvent(new Event('input',{bubbles:true}));s.lastValue=s.field.value;}finally{writing=false;}}
  function start(field,button){
@@ -33,7 +33,7 @@ export function createDictation({toast,identity,Recognition=()=>window.SpeechRec
   const previous=review?.field===field?review:null,before=field.value,startAt=field.selectionStart??field.value.length,end=field.selectionEnd??startAt;
   const s={field,button,before,start:startAt,end,lastValue:field.value,insertEnd:startAt,identity:identity(),recognition:new Constructor(),inserted:false};review=session=s;
   s.recognition.lang='en-GB';s.recognition.continuous=false;s.recognition.interimResults=true;
-  s.recognition.onstart=()=>{if(session!==s)return;s.started=true;button?.classList.add('recording');update();};
+  s.recognition.onstart=()=>{if(session!==s)return;s.started=true;clearTimeout(s.startTimer);button?.classList.add('recording');update();};
   s.recognition.onresult=e=>{
    if((session!==s&&!s.stopped)||s.inserted)return;if(!valid(s)){dismiss();return;}if(field.value!==s.lastValue){stop();return;}
    let finalText='',interim='';for(let i=e.resultIndex||0;i<e.results.length;i++){const result=e.results[i],text=result[0]?.transcript||'';if(result.isFinal)finalText+=text;else interim+=text;}
@@ -47,7 +47,7 @@ export function createDictation({toast,identity,Recognition=()=>window.SpeechRec
   s.recognition.onerror=e=>{if(session!==s)return;const message=e.error==='not-allowed'||e.error==='service-not-allowed'?'Allow microphone and speech recognition in browser settings, then try again.':e.error==='audio-capture'?'No microphone is available. Check the device input.':e.error==='network'?'Speech recognition needs a working network connection.':'Speech recognition could not start in this browser. Use the keyboard microphone.';stop();toast(message);};
   s.recognition.onend=()=>{if(session!==s)return;session=null;button?.classList.remove('recording');update();if(!s.started)toast('Speech recognition did not start. Use the keyboard microphone.');};
   field.focus({preventScroll:true});ensureToolbar();update();
-  try{s.recognition.start();}catch(e){session=null;review=null;toolbar?.remove();toolbar=null;button?.classList.remove('recording');toast(e.name==='NotAllowedError'?'Allow microphone and speech recognition in browser settings.':'Speech recognition could not start. Use the keyboard microphone.');}
+  try{s.recognition.start();s.startTimer=setTimeout(()=>{if(session!==s||s.started)return;stop();toast('Speech recognition did not start. Use the keyboard microphone.');},3500);}catch(e){clearTimeout(s.startTimer);session=null;review=null;toolbar?.remove();toolbar=null;button?.classList.remove('recording');toast(e.name==='NotAllowedError'?'Allow microphone and speech recognition in browser settings.':'Speech recognition could not start. Use the keyboard microphone.');}
  }
  document.addEventListener('beforeinput',e=>{if(!writing&&session?.field===e.target)stop();},{capture:true,signal});
  document.addEventListener('input',e=>{if(!writing&&review?.field===e.target){stop();update();}},{capture:true,signal});

@@ -6,7 +6,7 @@ try{
   const page=await browser.newPage({viewport:{width,height}});
   await page.goto(process.env.UNBOUND_TEST_URL||'http://localhost:4173');
   const result=await page.evaluate(async()=>{
-   const {createDictation}=await import('/dictation.js?v=0.4.20');
+   const {createDictation}=await import('/dictation.js?v=0.4.21');
    document.body.innerHTML='<textarea></textarea><button>Dictate</button>';
    const field=document.querySelector('textarea'),button=document.querySelector('button');let user='one',writes=0;
    field.addEventListener('input',()=>writes++);
