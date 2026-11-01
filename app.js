@@ -540,7 +540,7 @@ function plannerClick(data){
  return false;
 }
 document.addEventListener('input',e=>{if(e.target.id==='planner-search'){plannerSearch=e.target.value;document.querySelector('#planner-catalogue').innerHTML=plannerCatalogue();plannerFilterSaved();}customBuilder.input(e.target);if(e.target.dataset.entry?.startsWith('form:')&&e.target.dataset.entry.endsWith(':title')){const h=app.querySelector('.book-head h1');if(h)h.textContent=e.target.value||'Planning Tools';}});
-document.addEventListener('focusin',e=>{const field=e.target;if(field.matches('[data-select-default-title="true"]')&&field.value==='My Planning Page')queueMicrotask(()=>{if(document.activeElement===field&&field.value==='My Planning Page')field.select();});});
+document.addEventListener('focusin',e=>{const field=e.target,isDefaultTitle=field.matches('input[data-entry^="form:"][data-entry$=":title"]')&&field.value.trim().toLocaleLowerCase('en-GB')==='my planning page';if(isDefaultTitle)queueMicrotask(()=>{if(document.activeElement===field&&field.value.trim().toLocaleLowerCase('en-GB')==='my planning page')field.select();});});
 
 document.addEventListener('input',e=>templateLibrary.input(e.target));
 

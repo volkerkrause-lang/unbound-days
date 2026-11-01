@@ -31,7 +31,7 @@ for(const [device,width,height] of [['desktop',1366,1024],['ipad-landscape',1180
   assert.equal(await quick.inputValue(),'Alright let’s dictate a task');
   await page.locator('#task-quick button').click();
   assert.ok(await page.evaluate(()=>JSON.parse(localStorage.getItem('unbound-days-v1')).tasks.some(t=>t.title==='Alright let’s dictate a task')));
-  await page.locator('[data-section="goals"]').first().click();await page.locator('[data-planner-choice="custom"]').click();await page.locator('[data-custom-new]').click();
+  await page.locator('[data-section="goals"]').first().click();await page.locator('[data-planner-choice="custom"]').click();await page.locator('[data-custom-new]').click();const defaultFormTitle=page.locator('.custom-form-name input');await defaultFormTitle.focus();assert.equal(await defaultFormTitle.evaluate(el=>el.selectionEnd-el.selectionStart),await defaultFormTitle.inputValue().then(v=>v.length));await defaultFormTitle.fill('Clinical Page');
   await page.locator('[data-custom-add="note"]').click();const field=page.locator('.custom-note');await field.fill('Bring the blue folder tomorrow.');
   await field.evaluate(el=>{el.focus();el.setSelectionRange(10,14);});await page.getByRole('button',{name:'Dictate',exact:true}).click();await page.evaluate(()=>window.testRecognition.emit('green'));
   assert.equal(await field.inputValue(),'Bring the green folder tomorrow.');
