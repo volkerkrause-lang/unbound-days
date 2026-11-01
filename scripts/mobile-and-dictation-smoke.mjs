@@ -25,20 +25,22 @@ for(const [device,width,height] of [['desktop',1366,1024],['ipad-landscape',1180
   await page.locator('[data-section="tasks"]').first().click();
   const quick=page.locator('#task-quick input[name="title"]');await quick.focus();
   await page.getByRole('button',{name:'Dictate',exact:true}).click();
+  await page.getByRole('button',{name:'Dictate',exact:true}).click();assert.equal(await page.evaluate(()=>window.testRecognition.running),false);
+  await page.getByRole('button',{name:'Dictate',exact:true}).click();
   await page.evaluate(()=>window.testRecognition.emitSlots(['alright','alright let’s','alright let’s dictate a task']));
   assert.equal(await quick.inputValue(),'Alright let’s dictate a task');
-  await page.locator('[data-action="dictate"].recording').click();await page.locator('#task-quick button').click();
+  await page.locator('#task-quick button').click();
   assert.ok(await page.evaluate(()=>JSON.parse(localStorage.getItem('unbound-days-v1')).tasks.some(t=>t.title==='Alright let’s dictate a task')));
   await page.locator('[data-section="goals"]').first().click();await page.locator('[data-planner-choice="custom"]').click();await page.locator('[data-custom-new]').click();
   await page.locator('[data-custom-add="note"]').click();const field=page.locator('.custom-note');await field.fill('Bring the blue folder tomorrow.');
   await field.evaluate(el=>{el.focus();el.setSelectionRange(10,14);});await page.getByRole('button',{name:'Dictate',exact:true}).click();await page.evaluate(()=>window.testRecognition.emit('green'));
   assert.equal(await field.inputValue(),'Bring the green folder tomorrow.');
-  await page.locator('[data-action="dictate"].recording').click();assert.ok(await page.locator('.dictation-tools').isVisible());if(device==='mobile')await page.screenshot({path:'/tmp/unbound-mobile-dictation-panel.png'});await page.locator('[data-dictation="select"]').click();await page.locator('[data-dictation="replace"]').click();await page.evaluate(()=>window.testRecognition.emit('red'));
+  assert.ok(await page.locator('.dictation-tools').isVisible());if(device==='mobile')await page.screenshot({path:'/tmp/unbound-mobile-dictation-panel.png'});await page.locator('[data-dictation="select"]').click();await page.locator('[data-dictation="replace"]').click();await page.evaluate(()=>window.testRecognition.emit('red'));
   assert.equal(await field.inputValue(),'Bring the red folder tomorrow.');
-  await page.locator('[data-action="dictate"].recording').click();await page.locator('[data-dictation="undo"]').click();assert.equal(await field.inputValue(),'Bring the green folder tomorrow.');
+  await page.locator('[data-dictation="undo"]').click();assert.equal(await field.inputValue(),'Bring the green folder tomorrow.');
   // Editing while recognition runs must stop it and ignore queued results.
   await field.evaluate(el=>{el.focus();el.setSelectionRange(el.value.length,el.value.length);});await page.getByRole('button',{name:'Dictate',exact:true}).click();await page.evaluate(()=>window.testRecognition.emit('and pen'));
-  await field.press('End');await field.press('!');const edited=await field.inputValue();await page.evaluate(()=>window.testRecognition.emit('late result'));assert.equal(await field.inputValue(),edited);assert.equal(await page.evaluate(()=>window.testRecognition.running),false);await page.locator('[data-dictation="done"]').click();
+  await field.press('End');await field.press('!');const edited=await field.inputValue();await page.evaluate(()=>window.testRecognition.emit('late result'));assert.equal(await field.inputValue(),edited);assert.equal(await page.evaluate(()=>window.testRecognition.running),false);
   await page.locator('[data-custom-add="drawing"]').click();await page.getByLabel('Pen and eraser thickness',{exact:true}).click();const slider=page.getByLabel('Pen and eraser size',{exact:true});assert.ok((await slider.boundingBox()).width>180);await slider.fill('12');assert.equal(await page.locator('[data-size-value]').textContent(),'12');await page.getByLabel('Pen and eraser thickness',{exact:true}).click();
   await page.locator('[data-custom-add="voice"]').click();assert.equal(await page.locator('[data-custom-record] .record-control').count(),1);
   await page.locator('[data-planner-pin]').click();assert.equal(await page.locator('.polished-form').count(),1);assert.equal(await field.inputValue(),edited);
