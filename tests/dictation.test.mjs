@@ -20,7 +20,9 @@ test('dictation restarts unexpected session endings, stops on second tap, and in
  // Growing final-result lists use the latest final slot, preserving repetitions.
  api.start(field,button);emit([['again',true],['again again',true]],1);assert.equal(field.value,'Keep this safe again again');api.stop();assert.ok(!button.classes.has('recording'));
  field.value='';field.setSelectionRange(0,0);api.start(field,button);emit([['so',true],['so is',true],['so is possible to dictate',true]],0);assert.equal(field.value,'So is possible to dictate');api.stop();
- field.value='Bring blue folder';field.setSelectionRange(6,10);api.start(field,button);emit([['green',true]]);assert.equal(field.value,'Bring green folder');api.stop();
+ field.value='I wonder if this works for Every single place';const every=field.value.indexOf('Every');field.setSelectionRange(every,every+5);api.start(field,button);emit([['Every',true]]);assert.equal(field.value,'I wonder if this works for every single place');api.stop();
+ field.value='Done. every detail';field.setSelectionRange(6,11);api.start(field,button);emit([['every',true]]);assert.equal(field.value,'Done. Every detail');api.stop();
+ field.value='Bring blue folder';field.setSelectionRange(6,10);api.start(field,button);emit([['NASA',true]]);assert.equal(field.value,'Bring NASA folder');api.stop();
  field.value='';field.setSelectionRange(0,0);api.start(field,button);emit([['so',true],['so it is possible to dictate',true]],1);assert.equal(field.value,'So it is possible to dictate');api.stop();
  api.start(field,button);const stale=rec.onresult;api.stop();stale?.({results:[],resultIndex:0});assert.equal(field.value,'So it is possible to dictate');
  api.start(field,button);const previous=rec;const replacement=createDictation(options);assert.equal(previous.onresult,null);assert.equal(previous.onerror,null);assert.equal(previous.onend,null);
