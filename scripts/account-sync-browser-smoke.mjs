@@ -1,3 +1,4 @@
+// Revision-aware sync checks assert conflict fetches use a changed remote revision.
 // Synthetic browser regression coverage. Every Supabase request is intercepted;
 // requests to any other external service are blocked before reaching the network.
 import {chromium} from 'playwright';
