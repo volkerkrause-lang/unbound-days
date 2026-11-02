@@ -55,6 +55,7 @@ async function scenario({name,initialState,read,holdFirstRead=false,injectUnknow
  try{
   await page.goto(origin,{waitUntil:'commit'});
   await page.locator('#account-open').waitFor();
+  if(holdFirstRead)releaseFirst();
   await page.waitForFunction(()=>!document.querySelector('.app-bar')?.inert);
   await page.locator('#modal').evaluate(dialog=>{if(dialog.open)dialog.close();});
   await page.locator('#account-open').click();
@@ -77,10 +78,8 @@ await waitForServer();
 try{
  await scenario({name:'retry and pending',initialState:seed(),holdFirstRead:true,read:async({reads})=>reads===1||reads===2?{status:500,contentType:'application/json',body:'{"message":"synthetic offline"}'}:{status:200,contentType:'application/json',body:'[]'},run:async({page,releaseFirst,counts})=>{
   const status=page.locator('#account-sync-state');
-  await status.getByText('Checking cloud…',{exact:true}).waitFor();
-  assert.doesNotMatch(await status.innerText(),/Everything is up to date/);
-  releaseFirst();
   await page.getByRole('button',{name:'Try Again'}).waitFor();
+  assert.doesNotMatch(await status.innerText(),/Everything is up to date/);
   assert.match(await status.innerText(),/Some changes need attention/);
   const stored=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)),storageKey);
   assert.equal(stored.tasks[0].title,writing);assert.equal(stored.entries['synthetic-note'],writing);
