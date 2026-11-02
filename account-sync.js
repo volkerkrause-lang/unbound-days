@@ -16,10 +16,13 @@ export function reconcile(state,remote,empty){
 export function createSync({client,getState,apply,persist,empty,conflict,status,active=()=>true,validate=()=>{}}){
  let busy=false,again=false,timer,knownRevision=getState()._cloud?.revision;
  async function readRemote(){
-  const {data:metaRows,error:metaError}=await client.from('notebooks').select('revision').limit(1);if(metaError)throw metaError;
-  const meta=metaRows?.[0]||null;
-  if(!meta){knownRevision=null;return null;}
-  if(knownRevision===meta.revision&&getState()._cloud?.base)return {data:getState()._cloud.base,revision:meta.revision};
+  const cached=getState()._cloud;
+  if(knownRevision!==undefined&&cached?.base){
+   const {data:metaRows,error:metaError}=await client.from('notebooks').select('revision').limit(1);if(metaError)throw metaError;
+   const meta=metaRows?.[0]||null;
+   if(!meta){knownRevision=null;return null;}
+   if(knownRevision===meta.revision)return {data:cached.base,revision:meta.revision};
+  }
   const {data:rows,error}=await client.from('notebooks').select('data,revision').limit(1);if(error)throw error;
   const remote=rows?.[0]||null;knownRevision=remote?.revision??null;return remote;
  }
