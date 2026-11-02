@@ -112,6 +112,7 @@ try{
   await page.locator('input[name="c0"][value="local"]').check();
   await page.getByRole('button',{name:'Apply choices'}).click();
   await page.waitForFunction(key=>JSON.parse(localStorage.getItem(key)).entries['synthetic-note']==='Synthetic writing must survive failed sync',storageKey);
+  for(let i=0;i<100&&counts().rpcs<1;i++)await new Promise(resolve=>setTimeout(resolve,50));
   assert.equal(counts().rpcs,1,'explicit local choice is saved through the mocked cloud endpoint');
   console.log('Account browser: conflict review preserves writing until an explicit choice, then keeps chosen writing');
  }});
