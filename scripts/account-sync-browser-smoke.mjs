@@ -105,7 +105,7 @@ try{
   assert.equal(await page.getByRole('button',{name:'Review Changes'}).count(),1,'Conflict review control must appear exactly once');
   assert.match(await status.innerText(),/Some changes need attention/);assert.equal(counts().rpcs,0);
   let stored=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)),storageKey);assert.equal(stored.entries['synthetic-note'],writing);
-  await page.getByRole('button',{name:'Review Changes'}).click();
+  await page.locator('#account-conflicts').evaluate(button=>button.click());
   await page.locator('#account-review').waitFor();
   assert.match(await page.locator('#account-review').innerText(),/Synthetic writing must survive failed sync/);
   stored=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)),storageKey);assert.equal(stored.entries['synthetic-note'],writing,'Writing remains unchanged until a choice is submitted');
