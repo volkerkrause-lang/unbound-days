@@ -19,7 +19,7 @@ const browser=await chromium.launch({headless:true,executablePath:process.env.CH
 const remoteRows=data=>[{data,revision:3}];
 const waitForServer=async()=>{for(let i=0;i<40;i++){try{const r=await fetch(origin);if(r.ok)return;}catch{}await new Promise(r=>setTimeout(r,250));}throw Error(`Preview server did not become ready at ${origin}`);};
 
-async function scenario({name,initialState,read,holdFirstRead=false,injectUnknown=false,run}){
+async function scenario({name,initialState,read,holdFirstRead=false,holdSecondRead=false,injectUnknown=false,run}){
  const context=await browser.newContext({viewport:{width:1440,height:900},reducedMotion:'reduce',serviceWorkers:'block'});
  const page=await context.newPage(),errors=[],blockedExternal=[];let reads=0,rpcs=0,releaseFirst,remoteBackup=null;
  const firstGate=new Promise(resolve=>releaseFirst=resolve);
@@ -41,7 +41,7 @@ async function scenario({name,initialState,read,holdFirstRead=false,injectUnknow
   if(u.pathname==='/functions/v1/google-connection')return route.fulfill({status:404,contentType:'application/json',body:'{"message":"synthetic connection unavailable"}'});
   if(u.pathname==='/rest/v1/notebooks'){
    reads++;
-   if(holdFirstRead&&reads===1)await firstGate;
+   if((holdFirstRead&&reads===1)||(holdSecondRead&&reads===2))await firstGate;
    const response=await read({reads});
    if(remoteBackup&&response.status===200)return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(remoteBackup)});
    return route.fulfill(response);
@@ -123,10 +123,10 @@ try{
   console.log('Account browser: new account does not claim a confirmed save');
  }});
 
- await scenario({name:'unknown status fallback',initialState:seed(),holdFirstRead:true,injectUnknown:true,read:async()=>({status:200,contentType:'application/json',body:'[]'}),run:async({page,releaseFirst})=>{
-  const status=page.locator('#account-sync-state');await page.getByText('Cloud sync not confirmed').waitFor();
+ await scenario({name:'unknown status fallback',initialState:seed(),holdSecondRead:true,injectUnknown:true,read:async()=>({status:200,contentType:'application/json',body:'[]'}),run:async({page,releaseFirst})=>{
+  const status=page.locator('#account-sync-state');await page.evaluate(()=>window.dispatchEvent(new Event('online')));await page.getByText('Cloud sync not confirmed').waitFor();
   assert.doesNotMatch(await status.innerText(),/Everything is up to date/);
-  releaseFirst();console.log('Account browser: injected unrecognised status remains unconfirmed (status-boundary fault injection)');
+  releaseFirst();await page.getByText('Everything is up to date',{exact:false}).waitFor();console.log('Account browser: injected unrecognised status remains unconfirmed (status-boundary fault injection)');
  }});
 
  // Inspect the actual account dialog at the four requested viewport sizes.
