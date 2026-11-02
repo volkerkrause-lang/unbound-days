@@ -108,7 +108,7 @@ export function mountAccounts({getState,empty,apply,persist,render,openModal,clo
  // Empty accounts are not uploaded automatically before the owner has a chance
  // to import their legacy data. Explicit Sync Now can create an empty notebook.
  const ready=sync?sync.sync():Promise.resolve();
- if(sync){document.addEventListener('focusout',()=>queueMicrotask(()=>{if(active())sync.queue();}));timer=setInterval(()=>{if(document.visibilityState==='visible')sync.sync();},60000);window.addEventListener('online',()=>sync.sync());}
+ if(sync){document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')sync.sync();});timer=setInterval(()=>{if(document.visibilityState==='visible')sync.sync();},300000);window.addEventListener('online',()=>sync.sync());}
  if(Accounts.recovery)setTimeout(recoveryForm,0);
  const file=document.createElement('input');file.type='file';file.accept='.json,application/json';file.hidden=true;document.body.append(file);
  file.onchange=()=>run(async()=>{const f=file.files[0];if(!f)return;if(f.size>15*1024*1024)throw Error('Backup is too large.');await importData(JSON.parse(await f.text()));file.value='';});
