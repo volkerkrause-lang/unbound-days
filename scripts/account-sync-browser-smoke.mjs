@@ -15,7 +15,7 @@ const writing='Synthetic writing must survive failed sync';
 const seed=(entry=writing,base=null)=>({...blank(),tasks:[{id:'synthetic-task',title:writing,date:'2026-10-28',done:false}],entries:{'synthetic-note':entry},...(base?{_cloud:{revision:2,base}}:{})});
 const chromiumArgs=process.env.CHROMIUM_EXECUTABLE_PATH?['--no-sandbox','--disable-dev-shm-usage','--no-zygote','--single-process','--use-gl=angle','--use-angle=swiftshader','--disable-gpu-sandbox','--in-process-gpu']:[];
 const browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||undefined,args:chromiumArgs});
-const remoteRows=data=>[{data,revision:2}];
+const remoteRows=data=>[{data,revision:3}];
 const waitForServer=async()=>{for(let i=0;i<40;i++){try{const r=await fetch(origin);if(r.ok)return;}catch{}await new Promise(r=>setTimeout(r,250));}throw Error(`Preview server did not become ready at ${origin}`);};
 
 async function scenario({name,initialState,read,holdFirstRead=false,injectUnknown=false,run}){
@@ -40,7 +40,7 @@ async function scenario({name,initialState,read,holdFirstRead=false,injectUnknow
   if(u.pathname==='/functions/v1/google-connection')return route.fulfill({status:404,contentType:'application/json',body:'{"message":"synthetic connection unavailable"}'});
   if(u.pathname==='/rest/v1/notebooks'){
    reads++;
-   if(holdFirstRead&&reads===2)await firstGate;
+   if(holdFirstRead&&reads===1)await firstGate;
    const response=await read({reads});
    if(remoteBackup&&response.status===200)return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(remoteBackup)});
    return route.fulfill(response);
@@ -75,7 +75,7 @@ async function scenario({name,initialState,read,holdFirstRead=false,injectUnknow
 
 await waitForServer();
 try{
- await scenario({name:'retry and pending',initialState:seed(),holdFirstRead:true,read:async({reads})=>reads===2||reads===3?{status:500,contentType:'application/json',body:'{"message":"synthetic offline"}'}:{status:200,contentType:'application/json',body:'[]'},run:async({page,releaseFirst,counts})=>{
+ await scenario({name:'retry and pending',initialState:seed(),holdFirstRead:true,read:async({reads})=>reads===1||reads===2?{status:500,contentType:'application/json',body:'{"message":"synthetic offline"}'}:{status:200,contentType:'application/json',body:'[]'},run:async({page,releaseFirst,counts})=>{
   const status=page.locator('#account-sync-state');
   await status.getByText('Checking cloud…',{exact:true}).waitFor();
   assert.doesNotMatch(await status.innerText(),/Everything is up to date/);
@@ -86,12 +86,12 @@ try{
   assert.equal(stored.tasks[0].title,writing);assert.equal(stored.entries['synthetic-note'],writing);
   await page.getByRole('button',{name:'Try Again'}).click();
   await page.getByRole('button',{name:'Try Again'}).waitFor();
-  assert.equal(counts().reads,3,'each retry performs exactly one request');
+  assert.equal(counts().reads,2,'each retry performs exactly one request');
   assert.match(await status.innerText(),/Some changes need attention/);
   const stillStored=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)),storageKey);assert.equal(stillStored.entries['synthetic-note'],writing);
   await page.getByRole('button',{name:'Try Again'}).click();
   await page.getByText('Everything is up to date',{exact:false}).waitFor();
-  assert.equal(counts().reads,4);assert.equal(counts().rpcs,1);
+  assert.equal(counts().reads,3);assert.equal(counts().rpcs,1);
   assert.match(await status.innerText(),/Everything is up to date/);
   const saved=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)),storageKey);assert.equal(saved.entries['synthetic-note'],writing);
   console.log('Account browser: checking, repeated failed retry, preserved local writing, successful retry passed');
