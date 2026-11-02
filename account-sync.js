@@ -14,7 +14,15 @@ export function reconcile(state,remote,empty){
  return {...merged,revision:remote?.revision||0,base:theirs};
 }
 export function createSync({client,getState,apply,persist,empty,conflict,status,active=()=>true,validate=()=>{}}){
- let busy=false,again=false,timer;
+ let busy=false,again=false,timer,knownRevision=getState()._cloud?.revision;
+ async function readRemote(){
+  const {data:metaRows,error:metaError}=await client.from('notebooks').select('revision').limit(1);if(metaError)throw metaError;
+  const meta=metaRows?.[0]||null;
+  if(!meta){knownRevision=null;return null;}
+  if(knownRevision===meta.revision&&getState()._cloud?.base)return {data:getState()._cloud.base,revision:meta.revision};
+  const {data:rows,error}=await client.from('notebooks').select('data,revision').limit(1);if(error)throw error;
+  const remote=rows?.[0]||null;knownRevision=remote?.revision??null;return remote;
+ }
  async function sync(){
   if(!active()||!globalThis.navigator?.onLine)return;
   if(busy){again=true;return;}busy=true;status('Checking cloud…');
@@ -22,9 +30,9 @@ export function createSync({client,getState,apply,persist,empty,conflict,status,
   try{
    do{
     if(++rounds>3){status('Cloud busy · retry shortly');break;}
-    again=false;const {data:rows,error}=await client.from('notebooks').select('data,revision').limit(1);if(error)throw error;
+    again=false;const remote=await readRemote();
     if(!active())return;
-    const remote=rows?.[0]||null;if(remote)validate(remote.data);
+    if(remote)validate(remote.data);
     if(!remote&&!getState()._cloud&&sameNotebookValue(cloudContent(getState()),cloudContent(empty()))){status('New account · import or start writing');return;}
     const result=reconcile(getState(),remote,empty());
     if(result.conflicts.length){conflict(result);status('Cloud conflict · review in My Account');return;}
@@ -34,6 +42,7 @@ export function createSync({client,getState,apply,persist,empty,conflict,status,
     const requestId=crypto.randomUUID();const {data:written,error:writeError}=await client.rpc('save_notebook',{p_data:content,p_expected_revision:result.revision,p_request_id:requestId,p_import_hash:null});
     if(writeError){if(writeError.message?.includes('revision_conflict')){status('Another device changed this notebook · retrying');again=true;continue;}throw writeError;}
     if(!active())return;
+    knownRevision=written.revision;
     // Preserve any writing made while this request was in flight.
     apply(cloudContent(getState()),{revision:written.revision,base:content});await persist();
     again=!sameNotebookValue(cloudContent(getState()),content);
