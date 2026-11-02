@@ -73,7 +73,7 @@ await waitForServer();
 try{
  await scenario({name:'retry and pending',initialState:seed(),holdFirstRead:true,read:async({reads})=>reads===2||reads===3?{status:500,contentType:'application/json',body:'{"message":"synthetic offline"}'}:{status:200,contentType:'application/json',body:'[]'},run:async({page,releaseFirst,counts})=>{
   const status=page.locator('#account-sync-state');
-  await page.getByText('Checking cloud…',{exact:true}).waitFor();
+  await status.getByText('Checking cloud…',{exact:true}).waitFor();
   assert.doesNotMatch(await status.innerText(),/Everything is up to date/);
   releaseFirst();
   await page.getByRole('button',{name:'Try Again'}).waitFor();
