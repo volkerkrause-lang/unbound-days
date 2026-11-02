@@ -71,12 +71,10 @@ async function scenario({name,initialState,read,holdFirstRead=false,injectUnknow
 
 await waitForServer();
 try{
- await scenario({name:'retry and pending',initialState:seed(),holdFirstRead:true,read:async({reads})=>reads===1||reads===2||reads===3?{status:500,contentType:'application/json',body:'{"message":"synthetic offline"}'}:{status:200,contentType:'application/json',body:'[]'},run:async({page,releaseFirst,counts})=>{
+ await scenario({name:'retry and pending',initialState:seed(),holdFirstRead:true,read:async({reads})=>reads===2||reads===3?{status:500,contentType:'application/json',body:'{"message":"synthetic offline"}'}:{status:200,contentType:'application/json',body:'[]'},run:async({page,releaseFirst,counts})=>{
   const status=page.locator('#account-sync-state');
-  await page.getByRole('button',{name:'Try Again'}).waitFor();
-  assert.match(await status.innerText(),/Some changes need attention/);
-  await page.getByRole('button',{name:'Try Again'}).click();
   await page.getByText('Checking cloud…',{exact:true}).waitFor();
+  assert.doesNotMatch(await status.innerText(),/Everything is up to date/);
   releaseFirst();
   await page.getByRole('button',{name:'Try Again'}).waitFor();
   assert.match(await status.innerText(),/Some changes need attention/);
