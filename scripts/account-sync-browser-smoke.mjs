@@ -51,7 +51,8 @@ async function scenario({name,initialState,read,holdFirstRead=false,injectUnknow
  try{
   await page.goto(origin,{waitUntil:'commit'});
   await page.locator('#account-open').waitFor();
-  await page.locator('#account-open').click({force:true});
+  await page.locator('#account-open').click();
+  await page.locator('#modal[open]').waitFor({timeout:5000});
   try{await page.locator('#account-sync-state').waitFor({timeout:8000});}
   catch(e){
    const diagnostic=await page.evaluate(()=>({accountButton:document.querySelector('#account-open')?.textContent,modalText:document.querySelector('#modal')?.innerText?.slice(0,1200),statusPresent:!!document.querySelector('#account-sync-state'),sessionKeys:Object.keys(localStorage).filter(k=>k.includes('auth-token'))}));
@@ -126,7 +127,7 @@ try{
  responsive.on('pageerror',e=>responsiveErrors.push(e.message));
  await responsive.addInitScript(({sessionKey,session,storageKey,state})=>{localStorage.setItem(sessionKey,JSON.stringify(session));localStorage.setItem(storageKey,JSON.stringify(state));localStorage.setItem('unbound-days-v1-backup-onboarding','deferred');},{sessionKey,session,storageKey,state:seed()});
  await responsive.route('**/*',async route=>{const u=new URL(route.request().url());if(u.origin===new URL(origin).origin)return route.continue();if(u.hostname!=='msgitgnzgfrsaxgklohy.supabase.co')return route.abort();if(u.pathname==='/auth/v1/user')return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(user)});if(u.pathname==='/rest/v1/profiles')return route.fulfill({status:200,contentType:'application/json',body:'{"role":"user"}'});if(u.pathname==='/rest/v1/notebooks')return route.fulfill({status:200,contentType:'application/json',body:'[]'});if(u.pathname==='/rest/v1/rpc/save_notebook')return route.fulfill({status:200,contentType:'application/json',body:'{"revision":3}'});return route.abort();});
- await responsive.goto(origin,{waitUntil:'domcontentloaded'});await responsive.locator('#account-open').click();await responsive.locator('#account-sync-state').waitFor();
+ await responsive.goto(origin,{waitUntil:'domcontentloaded'});await responsive.locator('#account-open').click();await responsive.locator('#modal[open]').waitFor({timeout:5000});await responsive.locator('#account-sync-state').waitFor();
  for(const [name,width,height] of [['desktop',1440,900],['iPad landscape',1180,820],['iPad portrait',820,1180],['mobile',390,844]]){
   await responsive.setViewportSize({width,height});const layout=await responsive.evaluate(()=>{const d=document.querySelector('#modal'),s=document.querySelector('#account-sync-state');return {width:innerWidth,height:innerHeight,documentWidth:document.documentElement.scrollWidth,dialogOverflow:getComputedStyle(d).overflowY,dialogClient:d.clientHeight,dialogScroll:d.scrollHeight,statusVisible:!!s&&s.getBoundingClientRect().width>0,exportVisible:!!document.querySelector('#account-export')?.getBoundingClientRect().width};});
   assert.ok(layout.documentWidth<=layout.width,`${name}: no horizontal page overflow`);assert.ok(layout.statusVisible&&layout.exportVisible,`${name}: status and controls are visible`);
