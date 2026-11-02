@@ -12,7 +12,7 @@ test('archive is local, reversible, and never changes Google completion',()=>{
  const task={id:'g1',title:'Keep writing',done:false,listId:'local',googleTask:{account:'a',id:'remote'}};const state={tasks:[task],settings:{}};let writes=0,toastMessage='';
  const view=createTaskView({getState:()=>state,save:()=>writes++,render:()=>{},esc:String,today:()=> '2026-11-02',openModal:()=>{},closeModal:()=>{},toast:x=>toastMessage=x});
  view.click({taskArchive:'g1'});assert.equal(task.archived,true);assert.equal(task.done,false);assert.equal(task.notes,undefined);assert.equal(writes,1);assert.match(toastMessage,/Undo/);
- assert.doesNotMatch(view.html(),/data-task-row="g1"/);view.click({taskAction:'undo-archive'});assert.equal(task.archived,false);assert.equal(task.done,false);assert.equal(writes,2);
+ assert.doesNotMatch(view.html(),/data-task-row="g1"/);view.click({taskAction:'show-archived'});assert.match(view.html(),/data-task-row="g1"/);assert.match(view.html(),/Restore Keep writing/);view.click({taskUnarchive:'g1'});assert.equal(task.archived,false);assert.equal(task.archived,false);assert.equal(task.done,false);assert.equal(writes,2);
 });
 test('selection exposes compact bulk controls and task tapping selects rather than edits',()=>{
  const state={tasks:[{id:'a',title:'One'},{id:'b',title:'Two',listId:'work'}],settings:{taskLists:[{id:'work',title:'Work'}]}};let renders=0;
