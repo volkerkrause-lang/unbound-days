@@ -31,6 +31,7 @@ export function createTaskSync({api,identity,getState,persist,active=()=>true,st
     tasks.sort((a,b)=>Number(!!a.parentId)-Number(!!b.parentId));
     for(const task of tasks){
      if(!valid())return;
+     if(task.archived)continue; // Local archive is a view state; never change or recreate its Google task.
      if(task.googleTask&&task.googleTask.account!==account)continue;
      if(task.googleTask&&task.listId!==key){task.taskSyncError='Moving between lists requires review; original Google task retained.';continue;}
      if(!task.googleTask&&task.taskOriginDevice&&task.taskOriginDevice!==device()){task.taskSyncError='New task will be created by its original device; open that device to finish syncing.';continue;}

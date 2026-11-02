@@ -8,6 +8,26 @@ test('bulk reschedule preserves unrelated tasks and local-only time',()=>{const 
 import {createTaskView} from '../task-view.js';
 test('quick entry, bulk actions and list preferences preserve existing task fields',()=>{const state={tasks:[{id:'old',title:'Legacy',notes:'Original',goal:'Goal',date:'2026-10-14',time:'09:00',done:false}],settings:{}};let writes=0;globalThis.document={querySelector:()=>null};try{const view=createTaskView({getState:()=>state,save:()=>writes++,render:()=>{},esc:s=>String(s??''),today:()=> '2026-10-14',addDays:()=> '2026-10-15',openModal:()=>{},closeModal:()=>{},taskForm:()=>{},tools:()=>'',toast:()=>{}});view.submit({id:'task-quick'},{title:' New task ',listId:'local'});assert.equal(state.tasks[1].title,'New task');view.click({taskAction:'select-all'});view.submit({id:'task-bulk-priority'},{priority:'urgent'});assert.equal(state.tasks[0].priority,'urgent');assert.equal(state.tasks[0].notes,'Original');assert.equal(state.tasks[0].goal,'Goal');assert.equal(state.tasks[0].time,'09:00');view.changed({dataset:{},hasAttribute:()=>true,value:'today'});view.enter();assert.equal(state.settings.taskView.list,'all');assert.equal(state.settings.taskView.filter,'today');assert.ok(writes>0);}finally{delete globalThis.document;}});
 
+test('archive is local, reversible, and never changes Google completion',()=>{
+ const task={id:'g1',title:'Keep writing',done:false,listId:'local',googleTask:{account:'a',id:'remote'}};const state={tasks:[task],settings:{}};let writes=0,toastMessage='';
+ const view=createTaskView({getState:()=>state,save:()=>writes++,render:()=>{},esc:String,today:()=> '2026-11-02',openModal:()=>{},closeModal:()=>{},toast:x=>toastMessage=x});
+ view.click({taskArchive:'g1'});assert.equal(task.archived,true);assert.equal(task.done,false);assert.equal(task.notes,undefined);assert.equal(writes,1);assert.match(toastMessage,/Undo/);
+ assert.doesNotMatch(view.html(),/data-task-row="g1"/);view.click({taskAction:'undo-archive'});assert.equal(task.archived,false);assert.equal(task.done,false);assert.equal(writes,2);
+});
+test('selection exposes compact bulk controls and task tapping selects rather than edits',()=>{
+ const state={tasks:[{id:'a',title:'One'},{id:'b',title:'Two',listId:'work'}],settings:{taskLists:[{id:'work',title:'Work'}]}};let renders=0;
+ const view=createTaskView({getState:()=>state,save:()=>{},render:()=>renders++,esc:String,today:()=> '2026-11-02',openModal:()=>{},closeModal:()=>{},toast:()=>{}});
+ view.click({taskAction:'toggle-selection'});assert.match(view.html(),/Select all/);assert.match(view.html(),/bulk-move/);assert.match(view.html(),/bulk-date/);assert.match(view.html(),/bulk-delete/);
+ view.click({editTask:'a'});assert.equal(renders,2);assert.match(view.html(),/1 selected/);
+ view.click({taskAction:'select-all'});assert.match(view.html(),/2 selected/);view.click({taskAction:'select-all'});assert.match(view.html(),/0 selected/);
+});
+test('bulk move and reschedule preserve unrelated task fields and roll back on save failure',()=>{
+ const state={tasks:[{id:'a',title:'A',notes:'Keep',date:'2026-11-02',listId:'local'},{id:'b',title:'B',listId:'local'}],settings:{taskLists:[{id:'work',title:'Work'}]}};let dialog='',writes=0;
+ const view=createTaskView({getState:()=>state,save:()=>{writes++;if(writes===1)throw Error('storage full');},render:()=>{},esc:String,today:()=> '2026-11-02',addDays:()=> '2026-11-03',openModal:(_title,body)=>dialog=body,closeModal:()=>{},toast:()=>{}});
+ view.click({taskAction:'select-all'});view.click({taskAction:'bulk-move'});assert.match(dialog,/task-move-form/);
+ assert.equal(view.submit({id:'task-move-form',dataset:{taskIds:'["a","b"]'}},{listId:'work'}),true);assert.equal(state.tasks[0].listId,'local');assert.equal(state.tasks[1].listId,'local');
+ view.click({taskAction:'bulk-date'});assert.match(dialog,/task-date-form/);assert.equal(state.tasks[0].notes,'Keep');
+});
 test('restoring pending deletion keeps identity; confirmed Google deletion creates only a local recovery copy',()=>{const pending={id:'pending',title:'Writing',deleted:true,googleTask:{id:'remote',base:{deleted:false}}};const tasks=[pending];restoreTask(tasks,{...pending},'new');assert.equal(tasks.length,1);assert.equal(pending.deleted,false);assert.equal(pending.googleTask.id,'remote');const deleted={id:'deleted',title:'Original',notes:'Keep',deleted:true,googleTask:{id:'gone',base:{deleted:true}}};tasks.push(deleted);const restored=restoreTask(tasks,deleted,'restored');assert.equal(restored.googleTask,undefined);assert.equal(restored.listId,'local');assert.equal(restored.notes,'Keep');assert.equal(deleted.deleted,true);});
 
 test('Google review batch resolves a large backlog in one save while preserving planner extras and account boundaries',()=>{
