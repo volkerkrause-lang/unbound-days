@@ -20,7 +20,7 @@ const waitForServer=async()=>{for(let i=0;i<40;i++){try{const r=await fetch(orig
 
 async function scenario({name,initialState,read,holdFirstRead=false,injectUnknown=false,run}){
  const context=await browser.newContext({viewport:{width:1440,height:900},reducedMotion:'reduce',serviceWorkers:'block'});
- const page=await context.newPage(),errors=[],blockedExternal=[];let reads=0,rpcs=0,releaseFirst;
+ const page=await context.newPage(),errors=[],blockedExternal=[];let reads=0,rpcs=0,releaseFirst,remoteBackup=null;
  const firstGate=new Promise(resolve=>releaseFirst=resolve);
  page.on('pageerror',e=>errors.push(e.message));
  await context.addInitScript(({sessionKey,session,storageKey,state})=>{localStorage.setItem(sessionKey,JSON.stringify(session));localStorage.setItem(storageKey,JSON.stringify(state));localStorage.setItem('unbound-days-v1-backup-onboarding','deferred');}, {sessionKey,session,storageKey,state:initialState});
@@ -40,10 +40,13 @@ async function scenario({name,initialState,read,holdFirstRead=false,injectUnknow
   if(u.pathname==='/rest/v1/notebooks'){
    reads++;
    if(holdFirstRead&&reads===2)await firstGate;
-   return route.fulfill(await read({reads}));
+   const response=await read({reads});
+   if(remoteBackup&&response.status===200)return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(remoteBackup)});
+   return route.fulfill(response);
   }
   if(u.pathname==='/rest/v1/rpc/save_notebook'){
    rpcs++;
+   const request=route.request().postDataJSON();remoteBackup=[{data:request.p_data,revision:3}];
    return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({revision:3})});
   }
   blockedExternal.push(u.origin+u.pathname);return route.abort();
@@ -87,7 +90,7 @@ try{
   const stillStored=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)),storageKey);assert.equal(stillStored.entries['synthetic-note'],writing);
   await page.getByRole('button',{name:'Try Again'}).click();
   await page.getByText('Everything is up to date',{exact:false}).waitFor();
-  assert.equal(counts().reads,4);assert.equal(counts().rpcs,2);
+  assert.equal(counts().reads,4);assert.equal(counts().rpcs,1);
   assert.match(await status.innerText(),/Everything is up to date/);
   const saved=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)),storageKey);assert.equal(saved.entries['synthetic-note'],writing);
   console.log('Account browser: checking, repeated failed retry, preserved local writing, successful retry passed');
