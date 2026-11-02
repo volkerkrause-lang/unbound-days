@@ -44,7 +44,7 @@ try{
   await page.locator('.idea-converted-editor').waitFor();assert.equal(await page.locator('.idea-converted-editor').inputValue(),'Clean converted note');await page.getByRole('button',{name:/Freehand note/}).click();await page.locator('#ink-canvas').waitFor();assert.ok(await page.evaluate(()=>Object.values(JSON.parse(localStorage.getItem('unbound-days-v1')).ink).some(paths=>paths.some(s=>s.tool==='pen'))),'Mode switch retains original ink');
   await page.locator('.section-tabs [data-section="tasks"]').click();
   await page.locator('#task-quick input[name="title"]').focus();
-  await page.getByRole('button',{name:'Pencil',exact:true}).click();
+  await page.getByRole('button',{name:'Pen',exact:true}).click();
   assert.equal(await page.locator('#task-quick input[name="title"]').evaluate(e=>document.activeElement===e),true);
   assert.deepEqual(errors,[]);
   await page.close();

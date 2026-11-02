@@ -23,7 +23,7 @@ async function scenario({name,initialState,read,holdFirstRead=false,injectUnknow
  const page=await context.newPage(),errors=[],blockedExternal=[];let reads=0,rpcs=0,releaseFirst;
  const firstGate=new Promise(resolve=>releaseFirst=resolve);
  page.on('pageerror',e=>errors.push(e.message));
- await context.addInitScript(({sessionKey,session,storageKey,state})=>{localStorage.setItem(sessionKey,JSON.stringify(session));localStorage.setItem(storageKey,JSON.stringify(state));}, {sessionKey,session,storageKey,state:initialState});
+ await context.addInitScript(({sessionKey,session,storageKey,state})=>{localStorage.setItem(sessionKey,JSON.stringify(session));localStorage.setItem(storageKey,JSON.stringify(state));localStorage.setItem('unbound-days-v1-backup-onboarding','deferred');}, {sessionKey,session,storageKey,state:initialState});
  await page.route('**/*',async route=>{
   const u=new URL(route.request().url());
   if(u.origin===new URL(origin).origin){
@@ -124,7 +124,7 @@ try{
  // Inspect the actual account dialog at the four requested viewport sizes.
  const responsiveContext=await browser.newContext({viewport:{width:1440,height:900},serviceWorkers:'block'}),responsive=await responsiveContext.newPage(),responsiveErrors=[];
  responsive.on('pageerror',e=>responsiveErrors.push(e.message));
- await responsive.addInitScript(({sessionKey,session,storageKey,state})=>{localStorage.setItem(sessionKey,JSON.stringify(session));localStorage.setItem(storageKey,JSON.stringify(state));},{sessionKey,session,storageKey,state:seed()});
+ await responsive.addInitScript(({sessionKey,session,storageKey,state})=>{localStorage.setItem(sessionKey,JSON.stringify(session));localStorage.setItem(storageKey,JSON.stringify(state));localStorage.setItem('unbound-days-v1-backup-onboarding','deferred');},{sessionKey,session,storageKey,state:seed()});
  await responsive.route('**/*',async route=>{const u=new URL(route.request().url());if(u.origin===new URL(origin).origin)return route.continue();if(u.hostname!=='msgitgnzgfrsaxgklohy.supabase.co')return route.abort();if(u.pathname==='/auth/v1/user')return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(user)});if(u.pathname==='/rest/v1/profiles')return route.fulfill({status:200,contentType:'application/json',body:'{"role":"user"}'});if(u.pathname==='/rest/v1/notebooks')return route.fulfill({status:200,contentType:'application/json',body:'[]'});if(u.pathname==='/rest/v1/rpc/save_notebook')return route.fulfill({status:200,contentType:'application/json',body:'{"revision":3}'});return route.abort();});
  await responsive.goto(origin,{waitUntil:'domcontentloaded'});await responsive.locator('#account-open').click();await responsive.locator('#account-sync-state').waitFor();
  for(const [name,width,height] of [['desktop',1440,900],['iPad landscape',1180,820],['iPad portrait',820,1180],['mobile',390,844]]){
