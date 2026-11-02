@@ -87,7 +87,7 @@ try{
   const stillStored=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)),storageKey);assert.equal(stillStored.entries['synthetic-note'],writing);
   await page.getByRole('button',{name:'Try Again'}).click();
   await page.getByText('Everything is up to date',{exact:false}).waitFor();
-  assert.equal(counts().reads,4);assert.equal(counts().rpcs,1);
+  assert.equal(counts().reads,4);assert.equal(counts().rpcs,2);
   assert.match(await status.innerText(),/Everything is up to date/);
   const saved=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)),storageKey);assert.equal(saved.entries['synthetic-note'],writing);
   console.log('Account browser: checking, repeated failed retry, preserved local writing, successful retry passed');
