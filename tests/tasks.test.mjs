@@ -65,3 +65,18 @@ test('Google review confirmation tolerates database key reordering without accep
  state.tasks[0].taskConflict={etag:'1',remote:{deleted:false,done:true,title:'Google'}};
  view.click({taskAction:'confirm-google-reviews'});assert.equal(writes,1);assert.equal(state.tasks[0].title,'Google');assert.equal(state.tasks[0].taskConflict,undefined);
 });
+
+test('task selection and revealed archive actions are labelled, compact and operable',()=>{
+ const state={tasks:[{id:'a',title:'One'}],settings:{}};
+ const view=createTaskView({getState:()=>state,save:()=>{},render:()=>{},esc:String,today:()=> '2026-11-03',openModal:()=>{},closeModal:()=>{},toast:()=>{}});
+ let html=view.html();
+ assert.match(html,/data-task-action="toggle-selection"[\s\S]*?<small>Select tasks<\/small>/);
+ assert.match(html,/class="task-archive-reveal" data-task-archive="a"[\s\S]*?<small>Archive<\/small>/);
+ view.click({taskAction:'toggle-selection'});html=view.html();
+ assert.match(html,/data-task-action="select-all"[\s\S]*?<small>Select all<\/small>/);
+ assert.match(html,/data-task-select="a"/);
+ assert.match(html,/0 selected/);
+ view.changed({dataset:{taskSelect:'a'},checked:true});html=view.html();assert.match(html,/1 selected/);
+ assert.equal((html.match(/<small>Cancel<\/small>/g)||[]).length,1);
+ view.click({taskAction:'toggle-selection'});assert.doesNotMatch(view.html(),/data-task-select="a"/);
+});
