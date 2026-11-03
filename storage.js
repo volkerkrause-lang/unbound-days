@@ -4,7 +4,11 @@ export const validNotebook=s=>s?.version===1&&Array.isArray(s.events)&&Array.isA
 export function chooseRecovery(local,mirror){
   const a=validNotebook(local)?local:null,b=validNotebook(mirror)?mirror:null;
   if(!a)return b;if(!b)return a;
-  return (b.savedAt||'')>(a.savedAt||'')?b:a;
+  const time=value=>typeof value==='string'&&Number.isFinite(Date.parse(value))?Date.parse(value):null;
+  const aTime=time(a.savedAt),bTime=time(b.savedAt);
+  if(aTime===null)return bTime===null?a:b;
+  if(bTime===null)return a;
+  return bTime>aTime?b:a;
 }
 let database;
 function open(){if(!database)database=new Promise((resolve,reject)=>{

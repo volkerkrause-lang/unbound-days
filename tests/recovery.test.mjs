@@ -8,6 +8,13 @@ test('recovery chooses the newer complete copy and survives corruption',()=>{
  assert.equal(chooseRecovery(old,newer),newer);assert.equal(chooseRecovery(newer,old),newer);
  assert.equal(chooseRecovery({version:1},newer),newer);assert.equal(chooseRecovery(null,null),null);
 });
+test('recovery ignores malformed freshness metadata when a valid timestamp exists',()=>{
+ const newer=notebook('2026-11-03T12:00:00.000Z',[{id:'note',title:'Newest writing'}]);
+ const malformed=notebook('not-a-timestamp',[{id:'note',title:'Stale writing'}]);
+ assert.equal(chooseRecovery(malformed,newer),newer);
+ assert.equal(chooseRecovery(newer,malformed),newer);
+ assert.equal(chooseRecovery(notebook('also-invalid'),malformed).savedAt,'also-invalid');
+});
 test('Google backup uses the limited drive.file scope and immutable visible-folder uploads',async()=>{
  let scope,requests=[];const previousFetch=globalThis.fetch;
  const oauth={hasGrantedAllScopes:()=>true,initTokenClient:options=>{scope=options.scope;return {requestAccessToken:()=>options.callback({access_token:'test-only',expires_in:3600})}},revoke:()=>{}};

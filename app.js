@@ -19,7 +19,7 @@ import * as Google from './google.js?v=0.4.17';
 import * as Dropbox from './dropbox.js?v=0.4.17';
 import {cloudConfig} from './cloud-config.js?v=0.4.17';
 import {notebookContent,mergeNotebook,resolveConflict,unwrapBackup} from './sync.js?v=0.4.17';
-import {chooseRecovery,readMirror,writeMirror} from './storage.js?v=0.4.17';
+import {chooseRecovery,readMirror,writeMirror} from './storage.js?v=0.4.18';
 import {createPlanningBuilder,renderBuilder,renderCustomLibrary,definitionFromTemplate,compactFormToolbar} from './planning-builder.js?v=0.4.17';
 import {drawInkStroke,normaliseStroke,selectedStrokeIndexes,selectionBounds,moveStrokes,scaleStrokes,eraseWholeStrokes,paperEntry} from './idea-workspace.js?v=0.4.17';
 
