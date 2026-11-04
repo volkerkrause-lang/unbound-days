@@ -559,15 +559,14 @@ accountManager=mountAccounts({getState:()=>state,empty:emptyState,
    cachedGoogle:[],googleCalendars:[]}),
 });
 
-// Resolve the account notebook before showing its cover, including first use on a device.
-await accountManager.ready;
+// The account-scoped local notebook and recovery copy are ready. Cloud
+// reconciliation started in mountAccounts and can finish after the first paint.
 try{const draft=JSON.parse(localStorage.getItem(KEY+'-active-ink')||'null');if(draft&&Array.isArray(draft.paths)&&(state.notes.some(n=>n.id===draft.key)||draft.key.startsWith('planner:'))&&draft.updatedAt>(Date.parse(state.savedAt)||0)){state.ink[draft.key]=draft.paths;save();}if(!storageError)localStorage.removeItem(KEY+'-active-ink');}catch{}
 
-// Wait for the selected artwork so the CSS fallback cover never flashes first.
-const startupCoverURL=coverStyle().match(/background-image:url\('([^']+)'\)/)?.[1];
-if(startupCoverURL)await new Promise(resolve=>{const image=new Image();image.onload=image.onerror=resolve;image.src=startupCoverURL;});
 startupReady=true;
 render();
+performance.mark('unbound:app-ready');
+performance.measure('unbound:startup-to-visible',{start:0,end:'unbound:app-ready'});
 document.querySelector('.app-bar').inert=false;
 
 // Restore the account-bound grant on every device, reload and foreground return.

@@ -12,7 +12,15 @@ if(configured){
  client=createClient(accountConfig.supabaseUrl,accountConfig.supabasePublishableKey,{auth:{flowType:'pkce',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:authStorage(localStorage)}});
  client.auth.onAuthStateChange((event,session)=>{if(event==='PASSWORD_RECOVERY')recovery=true;if(session?.provider_token)providerCredentials={accessToken:session.provider_token,refreshToken:session.provider_refresh_token||''};if(event==='SIGNED_OUT')providerCredentials=null;});
  const {data,error}=await client.auth.getSession();if(error)throw error;user=data.session?.user||null;
- if(user&&navigator.onLine){const result=await client.auth.getUser();if(result.error){if(result.error.status===401||result.error.status===403){user=null;await client.auth.signOut({scope:'local'});}else throw result.error;}else{user=result.data.user;verified=true;}}
+ // The persisted session already identifies the local account scope. Verify it
+ // in the background so a network round trip cannot hold the notebook screen.
+ if(user&&navigator.onLine){
+  const sessionUser=user;
+  client.auth.getUser().then(async result=>{
+   if(result.error){if(result.error.status===401||result.error.status===403){if(user?.id===sessionUser.id)user=null;await client.auth.signOut({scope:'local'});return;}throw result.error;}
+   user=result.data.user;verified=true;
+  }).catch(e=>{sdkError=e.message;/* retain the scoped offline session if verification is unavailable */});
+ }
  }catch(e){sdkError=e.message;/* retain scoped offline session if verification unavailable */}
 }
 export const configurationError=()=>sdkError;
