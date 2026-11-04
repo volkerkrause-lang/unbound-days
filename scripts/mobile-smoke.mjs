@@ -8,8 +8,13 @@ try{
  page.on('pageerror',e=>errors.push(e.message));
  await page.goto(process.env.UNBOUND_TEST_URL||'http://localhost:4173/');
  await page.locator('#account-open').waitFor();
+ const coldStartup=await page.evaluate(()=>performance.getEntriesByName('unbound:startup-to-visible').at(-1)?.duration??null);
+ assert.equal(typeof coldStartup,'number','startup timing mark is available on first load');
  await page.evaluate(()=>{const key='unbound-days-v1',data=JSON.parse(localStorage.getItem(key)||'null')||{version:1,events:[],tasks:[],notes:[],habits:[],entries:{},settings:{cover:0},ink:{},trash:[],bookmarks:[]};Object.assign(data.entries,{'form:mobile-check:type':'holiday','form:mobile-check:title':'Mobile trip','form:mobile-check:pinned':'yes'});localStorage.setItem(key,JSON.stringify(data));});
- await page.reload();await page.locator('[data-action="open"]').click();
+ await page.reload();await page.locator('#account-open').waitFor();
+ const warmStartup=await page.evaluate(()=>performance.getEntriesByName('unbound:startup-to-visible').at(-1)?.duration??null);
+ assert.equal(typeof warmStartup,'number','startup timing mark is available after reload');
+ await page.locator('[data-action="open"]').click();
  await page.locator('.mobile-view-switch [data-mobile-view="day"]').click();
  await page.getByLabel('Priority 1',{exact:true}).fill('Keep my writing');
  await page.getByLabel('Priority 1',{exact:true}).blur();
@@ -38,6 +43,13 @@ try{
  await page.locator('[data-action="open"]').click();
  await page.reload();await page.locator('[data-action="open"]').click();await page.locator('[data-mobile-view="day"]').click();
  assert.equal(await page.getByLabel('Priority 1',{exact:true}).inputValue(),'Keep my writing');
+ await page.waitForFunction(()=>!!navigator.serviceWorker?.controller,{timeout:15000});
+ await page.context().setOffline(true);
+ await page.reload({waitUntil:'domcontentloaded'});
+ await page.locator('#account-open').waitFor({timeout:15000});
+ await page.locator('[data-action="open"]').click();
+ assert.equal(await page.getByLabel('Priority 1',{exact:true}).inputValue(),'Keep my writing','offline opening retains local notebook writing');
+ await page.context().setOffline(false);
  await mkdir('test-results',{recursive:true});await page.screenshot({path:'test-results/classic-clean-mobile.png',fullPage:true});
- assert.deepEqual(errors,[]);console.log('390px mobile layout, navigation, pinned form, search/settings, cover and writing persistence passed');
+ assert.deepEqual(errors,[]);console.log(`390px mobile layout, navigation, pinned form, search/settings, cover and writing persistence passed; first=${coldStartup.toFixed(1)}ms reload=${warmStartup.toFixed(1)}ms app-ready; offline reload retained writing`);
 }finally{await browser.close();}
