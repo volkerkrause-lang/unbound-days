@@ -1153,3 +1153,38 @@ dialog:has(#task-move-form) .modal-body,dialog:has(#task-date-form) .modal-body{
 .todo-view .task-list-delete-inline{padding:5px 8px;border:1px solid #d6aaa0;border-radius:5px;background:#fff6f2;color:#91382f;font-size:12px}
 .todo-view .task-list-delete-inline:hover,.todo-view .task-list-delete-inline:focus-visible{background:#f8ded8}
 .todo-view .task-list-delete-none{color:#8c877c;font-style:italic}
+
+/* Annual overview: abstract seasonal colour, with the dates kept primary. */
+.year-overview{min-height:100%;display:flex;flex-direction:column;gap:12px}
+.year-overview-head{position:relative;display:flex;align-items:center;justify-content:space-between;min-height:76px;padding:0 8px 7px;border-bottom:1px solid #d9d2c4;overflow:hidden}
+.year-overview-head>div:first-child{position:relative;z-index:2}
+.year-overview-head .eyebrow{margin:0 0 2px;font-size:9px;letter-spacing:2.2px}
+.year-overview-head h2{font:400 clamp(27px,3vw,39px)/1 var(--serif);margin:0;letter-spacing:.01em;color:#302f2a}
+.year-overview-head h2 em{font-size:.48em;color:#788071;font-weight:400;margin-left:5px}
+.year-landscape{position:absolute;inset:0 0 0 31%;overflow:hidden;opacity:.88}
+.year-landscape span{position:absolute;right:-3%;width:75%;height:66px;border-radius:50%;transform:rotate(-7deg);filter:blur(.2px)}
+.year-landscape span:nth-child(1){top:37px;background:#bdc6b0;clip-path:ellipse(51% 45% at 50% 100%)}
+.year-landscape span:nth-child(2){top:26px;right:18%;background:#d1d7c9;clip-path:ellipse(50% 44% at 50% 100%)}
+.year-landscape span:nth-child(3){top:45px;right:34%;background:#aab9b4;clip-path:ellipse(50% 44% at 50% 100%)}
+.year-landscape i{position:absolute;right:18%;top:8px;width:28px;height:28px;background:#dfbd76;border-radius:50%;opacity:.75}
+.year-grid{flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(4,minmax(0,1fr));gap:11px 15px;align-items:stretch}
+.mini-month{position:relative;min-width:0;overflow:hidden;padding:8px 10px 6px;border:1px solid #d8d1c4;border-radius:12px;background:linear-gradient(150deg,color-mix(in srgb,var(--month-tone) 14%,#fffdf7) 0%,#fbf8f0 46%,#f8f4ea 100%);box-shadow:0 1px 2px #3d30200b;isolation:isolate}
+.mini-month:before{content:"";position:absolute;z-index:-1;left:22%;right:-8%;top:-24px;height:56px;border-radius:50%;background:color-mix(in srgb,var(--month-tone) 24%,transparent);transform:rotate(-7deg);clip-path:ellipse(54% 48% at 50% 100%)}
+.mini-month:after{content:"";position:absolute;z-index:-1;left:43%;right:-8%;top:-33px;height:57px;border-radius:50%;background:color-mix(in srgb,var(--month-tone) 16%,transparent);transform:rotate(5deg);clip-path:ellipse(55% 49% at 50% 100%)}
+.month-tone-1{--month-tone:#6885a0}.month-tone-2{--month-tone:#ba7969}.month-tone-3{--month-tone:#768a69}.month-tone-4{--month-tone:#bb8b47}.month-tone-5{--month-tone:#82916c}.month-tone-6{--month-tone:#728b9e}.month-tone-7{--month-tone:#8875a1}.month-tone-8{--month-tone:#c0914e}.month-tone-9{--month-tone:#a87868}.month-tone-10{--month-tone:#c08a3f}.month-tone-11{--month-tone:#77867c}.month-tone-12{--month-tone:#668394}
+.mini-month h2{position:relative;z-index:1;text-align:left;margin:0 0 4px;font:400 17px/1.15 var(--serif);letter-spacing:.11em;text-transform:uppercase;color:#343832}
+.mini-month h2 button{min-height:28px;padding:0;text-align:left;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit}
+.mini-month table{position:relative;z-index:1;font:12px/1 var(--ui);color:#343832}
+.mini-month th{height:20px;padding:0;font-size:9px;letter-spacing:.04em;color:#72776e}
+.mini-month th.weekend{color:#9a5b4e}
+.mini-month td{height:clamp(20px,2.5dvh,27px);padding:0}
+.mini-month td button{width:25px;height:25px;min-height:25px;padding:0;border-radius:50%;font:12px var(--ui);position:relative;color:#323733}
+.mini-month td button:hover,.mini-month h2 button:hover{background:#ffffff9c}
+.mini-month td button.today{background:#5f795d;color:#fff;box-shadow:0 1px 3px #43533f45;font-weight:600}
+.mini-month td button.has-event:after,.mini-month td button.has-task:before{content:"";position:absolute;left:50%;bottom:1px;width:4px;height:4px;transform:translateX(-50%);border-radius:50%;background:#537b91}
+.mini-month td button.has-task:before{bottom:0;background:#b1843c;left:calc(50% - 4px)}
+.mini-month td button.has-event.today:after,.mini-month td button.has-task.today:before{background:#f4e4b1}
+@media(max-width:1100px) and (min-width:761px){.year-grid{gap:8px}.mini-month{padding:6px 5px}.mini-month h2{font-size:15px}.mini-month td button{width:22px;height:23px;min-height:23px;font-size:11px}}
+@media(min-width:1024px) and (max-height:850px){.year-overview{gap:7px}.year-overview-head{min-height:59px}.year-grid{gap:7px 12px}.mini-month{padding:5px 8px 3px}.mini-month h2{font-size:15px;margin-bottom:2px}.mini-month h2 button{min-height:23px}.mini-month th{height:16px}.mini-month td{height:21px}.mini-month td button{height:20px;min-height:20px;width:22px;font-size:11px}}
+@media(max-width:760px){.year-overview{gap:12px}.year-overview-head{min-height:66px;padding:0 2px 5px}.year-landscape{left:30%;opacity:.62}.year-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto;gap:10px}.mini-month{min-height:181px;padding:8px 7px 6px;border-radius:10px}.mini-month h2{font-size:14px;letter-spacing:.08em}.mini-month table{font-size:12px}.mini-month th{height:22px}.mini-month td{height:27px}.mini-month td button{height:27px;min-height:27px;width:27px;font-size:12px}}
+@media(max-width:380px){.year-grid{gap:8px 5px}.mini-month{padding:7px 3px}.mini-month h2{font-size:12px}.mini-month td button{width:25px;height:26px;min-height:26px}}
