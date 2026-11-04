@@ -1188,3 +1188,34 @@ dialog:has(#task-move-form) .modal-body,dialog:has(#task-date-form) .modal-body{
 @media(min-width:1024px) and (max-height:850px){.year-overview{gap:7px}.year-overview-head{min-height:59px}.year-grid{gap:7px 12px}.mini-month{padding:5px 8px 3px}.mini-month h2{font-size:15px;margin-bottom:2px}.mini-month h2 button{min-height:23px}.mini-month th{height:16px}.mini-month td{height:21px}.mini-month td button{height:20px;min-height:20px;width:22px;font-size:11px}}
 @media(max-width:760px){.year-overview{gap:12px}.year-overview-head{min-height:66px;padding:0 2px 5px}.year-landscape{left:30%;opacity:.62}.year-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto;gap:10px}.mini-month{min-height:181px;padding:8px 7px 6px;border-radius:10px}.mini-month h2{font-size:14px;letter-spacing:.08em}.mini-month table{font-size:12px}.mini-month th{height:22px}.mini-month td{height:27px}.mini-month td button{height:27px;min-height:27px;width:27px;font-size:12px}}
 @media(max-width:380px){.year-grid{gap:8px 5px}.mini-month{padding:7px 3px}.mini-month h2{font-size:12px}.mini-month td button{width:25px;height:26px;min-height:26px}}
+
+/* Month view borrows Year View's seasonal colour and flowing paper accents. */
+.month-overview{--month-tone:#768a69;display:flex;flex-direction:column;gap:14px;min-height:100%;height:100%}
+.month-overview-head{position:relative;display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:100px;padding:12px 18px;border:1px solid #d8d1c4;border-radius:13px;background:linear-gradient(110deg,color-mix(in srgb,var(--month-tone) 13%,#fffdf7),#fbf8f0 54%,#f7f3e9);overflow:hidden;isolation:isolate}
+.month-overview-head>div:first-child{position:relative;z-index:2}
+.month-overview-head .eyebrow{font-size:9px;letter-spacing:2px;margin-bottom:5px}
+.month-overview-head h2{margin:0;font:400 clamp(29px,3.2vw,42px)/1.05 var(--serif);letter-spacing:.02em;color:#343832}
+.month-overview-head h2 span{font-size:.48em;color:#788071;margin-left:6px;vertical-align:middle}
+.month-flow{position:absolute;inset:0 0 0 28%;z-index:0;overflow:hidden;opacity:.9}
+.month-flow i{position:absolute;right:-4%;width:74%;height:104px;top:36px;border-radius:50%;background:color-mix(in srgb,var(--month-tone) 22%,transparent);clip-path:ellipse(54% 49% at 50% 100%);transform:rotate(-5deg)}
+.month-flow i:nth-child(2){right:18%;top:23px;width:69%;background:color-mix(in srgb,var(--month-tone) 15%,transparent);transform:rotate(5deg)}
+.month-flow i:nth-child(3){right:37%;top:51px;width:55%;height:78px;background:#e2c9877a;transform:rotate(-4deg)}
+.month-sync{position:relative;z-index:2;align-self:flex-end;padding:6px 10px;border-radius:20px;background:#fffaf0b8;color:#6c7568;font:11px var(--ui);white-space:nowrap}
+.month-tone-1{--month-tone:#6885a0}.month-tone-2{--month-tone:#ba7969}.month-tone-3{--month-tone:#768a69}.month-tone-4{--month-tone:#bb8b47}.month-tone-5{--month-tone:#82916c}.month-tone-6{--month-tone:#728b9e}.month-tone-7{--month-tone:#8875a1}.month-tone-8{--month-tone:#c0914e}.month-tone-9{--month-tone:#a87868}.month-tone-10{--month-tone:#c08a3f}.month-tone-11{--month-tone:#77867c}.month-tone-12{--month-tone:#668394}
+.month-calendar-wrap{flex:1;min-height:430px;border:1px solid #ded7ca;border-radius:12px;background:linear-gradient(155deg,#fffdf7,#faf7ef);padding:10px 13px;box-shadow:0 1px 3px #3d30200a}
+.month-overview .calendar-table{height:100%;border-collapse:separate;border-spacing:0;table-layout:fixed}
+.month-overview .calendar-table th{height:34px;padding:5px;color:#72776e;font-size:10px;letter-spacing:.1em}
+.month-overview .calendar-table th.weekend{color:#9a5b4e}
+.month-overview .calendar-table th.week-number{width:31px}
+.month-overview .calendar-table td{height:calc((100% - 34px)/6);border:0;border-top:1px solid #e9e4d9;padding:3px;vertical-align:top}
+.month-overview .calendar-table td.week-number{border:0;border-top:1px solid #e9e4d9;vertical-align:middle;text-align:center}
+.month-overview .calendar-table td.week-number button{font-size:10px;color:#a09b8e}
+.month-overview .day-cell{border-radius:8px;padding:7px;transition:background .15s ease,box-shadow .15s ease}
+.month-overview .day-cell:hover{background:color-mix(in srgb,var(--month-tone) 9%,transparent)}
+.month-overview .day-cell.outside{opacity:.48;background:transparent}
+.month-overview .day-number{font:14px var(--serif);color:#3a3c37;margin-bottom:8px}
+.month-overview .day-cell.is-today{background:color-mix(in srgb,#71866c 9%,transparent);box-shadow:inset 0 0 0 1px #71866c55}
+.month-overview .day-cell.is-today .day-number span{background:#5f795d;color:white;border-radius:50%;display:grid;place-items:center;width:27px;height:27px;margin:-4px -3px -2px 0}
+.month-overview .entry-chip{font-size:clamp(13px,1.1vw,17px);margin:3px 0;padding:4px 7px;border-radius:5px;white-space:normal;line-height:1.15}
+.month-overview .more-count{display:inline-block;margin:3px 5px;color:#7d8376;font-size:11px}
+@media(max-width:760px){.month-overview{height:auto;gap:10px}.month-overview-head{min-height:72px;padding:9px 11px}.month-overview-head h2{font-size:27px}.month-overview-head .eyebrow{display:none}.month-flow{left:31%;opacity:.58}.month-sync{font-size:9px;max-width:44%;overflow:hidden;text-overflow:ellipsis}.month-calendar-wrap{min-height:0;padding:4px;border:0;background:transparent;box-shadow:none}.month-overview .calendar-table th{height:30px;font-size:9px;letter-spacing:.03em}.month-overview .calendar-table th.week-number,.month-overview .calendar-table td.week-number{display:none}.month-overview .calendar-table td{height:clamp(70px,11dvh,105px);padding:2px}.month-overview .day-cell{padding:4px;border-radius:6px}.month-overview .day-number{font-size:12px;margin-bottom:4px}.month-overview .day-cell.is-today .day-number span{width:24px;height:24px}.month-overview .entry-chip{font-size:11px;padding:3px 4px;margin:2px 0;max-height:34px;overflow:hidden}.month-overview .more-count{font-size:9px;margin:2px}}
