@@ -1092,3 +1092,18 @@ dialog:has(#task-move-form) .modal-body,dialog:has(#task-date-form) .modal-body{
 .note-mode-switch button[aria-pressed=true]{background:#e9dfca;border-color:#ac925b}
 .note-mode-switch button[aria-label^='New Idea']{gap:5px}
 @media(max-width:650px){.idea-size-captioned{width:106px!important;min-width:106px!important}.note-mode-switch{gap:4px}.note-mode-switch button{padding:5px 6px}}
+
+/* Compact five-action row and contextual pen-size control. */
+.note-mode-switch{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));align-items:stretch;gap:4px;width:100%;}
+.note-mode-switch button{box-sizing:border-box;min-width:0;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px 2px;white-space:normal;font:10px/1.1 var(--ui);}
+.note-mode-switch button .idea-action-icon{display:block;font:17px/1 var(--ui);}
+.note-mode-switch button small{display:block;max-width:100%;font:8px/1.05 var(--ui);text-align:center;overflow-wrap:anywhere;}
+.idea-floating-size{position:absolute;right:12px;bottom:12px;z-index:6;}
+.idea-floating-size[hidden],.idea-size-popover[hidden]{display:none!important;}
+.idea-floating-size-trigger{box-sizing:border-box;width:42px;height:42px;display:grid;place-items:center;padding:0;border:1px solid #c9bca8;border-radius:50%;background:#fffdf7ed;color:var(--ink);box-shadow:0 3px 10px #49351e2b;font:22px/1 var(--ui);}
+.idea-floating-size-trigger[aria-expanded=true]{background:#e9dfca;border-color:#ac925b;}
+.idea-size-popover{position:absolute;right:0;bottom:50px;width:190px;padding:10px 12px;border:1px solid #c9bca8;border-radius:12px;background:#fffdf7;box-shadow:0 8px 24px #49351e2b;}
+.idea-size-popover label{display:flex;flex-direction:column;gap:5px;color:var(--ink);font:10px/1.2 var(--ui);}
+.idea-size-popover input[type=range]{width:100%;margin:0;accent-color:#657b4c;}
+@media(max-width:650px){.note-mode-switch{gap:3px}.note-mode-switch button{min-height:46px;padding:3px 1px}.note-mode-switch button small{font-size:7.5px}.idea-floating-size{right:9px;bottom:9px}}
+.idea-page-tabs{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:8px 0 10px;padding-bottom:8px;border-bottom:1px solid var(--line)}.idea-page-tabs button{min-width:64px;padding:5px 10px;border:1px solid #d5c7ad;border-radius:14px;background:#fffdf7;color:var(--ink);font:10px var(--ui)}.idea-page-tabs button.active{background:#e9dfca;border-color:#ac925b}
