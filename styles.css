@@ -1065,3 +1065,18 @@ dialog:has(#task-move-form),dialog:has(#task-date-form){width:min(430px,calc(100
 dialog:has(#task-move-form) .modal-body,dialog:has(#task-date-form) .modal-body{padding:16px 20px}
 @media(min-width:761px){body:has(.task-selection-toolbar) .task-selection-toolbar{width:min(540px,calc(100vw - 48px));padding:10px 14px 12px}.task-selection-actions button{min-height:62px}}
 @media(max-width:650px){.todo-view:has(.task-selection-toolbar){padding-bottom:148px}body:has(.task-selection-toolbar) .task-selection-toolbar{width:calc(100vw - 26px);bottom:calc(8px + env(safe-area-inset-bottom));padding:7px 8px 8px;border-radius:14px}.task-selection-summary{padding-bottom:6px}.task-selection-actions{gap:6px}.task-selection-actions button{min-height:52px}}
+
+/* Notes and Ideas: compact tool captions remain legible without crowding the page. */
+.idea-native-toolbar{gap:4px;align-items:stretch;flex-wrap:wrap}
+.idea-tool-captioned,.idea-tool-control{box-sizing:border-box;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:42px;min-width:42px;height:48px;padding:3px;border:1px solid #c9bca8;border-radius:7px;background:#fffdf7;color:var(--ink);font:12px var(--ui);position:relative}
+.idea-tool-captioned{font-size:0}
+.idea-tool-captioned>span{display:flex;height:23px;align-items:center;justify-content:center}
+.idea-tool-captioned svg,.idea-tool-control>svg{width:18px;height:18px}
+.idea-tool-captioned small,.idea-tool-caption{font:9px/1.05 var(--ui);white-space:nowrap;color:inherit}
+.idea-tool-captioned.active{background:#657b4c;color:#fff;border-color:#657b4c}
+.paper-picker select,.idea-tool-control input[type=color]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.idea-size-captioned{width:90px;min-width:90px;gap:4px}
+.idea-size-captioned input{width:78px;accent-color:#657b4c}
+.note-mode-switch{align-items:center;gap:5px}
+.note-mode-switch button{padding:5px 8px;font:11px var(--ui)}
+@media(max-width:650px){.idea-native-toolbar{gap:3px}.idea-tool-captioned,.idea-tool-control{width:38px;min-width:38px;height:44px}.idea-size-captioned{width:82px;min-width:82px}.idea-size-captioned input{width:70px}.note-mode-switch button{padding:5px 6px}}
