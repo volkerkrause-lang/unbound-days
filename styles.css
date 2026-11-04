@@ -1144,3 +1144,6 @@ dialog:has(#task-move-form) .modal-body,dialog:has(#task-date-form) .modal-body{
 .todo-view .task-entry-panel>input[name=title]::placeholder{color:#171717;opacity:1}
 .todo-view .task-entry-action{display:flex;flex-direction:column;align-items:center;justify-self:end;gap:2px;min-width:42px;color:#171717}
 .todo-view .task-entry-action small{font:10px/1.1 var(--ui);color:#171717}
+
+.todo-view .task-entry-panel>input[name=title]{font-size:16px}
+@media(max-width:650px){.todo-view .task-entry-panel>input[name=title]{font-size:15px}}
