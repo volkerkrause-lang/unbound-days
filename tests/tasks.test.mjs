@@ -90,3 +90,17 @@ test('Done button toggles task completion, offers undo, and selection mode keeps
  view.click({taskDone:'a'});view.click({taskDone:'a'});assert.equal(state.tasks[0].done,true);assert.equal(writes,3);
  view.click({taskAction:'toggle-selection'});html=view.html();assert.doesNotMatch(html,/data-task-done="a"/);assert.match(html,/data-task-select="a"/);assert.match(html,/task-selection-toolbar/);view.click({editTask:'a'});assert.equal(state.tasks[0].done,true);
 });
+
+
+test('custom list deletion preserves task records locally and offers reversible reassignment',()=>{
+ const task={id:'t1',title:'Keep this task',notes:'Keep notes',date:'2026-11-06',time:'09:30',done:true,listId:'work',recurrence:{frequency:'weekly'}};
+ const state={tasks:[task],settings:{taskLists:[{id:'work',title:'Work',colour:'#123456'}],taskListOrder:['work','local'],taskListPins:['work'],taskView:{list:'work'}}};let writes=0,dialog='',renders=0,message='';
+ const view=createTaskView({getState:()=>state,save:()=>writes++,render:()=>renders++,esc:String,today:()=> '2026-11-04',openModal:(_title,body)=>dialog=body,closeModal:()=>{},toast:x=>message=x});
+ assert.match(view.html(),/Something to get done, once or on a schedule/);assert.match(view.html(),/A regular activity to build into your routine and track your progress/);assert.doesNotMatch(view.html(),/How Rituals work|Add a Task|Add a Ritual/);
+ view.click({taskAction:'reorder'});assert.match(view.html(),/data-task-delete-list="work"/);assert.doesNotMatch(view.html(),/data-task-delete-list="local"/);
+ view.click({taskDeleteList:'work'});assert.match(dialog,/Are you sure you want to delete/);assert.match(dialog,/preserve these tasks and move them to My tasks/);
+ view.click({taskAction:'confirm-delete-list',listId:'work'});assert.equal(task.listId,'local');assert.deepEqual([task.title,task.notes,task.date,task.time,task.done,task.recurrence.frequency],['Keep this task','Keep notes','2026-11-06','09:30',true,'weekly']);assert.deepEqual(state.settings.taskLists,[]);assert.equal(state.settings.taskView.list,'all');assert.match(view.html(),/undo-delete-list/);assert.equal(writes,1);
+ view.click({taskAction:'undo-delete-list'});assert.equal(task.listId,'work');assert.equal(state.settings.taskLists[0].id,'work');assert.deepEqual(state.settings.taskListOrder,['work','local']);assert.deepEqual(state.settings.taskListPins,['work']);assert.equal(writes,2);assert.match(message,/restored/);
+});
+
+test('Google task lists are not exposed to deletion controls',()=>{const state={tasks:[],settings:{taskLists:[{id:'gt:work',title:'Google work',googleList:{id:'work',account:'a'}}]}};const view=createTaskView({getState:()=>state,save:()=>{},render:()=>{},esc:String,today:()=> '2026-11-04',openModal:()=>{},closeModal:()=>{},toast:()=>{}});view.click({taskAction:'reorder'});assert.doesNotMatch(view.html(),/data-task-delete-list="gt:work"/);});

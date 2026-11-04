@@ -625,6 +625,24 @@ body:has(dialog[open]) #app .shared-write-tools{visibility:hidden}
 .todo-card>.task-more{padding:3px;align-self:start}.todo-card-content{min-width:0}
 @media(max-width:650px){.todo-card{padding:6px!important;column-gap:5px!important;row-gap:0!important}.todo-card>.task-date{max-width:60px;font-size:10px!important}.todo-card .task-name{font-size:14px!important}.todo-card>.task-more{padding:2px;width:22px}.todo-card .task-badges{font-size:9px!important}}
 .todo-view .task-quick{position:static!important;bottom:auto!important;z-index:auto;margin:6px 0 10px;padding:0}
+.todo-view .task-entry-split{gap:10px;border:0;background:transparent;overflow:visible}
+.todo-view .task-entry-panel{display:grid;grid-template-columns:32px minmax(0,1fr) 42px;gap:9px;min-height:62px;padding:9px 10px;border:1px solid #e4dfd2;border-radius:9px;background:linear-gradient(145deg,#fffdf8,#f5f1e6);box-shadow:inset 0 1px #fff,0 3px 8px #51442b15}
+.todo-view .task-entry-panel+.task-entry-panel{border-left:1px solid #d8ddd2}
+.todo-view .ritual-entry-panel{background:linear-gradient(145deg,#fafcf7,#edf2e9);border-color:#d9e1d3}
+.todo-view .task-entry-icon,.todo-view .ritual-entry-icon{display:grid;place-items:center;width:30px;height:34px;font-size:22px;line-height:1}
+.todo-view .task-entry-icon svg{width:29px;height:31px;filter:drop-shadow(0 1px 1px #164f6529)}
+.todo-view .task-entry-panel>input[name=title]{box-sizing:border-box;width:100%;height:auto;min-height:42px;padding:6px 2px;border:0;border-bottom:1px solid #d8d3c5;border-radius:0;background:transparent;color:var(--ink);font:italic 14px/1.35 var(--hand,var(--serif));box-shadow:none}
+.todo-view .task-entry-panel>input[name=title]::placeholder{color:#98968d;opacity:.82;font-style:italic;white-space:normal}
+.todo-view .task-entry-panel>input[name=title]:focus{outline:0;border-bottom-color:#638c9a;box-shadow:0 1px #638c9a}
+.todo-view .task-entry-panel .primary{display:grid;place-items:center;justify-self:end;width:42px;min-width:42px;height:42px;min-height:42px;padding:0;border:1px solid #1b7392;border-radius:9px;background:linear-gradient(150deg,#319ac0,#176b91);color:#fff;box-shadow:inset 0 1px #ffffff62,0 2px 4px #173a4a35}
+.todo-view .ritual-entry-panel .primary{border-color:#466d48;background:linear-gradient(150deg,#73966a,#426a46);box-shadow:inset 0 1px #ffffff60,0 2px 4px #314b3033}
+.todo-view .task-entry-panel .primary svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.todo-view .task-entry-panel .primary:hover{filter:brightness(1.06)}
+.todo-view .task-entry-panel .primary:active{transform:translateY(1px);box-shadow:inset 0 2px 4px #102a3a45}
+.todo-view .task-entry-panel .primary:focus-visible{outline:3px solid #8cb8c7;outline-offset:2px}
+.todo-view .task-entry-split>.task-entry-panel+ .task-entry-panel{border-left:1px solid #d8ddd2}
+.task-undo{display:flex;align-items:center;gap:8px}.task-undo button{color:#286a6d;text-decoration:underline}
+@media(max-width:650px){.todo-view .task-entry-split{grid-template-columns:minmax(0,1fr);gap:7px}.todo-view .task-entry-panel{grid-template-columns:30px minmax(0,1fr) 42px;min-height:56px;padding:7px 9px}.todo-view .task-entry-split>.task-entry-panel+ .task-entry-panel{border-left:1px solid #d8ddd2;border-top:1px solid #d9e1d3}.todo-view .task-entry-panel>input[name=title]{font-size:13px}.todo-view .task-entry-icon,.todo-view .ritual-entry-icon{width:28px}}
 
 /* Finished reusable forms retain the same editable, synced fields. */
 .form-delete{display:inline-flex;align-items:center;gap:5px;color:#9b3934;background:#fff0e9;border:1px solid #d4a59c;border-radius:6px;padding:6px 9px;font-size:12px;font-weight:600}
