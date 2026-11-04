@@ -1139,3 +1139,8 @@ dialog:has(#task-move-form) .modal-body,dialog:has(#task-date-form) .modal-body{
 .idea-size-popover input[type=range]{width:100%;margin:0;accent-color:#657b4c;}
 @media(max-width:650px){.note-mode-switch{gap:3px}.note-mode-switch button{min-height:46px;padding:3px 1px}.note-mode-switch button small{font-size:7.5px}.idea-floating-size{right:9px;bottom:9px}}
 .idea-page-tabs{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:8px 0 10px;padding-bottom:8px;border-bottom:1px solid var(--line)}.idea-page-tabs button{min-width:64px;padding:5px 10px;border:1px solid #d5c7ad;border-radius:14px;background:#fffdf7;color:var(--ink);font:10px var(--ui)}.idea-page-tabs button.active{background:#e9dfca;border-color:#ac925b}
+
+.todo-view .task-entry-panel>input[name=title]{color:#171717}
+.todo-view .task-entry-panel>input[name=title]::placeholder{color:#171717;opacity:1}
+.todo-view .task-entry-action{display:flex;flex-direction:column;align-items:center;justify-self:end;gap:2px;min-width:42px;color:#171717}
+.todo-view .task-entry-action small{font:10px/1.1 var(--ui);color:#171717}
