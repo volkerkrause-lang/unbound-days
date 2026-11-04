@@ -29,7 +29,8 @@ try{
   await page.getByRole('button',{name:/Choose from Forms/}).click();
   await page.locator('#planner-search').waitFor();
   assert.equal(await page.locator('.writing-target').count(),0);
-  for(const section of ['tasks','habits','launchpad']){await page.locator('.section-tabs [data-section="'+section+'"]').click();assert.equal(await page.locator('.mobile-view-switch').count(),0);assert.equal(await page.locator('.writing-target').count(),0);}
+  assert.equal(await page.locator('.section-tabs [data-section="habits"]').count(),0,'the separate Habits tab is removed');
+  for(const section of ['tasks','launchpad']){await page.locator('.section-tabs [data-section="'+section+'"]').click();assert.equal(await page.locator('.mobile-view-switch').count(),0);assert.equal(await page.locator('.writing-target').count(),0);}
   if(!await page.locator('#ink-canvas').count())await page.getByRole('button',{name:'New idea',exact:true}).click();
   const ideaCanvas=page.locator('#ink-canvas');await ideaCanvas.waitFor();
   const handwritingTools=page.getByRole('toolbar',{name:'Handwriting tools',exact:true});

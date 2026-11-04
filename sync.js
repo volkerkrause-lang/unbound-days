@@ -16,6 +16,12 @@ export function mergeNotebook(base,local,remote){
  function merge(b,l,r,path){
   if(same(l,r)||same(b,r))return copy(l);
   if(same(b,l))return copy(r);
+  if(path[0]==='habits'&&path[2]==='checks'&&Array.isArray(l)&&Array.isArray(r))return [...new Set([...l,...r])].sort();
+  if(path[0]==='habits'&&path[2]==='completionChanges'&&path.length===4&&l&&r&&typeof l==='object'&&typeof r==='object'){
+   const lt=Date.parse(l.updatedAt||'')||0,rt=Date.parse(r.updatedAt||'')||0;
+   if(lt!==rt)return copy(lt>rt?l:r);
+   return copy(String(l.deviceId||'')>=String(r.deviceId||'')?l:r);
+  }
   if(Array.isArray(l)&&Array.isArray(r)&&Array.isArray(b)&&[...b,...l,...r].every(x=>x&&typeof x==='object'&&typeof x.id==='string')){
    const bm=new Map(b.map(x=>[x.id,x])),lm=new Map(l.map(x=>[x.id,x])),rm=new Map(r.map(x=>[x.id,x]));
    return [...new Set([...lm.keys(),...rm.keys(),...bm.keys()])].map(k=>merge(bm.get(k),lm.get(k),rm.get(k),[...path,k])).filter(x=>x!==undefined);

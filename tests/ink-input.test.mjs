@@ -14,8 +14,8 @@ const history=source.slice(source.indexOf("case 'undo-ink':"),source.indexOf("ca
 function notebook({saved,fingerDrawing=false,userAgent='Android Samsung Galaxy S23 Ultra'}={}){
  const storage=new Map(),captures=new Set(),frames=[];let paints=0;
  const state=saved?JSON.parse(saved):{ink:{},settings:{fingerDrawing,noteColour:'#123456',noteSize:5}};
- const ctx={setTransform(){},clearRect(){},beginPath(){},moveTo(){},lineTo(){},quadraticCurveTo(){},stroke(){paints++;}};
- const canvas={style:{},isConnected:true,getBoundingClientRect:()=>({left:10,top:20,width:400,height:600}),getContext:()=>ctx,
+ const ctx={setTransform(){},clearRect(){},beginPath(){},arc(){},moveTo(){},lineTo(){},quadraticCurveTo(){},stroke(){paints++;}};
+ const canvas={style:{},isConnected:true,clientWidth:400,clientHeight:600,getBoundingClientRect:()=>({left:10,top:20,width:400,height:600}),getContext:()=>ctx,
   setPointerCapture:id=>captures.add(id),hasPointerCapture:id=>captures.has(id),releasePointerCapture:id=>captures.delete(id)};
  const buttons=['pen','pencil','eraser'].map(tool=>({dataset:{inkTool:tool},classList:{toggle(){}},attrs:{},setAttribute(k,v){this.attrs[k]=v;}}));
  const sandbox={...ink,state,structuredClone,Date,storageError:false,KEY:'synthetic-notebook',noteId:'test-note',devicePixelRatio:2,
