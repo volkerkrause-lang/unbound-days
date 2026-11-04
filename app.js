@@ -207,7 +207,7 @@ const noteMedia=createNoteMedia({notebookId:()=>KEY,entries:()=>state.entries,cu
 function renderLaunchpad(){
  const ideas=state.notes;for(const idea of ideas){if(!idea.idea){idea.idea=true;idea.ideaStatus='parked';}}
  let n=ideas.find(idea=>idea.id===noteId);if(!n){n=ideas.find(idea=>idea.ideaStatus!=='ignited')||ideas[0];noteId=n?.id||null;}
- const list=['parked','ignited'].map(status=>`<h2 class="small-heading">${status==='parked'?'Your ideas':'Ideas turned into plans'}</h2>${ideas.filter(idea=>(idea.ideaStatus==='ignited'?'ignited':'parked')===status).map(idea=>`<button class="${idea.id===noteId?'active':''}" data-note="${idea.id}">${esc(idea.title||entry('note:'+idea.id).trim().split('\n')[0].slice(0,50)||'New idea')}</button>`).join('')}`).join('');
+ const list=['parked','ignited'].map(status=>`<h2 class="small-heading">${status==='parked'?'Saved Ideas':'Ideas turned into plans'}</h2>${ideas.filter(idea=>(idea.ideaStatus==='ignited'?'ignited':'parked')===status).map(idea=>`<button class="${idea.id===noteId?'active':''}" data-note="${idea.id}">${esc(idea.title||entry('note:'+idea.id).trim().split('\n')[0].slice(0,50)||'New idea')}</button>`).join('')}`).join('');
  if(!n)return `<div class="launchpad-empty"><p class="empty-note">Start with a blank page for your next thought.</p><button class="primary" data-action="idea-page">New idea</button></div>`;
  const paper=entry(paperEntry(n.id))||'blank',custom=entry(paperEntry(n.id,'custom')),customType=entry(paperEntry(n.id,'custom-type'))||'image/jpeg',converted=entry(paperEntry(n.id,'mode'))==='text';
  const background=paper==='custom'&&custom?(customType==='application/pdf'?`<object class="idea-custom-paper" data="${esc(custom)}" type="application/pdf" aria-label="Imported PDF background"></object>`:`<div class="idea-custom-paper" style="background-image:url('${esc(custom)}')" aria-hidden="true"></div>`):'';
@@ -273,7 +273,7 @@ function setupInk(){
  let activePointer=null,activePointerType=null,redoBeforeStroke=[];
  // Keep the existing palm-rejection preference for finger input, while always
  // allowing a real stylus (including Samsung S Pen) to draw on the canvas.
- const stylusOnly=navigator.maxTouchPoints>1&&state.settings.fingerDrawing!==true;
+ const stylusOnly=navigator.maxTouchPoints>1;
  inkCanvas.style.touchAction='none';
  const point=e=>{const r=inkCanvas.getBoundingClientRect();return {x:Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),y:Math.max(0,Math.min(1,(e.clientY-r.top)/r.height)),p:e.pressure||.5};};
  const remember=()=>{inkUndo.push(structuredClone(inkPaths));if(inkUndo.length>50)inkUndo.shift();inkRedo=[];};
