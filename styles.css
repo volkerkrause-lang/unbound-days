@@ -1149,3 +1149,7 @@ dialog:has(#task-move-form) .modal-body,dialog:has(#task-date-form) .modal-body{
 @media(max-width:650px){.todo-view .task-entry-panel>input[name=title]{font-size:15px}}
 
 .todo-view .ritual-storage-hint,.todo-view .task-destination-hint{grid-column:1/-1;margin:0 2px 1px;color:#5e6658;font:11px/1.3 var(--ui)}
+.todo-view .task-list-delete-group{display:flex;align-items:center;gap:6px;flex-wrap:wrap;width:100%;font-size:12px;color:#635f56}
+.todo-view .task-list-delete-inline{padding:5px 8px;border:1px solid #d6aaa0;border-radius:5px;background:#fff6f2;color:#91382f;font-size:12px}
+.todo-view .task-list-delete-inline:hover,.todo-view .task-list-delete-inline:focus-visible{background:#f8ded8}
+.todo-view .task-list-delete-none{color:#8c877c;font-style:italic}
