@@ -1044,11 +1044,11 @@ body:has(dialog[open]) .task-widget,body:has(.dictation-review) .task-widget,bod
 }
 
 /* Floating bulk actions stay available while leaving room after the final task. */
-.todo-view:has(.task-selection-toolbar){padding-bottom:150px}
-.todo-view:has(.task-selection-toolbar) .task-quick,.todo-view:has(.task-selection-toolbar) .task-toolbar,.todo-view:has(.task-selection-toolbar) .task-undo{display:none!important}
-.todo-view:has(.task-selection-toolbar) .task-archive-desktop,.todo-view:has(.task-selection-toolbar) .task-archive-reveal,.todo-view:has(.task-selection-toolbar) .task-more{display:none!important}
+body:has(.task-selection-toolbar) #app{padding-bottom:170px!important}
+body:has(.task-selection-toolbar) .task-quick,body:has(.task-selection-toolbar) .task-toolbar,body:has(.task-selection-toolbar) .task-undo{display:none!important}
+body:has(.task-selection-toolbar) .task-archive-desktop,body:has(.task-selection-toolbar) .task-archive-reveal,body:has(.task-selection-toolbar) .task-more{display:none!important}
 .todo-card:has([data-task-select]:checked){background:#e8f1ff;box-shadow:0 3px 9px #315f9b22,0 0 0 1px #a9c7eb}
-.todo-view:has(.task-selection-toolbar) .task-selection-toolbar{position:fixed;z-index:25;left:50%;bottom:calc(12px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(440px,calc(100vw - 28px));padding:8px 10px 9px;border:1px solid #d6ddeb;border-radius:16px;background:#fffdf9ee;box-shadow:0 8px 28px #34291b30;backdrop-filter:blur(12px);font:13px var(--ui)}
+body:has(.task-selection-toolbar) .task-selection-toolbar{position:fixed;z-index:25;left:50%;bottom:calc(12px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(440px,calc(100vw - 28px));padding:8px 10px 9px;border:1px solid #d6ddeb;border-radius:16px;background:#fffdf9ee;box-shadow:0 8px 28px #34291b30;backdrop-filter:blur(12px);font:13px var(--ui)}
 .task-selection-summary{display:flex;align-items:center;gap:10px;padding:1px 2px 8px}
 .task-selection-summary button{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:8px;background:transparent;padding:6px;color:#344d65}
 .task-selection-summary svg,.task-selection-actions svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
@@ -1063,5 +1063,5 @@ body:has(dialog[open]) .task-widget,body:has(.dictation-review) .task-widget,bod
 .task-selection-actions .task-delete-action:hover:not(:disabled){background:#ffebe6}
 dialog:has(#task-move-form),dialog:has(#task-date-form){width:min(430px,calc(100vw - 28px))}
 dialog:has(#task-move-form) .modal-body,dialog:has(#task-date-form) .modal-body{padding:16px 20px}
-@media(min-width:761px){.todo-view:has(.task-selection-toolbar) .task-selection-toolbar{width:min(540px,calc(100vw - 48px));padding:10px 14px 12px}.task-selection-actions button{min-height:62px}}
-@media(max-width:650px){.todo-view:has(.task-selection-toolbar){padding-bottom:148px}.todo-view:has(.task-selection-toolbar) .task-selection-toolbar{width:calc(100vw - 26px);bottom:calc(8px + env(safe-area-inset-bottom));padding:7px 8px 8px;border-radius:14px}.task-selection-summary{padding-bottom:6px}.task-selection-actions{gap:6px}.task-selection-actions button{min-height:52px}}
+@media(min-width:761px){body:has(.task-selection-toolbar) .task-selection-toolbar{width:min(540px,calc(100vw - 48px));padding:10px 14px 12px}.task-selection-actions button{min-height:62px}}
+@media(max-width:650px){.todo-view:has(.task-selection-toolbar){padding-bottom:148px}body:has(.task-selection-toolbar) .task-selection-toolbar{width:calc(100vw - 26px);bottom:calc(8px + env(safe-area-inset-bottom));padding:7px 8px 8px;border-radius:14px}.task-selection-summary{padding-bottom:6px}.task-selection-actions{gap:6px}.task-selection-actions button{min-height:52px}}
