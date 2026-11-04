@@ -1245,3 +1245,35 @@ dialog:has(#task-move-form) .modal-body,dialog:has(#task-date-form) .modal-body{
 .day-period .side-section>div:first-child h2{color:#465343}
 @media(min-width:768px){.calendar-period{gap:11px}.period-overview-head{min-height:76px;padding:8px 16px}.period-overview-head h2{font-size:clamp(25px,2.4vw,34px)}.day-period .day-spread{gap:34px}}
 @media(max-width:760px){.calendar-period{gap:10px;height:auto;min-height:0}.period-overview-head{min-height:68px;padding:9px 12px;border-radius:10px}.period-overview-head .eyebrow{font-size:8px;letter-spacing:1.5px}.period-overview-head h2{font-size:25px}.period-flow{left:30%;opacity:.62}.week-period .weekly-grid{gap:0}.week-period .week-day.is-current-day{padding-left:8px;padding-right:8px}.day-period .day-spread{padding:0;gap:16px}.day-period .priorities{padding:8px 9px 11px}}
+
+/* Keep one calendar heading; its abstract seasonal landscape spans the top. */
+.book-head.calendar-page-head{position:relative;isolation:isolate;min-height:78px;padding:10px 16px;margin-bottom:12px;border:1px solid #d8d1c4;border-radius:12px;background:linear-gradient(105deg,color-mix(in srgb,var(--month-tone) 12%,#fffdf7),#fbf8f0 48%,#f7f3e9);overflow:hidden}
+.book-head.calendar-page-head:after{content:"";position:absolute;z-index:0;inset:auto 0 0;height:1px;background:color-mix(in srgb,var(--month-tone) 30%,#d9d2c4)}
+.book-head.calendar-page-head>div:first-child{position:relative;z-index:2}
+.book-head.calendar-page-head .eyebrow{font-size:9px;letter-spacing:2px;margin-bottom:4px}
+.book-head.calendar-page-head h1{font:400 clamp(25px,2.8vw,36px)/1.05 var(--serif);letter-spacing:.02em;color:#343832;margin:0}
+.book-head.calendar-page-head .date-controls{position:relative;z-index:2}
+.calendar-header-art{position:absolute;inset:0 0 0 27%;z-index:1;overflow:hidden;pointer-events:none}
+.calendar-header-art i{position:absolute;right:-4%;width:74%;height:100px;top:27px;border-radius:50%;background:color-mix(in srgb,var(--month-tone) 22%,transparent);clip-path:ellipse(54% 49% at 50% 100%);transform:rotate(-5deg)}
+.calendar-header-art i:nth-child(2){right:18%;top:15px;width:69%;background:color-mix(in srgb,var(--month-tone) 15%,transparent);transform:rotate(5deg)}
+.calendar-header-art i:nth-child(3){right:37%;top:38px;width:55%;height:78px;background:#e2c9877a;transform:rotate(-4deg)}
+.book-head.calendar-page-head-year .calendar-header-art{left:31%}
+.book-head.calendar-page-head-week h1{font-size:clamp(22px,2.3vw,31px)}
+.book-head.calendar-page-head-day h1{font-size:clamp(25px,2.5vw,34px)}
+.year-overview{gap:0}
+.month-overview{gap:8px}
+.month-overview .month-sync{align-self:flex-end;margin-top:-2px}
+@media(max-width:760px){
+ .book-head.calendar-page-head{min-height:60px;padding:7px 10px;margin:8px 0 9px;gap:5px;border-radius:9px;flex-wrap:nowrap}
+ .book-head.calendar-page-head .eyebrow{display:none}
+ .book-head.calendar-page-head h1{font-size:23px;line-height:1.1;padding-right:0}
+ .book-head.calendar-page-head .date-controls{gap:3px;flex-wrap:nowrap}
+ .book-head.calendar-page-head .date-controls select{max-width:72px;font-size:15px}
+ .book-head.calendar-page-head .date-controls .round-button{width:28px;height:28px;min-width:28px}
+ .book-head.calendar-page-head .date-controls .primary{min-height:30px;padding:4px 7px;font-size:10px}
+ .calendar-header-art{left:28%;opacity:.68}
+ .book-head.calendar-page-head-year .calendar-header-art{left:32%}
+ .book-head.calendar-page-head-week h1,.book-head.calendar-page-head-day h1{font-size:19px}
+ .year-overview{gap:0}
+ .month-overview{gap:6px}
+}
