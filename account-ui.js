@@ -6,7 +6,7 @@ export function mountAccounts({getState,empty,apply,persist,render,openModal,clo
  let stopped=false,conflicts=null,cloudText=Accounts.user?'checking':'local',cloudError=false,lastConfirmed=null,timer;
  const bootId=Accounts.user?.id||null;
  const active=()=>!stopped&&!!bootId&&!blocked();
- const sync=Accounts.client&&bootId?createSync({client:Accounts.client,getState,empty,apply,persist,active,validate:content=>validateBackup(validationNotebook(content,empty())),conflict:r=>{conflicts=r;},status:text=>{cloudText=text;cloudError=text==='Saved locally · cloud retry needed';if(text==='Saved to cloud')lastConfirmed=new Date();const el=document.querySelector('#account-sync-state');if(el)renderSyncState(el);onStatus();}}):null;
+ const sync=Accounts.client&&bootId?createSync({client:Accounts.client,getState,empty,apply,persist,active,render:()=>{if(!blocked())render();},validate:content=>validateBackup(validationNotebook(content,empty())),conflict:r=>{conflicts=r;},status:text=>{cloudText=text;cloudError=text==='Saved locally · cloud retry needed';if(text==='Saved to cloud')lastConfirmed=new Date();const el=document.querySelector('#account-sync-state');if(el)renderSyncState(el);onStatus();}}):null;
  const buttons=document.createElement('span');buttons.className='account-buttons';document.querySelector('.bar-actions').prepend(buttons);
  buttons.innerHTML=`<button class="text-action" id="account-open">${bootId?'My Account':'Log In'}</button>${bootId?'<button class="text-action" id="account-logout">Log Out</button>':''}`;
  buttons.querySelector('#account-open').onclick=()=>show().catch(e=>toast(e.message));buttons.querySelector('#account-logout')?.addEventListener('click',logout);

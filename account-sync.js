@@ -13,7 +13,7 @@ export function reconcile(state,remote,empty){
  const merged=mergeNotebook(base,local,theirs);
  return {...merged,revision:remote?.revision||0,base:theirs};
 }
-export function createSync({client,getState,apply,persist,empty,conflict,status,active=()=>true,validate=()=>{}}){
+export function createSync({client,getState,apply,persist,empty,conflict,status,render=()=>{},active=()=>true,validate=()=>{}}){
  let busy=false,again=false,timer,knownRevision=getState()._cloud?.revision;
  async function readRemote(){
   const cached=getState()._cloud;
@@ -39,7 +39,9 @@ export function createSync({client,getState,apply,persist,empty,conflict,status,
     if(!remote&&!getState()._cloud&&sameNotebookValue(cloudContent(getState()),cloudContent(empty()))){status('New account · import or start writing');return;}
     const result=reconcile(getState(),remote,empty());
     if(result.conflicts.length){conflict(result);status('Cloud conflict · review in My Account');return;}
+    const changed=!sameNotebookValue(cloudContent(getState()),result.data);
     apply(result.data,{revision:result.revision,base:result.base});await persist();if(!active())return;
+    if(changed)render();
     const content=cloudContent(getState());
     if(sameNotebookValue(content,result.base)&&remote){status('Saved to cloud');continue;}
     const requestId=crypto.randomUUID();const {data:written,error:writeError}=await client.rpc('save_notebook',{p_data:content,p_expected_revision:result.revision,p_request_id:requestId,p_import_hash:null});

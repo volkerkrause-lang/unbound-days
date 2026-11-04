@@ -16,6 +16,16 @@ test('unchanged cloud notebooks with reordered JSON keys confirm saved without a
   assert.equal(writes,0);assert.equal(status,'Saved to cloud');assert.equal(state.tasks[0].title,'Writing');
  }finally{delete globalThis.navigator;}
 });
+test('deferred cloud reconciliation refreshes the view only after local persistence',async()=>{
+ Object.defineProperty(globalThis,'navigator',{configurable:true,value:{onLine:true}});
+ try{
+  const base=empty(),remote={...empty(),entries:{'cloud-note':'newer writing'}};
+  let state={...empty(),_cloud:{revision:1,base}},persisted=false,rendered=false;
+  const client={from:()=>({select:columns=>({limit:async()=>({data:columns==='revision'?[{revision:2}]:[{data:remote,revision:2}]})})})};
+  await createSync({client,getState:()=>state,empty,apply:(data,meta)=>state={...data,_cloud:meta},persist:async()=>{persisted=true;},render:()=>{assert.equal(persisted,true);rendered=true;},status:()=>{},conflict:()=>assert.fail('unexpected conflict')}).sync();
+  assert.equal(state.entries['cloud-note'],'newer writing');assert.equal(rendered,true);
+ }finally{delete globalThis.navigator;}
+});
 test('database denies cross-account access and self-appointed admin; CAS/imports stay atomic',async()=>{
  const db=new PGlite();try{
  await db.exec(`create role anon;create role authenticated;create schema auth;create table auth.users(id uuid primary key);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;grant usage on schema auth to authenticated,anon;grant execute on function auth.uid() to authenticated,anon;`);
