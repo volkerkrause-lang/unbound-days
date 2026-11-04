@@ -80,3 +80,13 @@ test('task selection and revealed archive actions are labelled, compact and oper
  assert.equal((html.match(/<small>Cancel<\/small>/g)||[]).length,1);
  view.click({taskAction:'toggle-selection'});assert.doesNotMatch(view.html(),/data-task-select="a"/);
 });
+
+test('Done button toggles task completion, offers undo, and selection mode keeps actions separate',()=>{
+ const state={tasks:[{id:'a',title:'One',date:'2026-11-06',done:false}],settings:{}};let writes=0,renders=0,message='';
+ const view=createTaskView({getState:()=>state,save:()=>writes++,render:()=>renders++,esc:String,today:()=> '2026-11-04',openModal:()=>{},closeModal:()=>{},toast:x=>message=x});
+ let html=view.html();assert.match(html,/class="task-done-button[^"]*" data-task-done="a"/);assert.doesNotMatch(html,/data-task-check="a"|data-task-reschedule="a"|data-task-duplicate="a"/);
+ view.click({taskDone:'a'});assert.equal(state.tasks[0].done,true);assert.equal(writes,1);assert.match(message,/Undo/);assert.match(view.html(),/task-done-button is-done/);assert.match(view.html(),/✓/);
+ view.click({taskAction:'undo-completion'});assert.equal(state.tasks[0].done,false);assert.equal(writes,2);
+ view.click({taskDone:'a'});view.click({taskDone:'a'});assert.equal(state.tasks[0].done,true);assert.equal(writes,3);
+ view.click({taskAction:'toggle-selection'});html=view.html();assert.doesNotMatch(html,/data-task-done="a"/);assert.match(html,/data-task-select="a"/);assert.match(html,/task-selection-toolbar/);view.click({editTask:'a'});assert.equal(state.tasks[0].done,true);
+});

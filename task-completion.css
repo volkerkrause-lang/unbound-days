@@ -1,0 +1,24 @@
+/* Task completion is distinct from selection and keeps editing on the task title. */
+.todo-card[data-task-row]{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:center!important;column-gap:12px!important}
+.todo-card[data-task-row]>.task-archive-reveal{grid-column:1;grid-row:1}
+.todo-card[data-task-row]>.todo-card-content{grid-column:1;grid-row:1;min-width:0}
+.todo-card[data-task-row]>.task-done-button{grid-column:2;grid-row:1;align-self:center;display:inline-flex;align-items:center;justify-content:center;gap:5px;min-width:84px;min-height:44px;padding:8px 14px;border:1px solid #c9c7bf;border-radius:999px;background:#f5f4f0;color:#4b4b45;font:600 13px/1 var(--ui);white-space:nowrap;touch-action:manipulation;transition:background .18s ease,color .18s ease,border-color .18s ease,transform .18s ease}
+.todo-card[data-task-row]>.task-done-button:hover{background:#ebe9e2;border-color:#aaa99f}
+.todo-card[data-task-row]>.task-done-button:active{transform:scale(.96)}
+.todo-card[data-task-row]>.task-done-button.is-done{background:#e3f0df;border-color:#bad1b4;color:#426744}
+.todo-card[data-task-row]>.task-done-button.is-done span{font-size:15px}
+.todo-card[data-task-row].done .task-name{opacity:.58}
+.todo-card[data-task-row].done .task-name{text-decoration:line-through}
+.todo-card[data-task-row].completion-change{animation:task-complete .25s ease}
+@keyframes task-complete{50%{box-shadow:0 3px 14px #67845a40}}
+.todo-card[data-task-row] .task-name{min-height:32px;padding:2px 0;cursor:pointer}
+.todo-card[data-task-row] .task-note-writing{max-width:100%}
+.todo-card[data-task-row] .task-archive-desktop{grid-column:2;grid-row:1;right:100px}
+.todo-card[data-task-row].selecting{grid-template-columns:22px minmax(0,1fr)!important;column-gap:10px!important}
+.todo-card[data-task-row].selecting>[data-task-select]{grid-column:1;grid-row:1;width:20px;height:20px;align-self:start;margin:5px 0 0;accent-color:#56755d}
+.todo-card[data-task-row].selecting>.todo-card-content{grid-column:2;grid-row:1}
+.todo-card[data-task-row].selecting>.task-done-button{display:none!important}
+body:has(.task-selection-toolbar) .todo-view>.task-quick,body:has(.task-selection-toolbar) .todo-view>.task-undo,body:has(.task-selection-toolbar) .todo-view>.task-toolbar{display:none!important}
+.todo-card[data-task-row].selecting .task-archive-reveal{display:none}
+@media(max-width:650px){.todo-card[data-task-row]{grid-template-columns:minmax(0,1fr) auto!important;column-gap:7px!important;padding:8px!important}.todo-card[data-task-row]>.task-done-button{min-width:72px;min-height:44px;padding:7px 10px;font-size:12px}.todo-card[data-task-row].selecting{grid-template-columns:22px minmax(0,1fr)!important}.todo-card[data-task-row].selecting .task-name{font-size:14px!important}}
+@media(prefers-reduced-motion:reduce){.todo-card[data-task-row]>.task-done-button,.todo-card[data-task-row].completion-change{transition:none;animation:none}}
