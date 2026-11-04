@@ -1219,3 +1219,29 @@ dialog:has(#task-move-form) .modal-body,dialog:has(#task-date-form) .modal-body{
 .month-overview .entry-chip{font-size:clamp(13px,1.1vw,17px);margin:3px 0;padding:4px 7px;border-radius:5px;white-space:normal;line-height:1.15}
 .month-overview .more-count{display:inline-block;margin:3px 5px;color:#7d8376;font-size:11px}
 @media(max-width:760px){.month-overview{height:auto;gap:10px}.month-overview-head{min-height:72px;padding:9px 11px}.month-overview-head h2{font-size:27px}.month-overview-head .eyebrow{display:none}.month-flow{left:31%;opacity:.58}.month-sync{font-size:9px;max-width:44%;overflow:hidden;text-overflow:ellipsis}.month-calendar-wrap{min-height:0;padding:4px;border:0;background:transparent;box-shadow:none}.month-overview .calendar-table th{height:30px;font-size:9px;letter-spacing:.03em}.month-overview .calendar-table th.week-number,.month-overview .calendar-table td.week-number{display:none}.month-overview .calendar-table td{height:clamp(70px,11dvh,105px);padding:2px}.month-overview .day-cell{padding:4px;border-radius:6px}.month-overview .day-number{font-size:12px;margin-bottom:4px}.month-overview .day-cell.is-today .day-number span{width:24px;height:24px}.month-overview .entry-chip{font-size:11px;padding:3px 4px;margin:2px 0;max-height:34px;overflow:hidden}.month-overview .more-count{font-size:9px;margin:2px}}
+
+/* Week and Day use the same seasonal header as Month View. */
+.calendar-period{--month-tone:#768a69;display:flex;flex-direction:column;gap:14px;min-height:100%}
+.period-overview-head{position:relative;display:flex;align-items:center;justify-content:space-between;min-height:88px;padding:11px 18px;border:1px solid #d8d1c4;border-radius:13px;background:linear-gradient(110deg,color-mix(in srgb,var(--month-tone) 13%,#fffdf7),#fbf8f0 54%,#f7f3e9);overflow:hidden;isolation:isolate}
+.period-overview-head>div:first-child{position:relative;z-index:2}
+.period-overview-head .eyebrow{font-size:9px;letter-spacing:2px;margin:0 0 5px}
+.period-overview-head h2{margin:0;font:400 clamp(26px,3vw,38px)/1.05 var(--serif);letter-spacing:.02em;color:#343832}
+.period-overview-head h2 span{font-size:.52em;color:#788071;margin-left:9px;vertical-align:middle}
+.period-flow{position:absolute;inset:0 0 0 28%;z-index:0;overflow:hidden;opacity:.86}
+.period-flow i{position:absolute;right:-4%;width:74%;height:104px;top:32px;border-radius:50%;background:color-mix(in srgb,var(--month-tone) 22%,transparent);clip-path:ellipse(54% 49% at 50% 100%);transform:rotate(-5deg)}
+.period-flow i:nth-child(2){right:18%;top:19px;width:69%;background:color-mix(in srgb,var(--month-tone) 15%,transparent);transform:rotate(5deg)}
+.period-flow i:nth-child(3){right:37%;top:46px;width:55%;height:78px;background:#e2c9877a;transform:rotate(-4deg)}
+.week-period .weekly-grid{flex:1;align-content:stretch}
+.week-period .week-day{position:relative;border-top-color:#d7d1c4}
+.week-period .week-day.is-current-day{background:linear-gradient(135deg,color-mix(in srgb,var(--month-tone) 8%,transparent),transparent 72%);border-top-color:color-mix(in srgb,var(--month-tone) 55%,#d7d1c4)}
+.week-period .week-day-title button{font-family:var(--serif)}
+.week-period .week-day-title.is-today button{color:#526c4e}
+.week-period .week-notes{background:linear-gradient(135deg,#eee9dc80,transparent 70%);border-radius:7px;padding-left:10px;padding-right:10px}
+.day-period .day-spread{flex:1;min-height:0;padding:3px 7px 0}
+.day-period .day-spread>div>section{border-radius:8px}
+.day-period .day-spread h2{color:#465343}
+.day-period .priorities{padding:10px 12px 13px;background:linear-gradient(125deg,color-mix(in srgb,var(--month-tone) 8%,#fffdf7),#fffdf7 60%)}
+.day-period .day-writing-head{border-bottom-color:color-mix(in srgb,var(--month-tone) 28%,#d7d1c4)}
+.day-period .side-section>div:first-child h2{color:#465343}
+@media(min-width:768px){.calendar-period{gap:11px}.period-overview-head{min-height:76px;padding:8px 16px}.period-overview-head h2{font-size:clamp(25px,2.4vw,34px)}.day-period .day-spread{gap:34px}}
+@media(max-width:760px){.calendar-period{gap:10px;height:auto;min-height:0}.period-overview-head{min-height:68px;padding:9px 12px;border-radius:10px}.period-overview-head .eyebrow{font-size:8px;letter-spacing:1.5px}.period-overview-head h2{font-size:25px}.period-flow{left:30%;opacity:.62}.week-period .weekly-grid{gap:0}.week-period .week-day.is-current-day{padding-left:8px;padding-right:8px}.day-period .day-spread{padding:0;gap:16px}.day-period .priorities{padding:8px 9px 11px}}
