@@ -1348,3 +1348,10 @@ dialog:has(#task-move-form) .modal-body,dialog:has(#task-date-form) .modal-body{
 /* Render the forecast in a viewport layer so the notebook header cannot clip it. */
 body>.weather-scrim{position:fixed;inset:0;z-index:10000;background:transparent}
 body>.weather-popover{position:fixed;inset:auto auto auto auto;z-index:10001;width:min(310px,calc(100vw - 20px));max-height:calc(100dvh - 20px);overflow:auto}
+
+/* Make the day forecast motion visible at notebook scale. */
+.day-weather-icon .weather-icon{animation:weather-icon-float 2.4s ease-in-out infinite}
+.weather-week-list{display:grid;gap:4px;margin:12px 0}.weather-week-row{display:grid;grid-template-columns:68px 24px 1fr auto;align-items:center;gap:7px;min-height:31px;border-bottom:1px solid #e8e3d8;padding:3px 0;font:12px var(--ui);color:#4d554b}.weather-week-row>small{color:#788071;font-size:10px}.weather-week-row .weather-icon{width:20px;height:20px}.weather-unavailable{color:#929187;font-size:11px}.weather-week-location{margin:5px 0;color:#77796c;font:11px var(--ui)}
+@keyframes weather-icon-float{0%,100%{transform:translateY(0) scale(.96)}50%{transform:translateY(-2px) scale(1.08)}}
+@media(max-width:380px){.weather-week-row{grid-template-columns:58px 22px 1fr auto;gap:5px}.weather-week-row>small{font-size:9px}}
+@media(prefers-reduced-motion:reduce){.day-weather-icon .weather-icon{animation:none!important}}
