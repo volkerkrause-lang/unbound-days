@@ -1358,3 +1358,20 @@ body>.weather-popover{position:fixed;inset:auto auto auto auto;z-index:10001;wid
 
 /* Keep storage diagnostics readable in the narrow Settings panel. */
 .backup-status{overflow-wrap:anywhere;line-height:1.45}
+
+
+/* On phones, frame the cover against the wood grain, away from the folders. */
+@media(max-width:767px) and (orientation:portrait){
+ body{background-position:78% center;background-size:auto 100%;background-attachment:fixed}
+ .cover-scene{overflow:hidden}
+ .cover-book{transform:translateY(-4px)}
+}
+@media(max-width:767px) and (orientation:landscape){
+ body{background-position:78% center;background-size:auto 100%;background-attachment:fixed}
+ .cover-scene{height:calc(100dvh - 115px);min-height:0;overflow:hidden}
+ .cover-book{width:min(58vw,calc((100dvh - 135px)*1.35));height:min(72dvh,calc(100dvh - 150px));transform:translateX(-12px)}
+ .cover-tab{right:-60px;width:63px;height:82px;font-size:14px}
+ .cover-tab[data-section="calendar"]{top:28px}.cover-tab[data-section="goals"]{top:125px}.cover-tab[data-section="launchpad"]{top:222px}
+ .cover-controls{top:8px;right:10px;gap:6px}.quiet-button{padding:6px 10px;font-size:11px}
+ .ribbon{bottom:-32px;height:52px}
+}
