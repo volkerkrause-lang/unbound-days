@@ -116,28 +116,27 @@ style.textContent+=`
 }
 `;
 
-/* Mobile desk photo crop: use the clear wood region, away from folders and desk props. */
+/* Keep one continuous desk photo behind the cover in landscape. */
 style.textContent+=`
 @media (max-width:767px) and (orientation:portrait){
  body.desk-enabled:not(.desk-custom){background-size:auto 100dvh!important;background-position:40% center!important;background-repeat:no-repeat!important;background-attachment:scroll!important}
  body.desk-enabled:not(.desk-custom) .cover-scene{background-size:auto 100%!important;background-position:40% center!important;background-repeat:no-repeat!important}
 }
-@media (orientation:landscape) and (max-height:700px){
+@media (orientation:landscape) and (max-height:1000px) and (max-width:1300px){
  body.desk-enabled:not(.desk-custom){background-size:auto 340dvh!important;background-position:28% center!important;background-repeat:no-repeat!important;background-attachment:scroll!important}
- body.desk-enabled:not(.desk-custom) .cover-scene{background-size:auto 340%!important;background-position:28% center!important;background-repeat:no-repeat!important}
-}
-@media (orientation:landscape) and (max-height:700px) and (max-width:767px){
- body.desk-enabled:not(.desk-custom) .cover-scene{height:calc(100dvh - 115px)!important;min-height:0!important;overflow:visible!important}
- body.desk-enabled .cover-scene>.cover-book{left:0!important;width:min(58vw,calc((100dvh - 135px)*1.35));height:min(72dvh,calc(100dvh - 115px));transform:translateX(-12px)}
-}
-@media (orientation:landscape) and (max-height:700px) and (min-width:768px){
- body.desk-enabled:not(.desk-custom) .cover-scene{height:100%!important;min-height:0!important;overflow:visible!important}
- body.desk-enabled .cover-scene>.cover-book{left:clamp(-220px,-14vw,-90px)!important;height:min(72dvh,100%)!important}
-}
-@media (orientation:landscape) and (max-height:700px){
+ body.desk-enabled:not(.desk-custom) .cover-scene{background:transparent!important}
+ .cover-scene{overflow:visible!important}
  .cover-tab{right:-60px;width:63px;height:82px;font-size:14px}
  .cover-tab[data-section="calendar"]{top:28px}.cover-tab[data-section="goals"]{top:125px}.cover-tab[data-section="launchpad"]{top:222px}
  .cover-controls{top:8px;right:10px;gap:6px}.cover-controls .quiet-button{padding:6px 10px;font-size:11px}
  .ribbon{bottom:-32px;height:52px}
+}
+@media (orientation:landscape) and (max-height:1000px) and (max-width:767px){
+ .cover-scene{height:calc(100dvh - 115px)!important;min-height:0!important}
+ .cover-book{height:min(72dvh,calc(100dvh - 150px))!important}
+}
+@media (orientation:landscape) and (max-height:1000px) and (min-width:768px) and (max-width:1300px){
+ .cover-scene{height:100%!important;min-height:0!important}
+ .cover-book{height:min(72dvh,100%)!important}
 }
 `;
