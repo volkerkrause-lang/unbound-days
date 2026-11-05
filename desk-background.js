@@ -117,7 +117,7 @@ style.textContent+=`
 `;
 
 /* Mobile desk crop: the original left crop exposes the underlying folders. */
-style.textContent+=\x60
+style.textContent+=`
 @media (max-width:767px) and (orientation:portrait){
  body.desk-enabled:not(.desk-custom){background-size:auto 180%!important;background-position:right center!important}
  body.desk-enabled:not(.desk-custom) .cover-scene{background-size:auto 180%!important;background-position:right center!important}
@@ -126,10 +126,10 @@ style.textContent+=\x60
  body.desk-enabled:not(.desk-custom){background-size:auto 190%!important;background-position:right center!important}
  body.desk-enabled:not(.desk-custom) .cover-scene{background-size:auto 190%!important;background-position:right center!important}
 }
-\x60;
+`;
 
 /* Include wide phones in landscape without affecting iPad landscape. */
-style.textContent+=\x60
+style.textContent+=`
 @media (max-width:1024px) and (max-height:600px) and (orientation:landscape){
  body.desk-enabled:not(.desk-custom){background-size:auto 190%!important;background-position:right center!important}
  body.desk-enabled:not(.desk-custom) .cover-scene{height:calc(100dvh - 115px);min-height:0;overflow:hidden;background-size:auto 190%!important;background-position:right center!important}
@@ -139,4 +139,4 @@ style.textContent+=\x60
  .cover-controls{top:8px;right:10px;gap:6px}.cover-controls .quiet-button{padding:6px 10px;font-size:11px}
  .ribbon{bottom:-32px;height:52px}
 }
-\x60;
+`;
