@@ -25,7 +25,6 @@ const button=document.createElement('button');button.className='desk-button';but
 const menu=document.createElement('div');menu.className='desk-menu';menu.hidden=true;
 menu.innerHTML='<strong>Desk background</strong><button data-desk="wood">Light wooden table</button><button data-desk="upload">Choose your own photograph</button><button data-desk="none">No background</button><input type="file" accept="image/jpeg,image/png,image/webp" hidden><small>Backgrounds do not change notebook dimensions. Default: Unbound sunlit wooden desk photograph.</small>';
 document.body.append(button,menu);
-// Mount the existing selector beside Personalise cover whenever the cover renders.
 button.type='button';
 button.className='quiet-button desk-button';
 function mountDeskButton(){
@@ -51,7 +50,7 @@ function apply(mode,blob){if(imageURL){URL.revokeObjectURL(imageURL);imageURL=nu
 let lastRemote='';
 let selectedData='';
 async function ensureSelectedData(){if(selectedData)return;try{const saved=await readImage();if(saved){selectedData=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result));reader.onerror=()=>reject(reader.error);reader.readAsDataURL(saved);});}}catch{}}
-function broadcast(mode,data=''){if(mode==='custom'&&data)selectedData=data;/* Image bytes live in IndexedDB, never in the notebook's localStorage/sync state. */const detail={mode,x:Number(x.value),y:Number(y.value)};lastRemote=JSON.stringify(detail);window.dispatchEvent(new CustomEvent('unbound:desk-change',{detail}));}
+function broadcast(mode,data=''){if(mode==='custom'&&data)selectedData=data;const detail={mode,x:Number(x.value),y:Number(y.value)};lastRemote=JSON.stringify(detail);window.dispatchEvent(new CustomEvent('unbound:desk-change',{detail}));}
 async function compactImage(file){let bitmap;let objectURL;try{try{bitmap=await createImageBitmap(file);}catch{objectURL=URL.createObjectURL(file);bitmap=await new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=reject;img.src=objectURL;});}const w=bitmap.width,h=bitmap.height;const scale=Math.min(1,1600/Math.max(w,h));const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(w*scale));canvas.height=Math.max(1,Math.round(h*scale));canvas.getContext('2d').drawImage(bitmap,0,0,canvas.width,canvas.height);return canvas.toDataURL('image/jpeg',.78);}finally{if(bitmap&&typeof bitmap.close==='function')bitmap.close();if(objectURL)URL.revokeObjectURL(objectURL);}}
 window.addEventListener('unbound:desk-state',async e=>{const d=e.detail;if(!d||!['wood','none','custom'].includes(d.mode))return;const signature=JSON.stringify(d);if(signature===lastRemote)return;lastRemote=signature;setPosition();if(d.mode==='custom'&&typeof d.data==='string'&&d.data.startsWith('data:image/jpeg;base64,')&&d.data.length<2200000){try{const blob=await(await fetch(d.data)).blob();await storeImage(blob);selectedData=d.data;apply('custom',blob);}catch{}}else if(d.mode==='custom'){try{const local=await readImage();apply(local?'custom':'wood',local);}catch{apply('wood');}}else apply(d.mode);});
 function toggleMenu(){menu.hidden=!menu.hidden;const expanded=String(!menu.hidden);button.setAttribute('aria-expanded',expanded);}
@@ -60,48 +59,34 @@ menu.onclick=e=>{const action=e.target.closest('[data-desk]')?.dataset.desk;if(!
 input.onchange=async()=>{const file=input.files?.[0];if(!file)return;if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>12*1024*1024){alert('Choose a JPG, PNG or WebP image smaller than 12 MB.');return;}try{let blob=file;try{const data=await compactImage(file);blob=await(await fetch(data)).blob();}catch(error){console.warn('Desk photo compression unavailable; using original photograph',error);}apply('custom',blob);try{await storeImage(blob);}catch(error){console.warn('Desk photo storage unavailable; showing photo for this session',error);window.alert('Your photograph is displayed, but this browser could not save it permanently. It may disappear after refresh.');}broadcast('custom');menu.hidden=true;button.setAttribute('aria-expanded','false');}catch(error){console.error('Desk background upload failed',error);alert('Could not display this photograph: '+(error?.message||String(error)));}input.value='';};
 document.addEventListener('click',e=>{if(!menu.contains(e.target)&&e.target!==button){menu.hidden=true;button.setAttribute('aria-expanded','false');}});
 (async()=>{let mode='wood';try{mode=localStorage.getItem(KEY)||'wood';}catch{}if(mode==='custom'){try{const blob=await readImage();apply(blob?'custom':'wood',blob);if(blob)await ensureSelectedData();}catch{apply('wood');}}else apply(mode);window.dispatchEvent(new Event('unbound:desk-request'));})();
-
-/* Restrained, matching cover and desk controls */
 style.textContent+=`
 .cover-controls .desk-button,.cover-controls .quiet-button[data-action="gallery"]{background:rgba(244,238,228,.72)!important;border:1px solid rgba(110,91,72,.22)!important;color:#544a40!important;box-shadow:0 1px 3px #34241712!important;font-size:12px!important;font-weight:400!important;padding:6px 10px!important}
 .cover-controls .desk-button:hover,.cover-controls .quiet-button[data-action="gallery"]:hover{background:rgba(244,238,228,.92)!important}
 `;
-
-/* Keep the background and cover controls within the viewport on narrow devices. */
 style.textContent+=`
 html,body{max-width:100%;overflow-x:clip}
 body.desk-enabled{background-repeat:no-repeat!important}
 .cover-controls{max-width:100%;box-sizing:border-box;min-width:0}
 @media(max-width:700px){.cover-controls{width:100%;justify-content:flex-end!important;padding-inline:8px;gap:6px!important}.cover-controls .desk-button,.cover-controls .quiet-button[data-action="gallery"]{max-width:calc(50vw - 14px);font-size:clamp(10px,2.7vw,12px)!important;padding:6px 8px!important;white-space:normal;line-height:1.25}.desk-menu{max-width:calc(100vw - 16px);box-sizing:border-box}}
 `;
-
-/* Keep the cup and pen on the right edge when the photo is cropped on phones. */
 style.textContent+=`
 @media(max-width:700px){body.desk-enabled:not(.desk-custom){background-position:85% 50%!important}}
 `;
-
-/* Paint the photograph on the cover scene itself, above any app-level desk tint. */
 style.textContent+=`
 body.desk-enabled:not(.desk-custom) .cover-scene{isolation:isolate;background:transparent!important}
 body.desk-enabled:not(.desk-custom) .cover-scene::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background-image:url("./a_clean_warmly_lit_top_down_angled_overhead_stil.png");background-repeat:no-repeat;background-size:cover;background-position:center center}
 @media(max-width:700px){body.desk-enabled:not(.desk-custom) .cover-scene::before{background-position:85% center}}
 `;
-
-/* The photograph must sit above the scene background, but below diary and controls. */
 style.textContent+=`
 body.desk-enabled:not(.desk-custom) .cover-scene>.cover-book,body.desk-enabled:not(.desk-custom) .cover-scene>.cover-controls{position:relative;z-index:1}
 body.desk-enabled:not(.desk-custom) .cover-scene>.cover-controls{position:absolute}
 `;
-
-/* Reliable desk painting: render on the scene, not behind it or on body. */
 style.textContent+=`
 body.desk-enabled .cover-scene{background-color:#dfc49d!important;background-image:url("./a_clean_warmly_lit_top_down_angled_overhead_stil.png")!important;background-size:cover!important;background-position:var(--desk-position,50% 50%)!important;background-repeat:no-repeat!important}
 body.desk-enabled.desk-custom .cover-scene{background-image:var(--desk-image)!important}
 body.desk-enabled .cover-scene::before{content:none!important;display:none!important}
 @media(max-width:700px){body.desk-enabled:not(.desk-custom) .cover-scene{background-position:85% center!important}}
 `;
-
-/* Verify the actual asset and expose failures rather than silently showing beige. */
 const deskAsset='./a_clean_warmly_lit_top_down_angled_overhead_stil.png';
 let deskAssetStatus='pending';
 const deskNotice=document.createElement('small');
@@ -114,9 +99,6 @@ deskProbe.onerror=()=>{deskAssetStatus='missing';deskNotice.textContent='The bui
 deskProbe.src=deskAsset+'?asset=20261027';
 const oldMenuClick=menu.onclick;
 menu.onclick=e=>{oldMenuClick(e);if(e.target.closest('[data-desk="wood"]')&&deskAssetStatus==='missing'){menu.hidden=false;deskNotice.textContent='The built-in desk photograph is not available at '+deskAsset;}};
-
-/* Phone composition: crop to the unobstructed left-hand wood area.
-   Keep the notebook size and position unchanged; retain full photo on tablets. */
 style.textContent+=`
 @media(max-width:700px){
  body.desk-enabled:not(.desk-custom){background-size:auto 180%!important;background-position:left center!important}
@@ -126,10 +108,6 @@ style.textContent+=`
  }
 }
 `;
-
-/* In landscape, move the notebook left enough to leave the cup visible on
-   the right side of the desk photograph. Portrait framing stays centred;
-   all layouts retain the original photograph and its existing responsive crop. */
 style.textContent+=`
 @media (orientation:landscape) and (min-width:768px){
  body.desk-enabled .cover-scene>.cover-book{
