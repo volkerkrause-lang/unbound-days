@@ -1315,11 +1315,9 @@ dialog:has(#task-move-form) .modal-body,dialog:has(#task-date-form) .modal-body{
   transform-origin: center;
   animation: weather-sun-glow 4s ease-in-out infinite;
 }
-.day-weather-icon .weather-icon-sun path,
-.weather-icon-sun path,
-.weather-icon-partly > path:not(.weather-cloud) {
-  transform-box: fill-box;
-  transform-origin: 16px 16px;
+.weather-sun-rays {
+  transform-box: view-box;
+  transform-origin: center;
   animation: weather-sun-rays 18s linear infinite;
 }
 .weather-icon-cloud > path:first-child,
@@ -1328,17 +1326,19 @@ dialog:has(#task-move-form) .modal-body,dialog:has(#task-date-form) .modal-body{
 .weather-icon-storm > path:first-child {
   transform-box: fill-box;
   transform-origin: center;
-  animation: weather-cloud-drift 5s ease-in-out infinite;
+  fill: #e3ecee;
+  animation: weather-cloud-drift 4.2s ease-in-out infinite, weather-cloud-tint 4.2s ease-in-out infinite;
 }
 .weather-icon-rain > path:last-child { stroke-dasharray: 2 2; animation: weather-rainfall 1.8s linear infinite; }
 .weather-icon-storm > path:last-child { transform-box: fill-box; transform-origin: center; animation: weather-lightning 3.6s ease-in-out infinite; }
 @keyframes weather-sun-glow { 0%,100%{transform:scale(.96)} 50%{transform:scale(1.04)} }
 @keyframes weather-sun-rays { to{transform:rotate(360deg)} }
-@keyframes weather-cloud-drift { 0%,100%{transform:translateX(-.35px)} 50%{transform:translateX(.55px)} }
+@keyframes weather-cloud-drift { 0%,100%{transform:translate(-.6px,0)} 50%{transform:translate(1px,-.45px)} }
+@keyframes weather-cloud-tint { 0%,100%{fill:#e3ecee;stroke:#87989a} 50%{fill:#b9dce6;stroke:#668c9c} }
 @keyframes weather-rainfall { to{stroke-dashoffset:-8} }
 @keyframes weather-lightning { 0%,82%,86%,90%,100%{opacity:1} 84%,88%{opacity:.45} }
 @media(prefers-reduced-motion:reduce) {
-  .weather-icon-sun circle,.weather-icon-partly>circle,.weather-icon-sun path,
+  .weather-icon-sun circle,.weather-icon-partly>circle,.weather-sun-rays,.weather-icon-sun path,
   .weather-icon-partly>path:not(.weather-cloud),.weather-icon-cloud>path:first-child,
   .weather-icon-partly .weather-cloud,.weather-icon-rain>path:first-child,
   .weather-icon-rain>path:last-child,.weather-icon-storm>path:first-child,
