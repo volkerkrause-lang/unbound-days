@@ -140,3 +140,19 @@ style.textContent+=`
  .ribbon{bottom:-32px;height:52px}
 }
 `;
+
+/* A clean wood-only mobile surface: the original photo includes props in every portrait crop. */
+style.textContent+=`
+@media (max-width:767px) and (orientation:portrait), (max-width:1024px) and (max-height:600px) and (orientation:landscape){
+ body.desk-enabled:not(.desk-custom){
+  background-color:#91643f!important;
+  background-image:repeating-linear-gradient(3deg,rgba(64,39,22,.09) 0 1px,transparent 1px 13px,rgba(236,194,139,.08) 13px 15px,transparent 15px 29px),linear-gradient(104deg,#785132 0%,#a47749 22%,#956940 48%,#805632 75%,#a67b4f 100%)!important;
+  background-size:auto!important;background-position:center!important;background-attachment:scroll!important;
+ }
+ body.desk-enabled:not(.desk-custom) .cover-scene{
+  background-color:#91643f!important;
+  background-image:repeating-linear-gradient(3deg,rgba(64,39,22,.09) 0 1px,transparent 1px 13px,rgba(236,194,139,.08) 13px 15px,transparent 15px 29px),linear-gradient(104deg,#785132 0%,#a47749 22%,#956940 48%,#805632 75%,#a67b4f 100%)!important;
+  background-size:auto!important;background-position:center!important;background-repeat:repeat!important;
+ }
+}
+`;
