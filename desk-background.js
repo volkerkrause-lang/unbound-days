@@ -115,3 +115,15 @@ style.textContent+=`
  }
 }
 `;
+
+/* Mobile desk crop: the original left crop exposes the underlying folders. */
+style.textContent+=\x60
+@media (max-width:767px) and (orientation:portrait){
+ body.desk-enabled:not(.desk-custom){background-size:auto 180%!important;background-position:right center!important}
+ body.desk-enabled:not(.desk-custom) .cover-scene{background-size:auto 180%!important;background-position:right center!important}
+}
+@media (max-width:900px) and (max-height:600px) and (orientation:landscape){
+ body.desk-enabled:not(.desk-custom){background-size:auto 190%!important;background-position:right center!important}
+ body.desk-enabled:not(.desk-custom) .cover-scene{background-size:auto 190%!important;background-position:right center!important}
+}
+\x60;
