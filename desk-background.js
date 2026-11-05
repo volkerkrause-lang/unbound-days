@@ -116,55 +116,19 @@ style.textContent+=`
 }
 `;
 
-/* Mobile desk crop: the original left crop exposes the underlying folders. */
+/* Mobile desk photo crop: use the clear wood region, away from folders and desk props. */
 style.textContent+=`
 @media (max-width:767px) and (orientation:portrait){
- body.desk-enabled:not(.desk-custom){background-size:auto 180%!important;background-position:right center!important}
- body.desk-enabled:not(.desk-custom) .cover-scene{background-size:auto 180%!important;background-position:right center!important}
+ body.desk-enabled:not(.desk-custom){background-size:auto 100dvh!important;background-position:40% center!important;background-repeat:no-repeat!important;background-attachment:scroll!important}
+ body.desk-enabled:not(.desk-custom) .cover-scene{background-size:auto 100%!important;background-position:40% center!important;background-repeat:no-repeat!important}
 }
-@media (max-width:900px) and (max-height:600px) and (orientation:landscape){
- body.desk-enabled:not(.desk-custom){background-size:auto 190%!important;background-position:right center!important}
- body.desk-enabled:not(.desk-custom) .cover-scene{background-size:auto 190%!important;background-position:right center!important}
-}
-`;
-
-/* Include wide phones in landscape without affecting iPad landscape. */
-style.textContent+=`
 @media (max-width:1024px) and (max-height:600px) and (orientation:landscape){
- body.desk-enabled:not(.desk-custom){background-size:auto 190%!important;background-position:right center!important}
- body.desk-enabled:not(.desk-custom) .cover-scene{height:calc(100dvh - 115px);min-height:0;overflow:hidden;background-size:auto 190%!important;background-position:right center!important}
- body.desk-enabled .cover-scene>.cover-book{width:min(58vw,calc((100dvh - 135px)*1.35));height:min(72dvh,calc(100dvh - 150px));transform:translateX(-12px)}
+ body.desk-enabled:not(.desk-custom){background-size:auto 340dvh!important;background-position:28% center!important;background-repeat:no-repeat!important;background-attachment:scroll!important}
+ body.desk-enabled:not(.desk-custom) .cover-scene{height:calc(100dvh - 115px);min-height:0;overflow:hidden;background-size:auto 340%!important;background-position:28% center!important;background-repeat:no-repeat!important}
+ body.desk-enabled .cover-scene>.cover-book{left:0!important;width:min(58vw,calc((100dvh - 135px)*1.35));height:min(72dvh,calc(100dvh - 150px));transform:translateX(-12px)}
  .cover-tab{right:-60px;width:63px;height:82px;font-size:14px}
  .cover-tab[data-section="calendar"]{top:28px}.cover-tab[data-section="goals"]{top:125px}.cover-tab[data-section="launchpad"]{top:222px}
  .cover-controls{top:8px;right:10px;gap:6px}.cover-controls .quiet-button{padding:6px 10px;font-size:11px}
  .ribbon{bottom:-32px;height:52px}
-}
-`;
-
-/* A clean wood-only mobile surface: the original photo includes props in every portrait crop. */
-style.textContent+=`
-@media (max-width:767px) and (orientation:portrait), (max-width:1024px) and (max-height:600px) and (orientation:landscape){
- body.desk-enabled:not(.desk-custom){
-  background-color:#91643f!important;
-  background-image:repeating-linear-gradient(3deg,rgba(64,39,22,.09) 0 1px,transparent 1px 13px,rgba(236,194,139,.08) 13px 15px,transparent 15px 29px),linear-gradient(104deg,#785132 0%,#a47749 22%,#956940 48%,#805632 75%,#a67b4f 100%)!important;
-  background-size:auto!important;background-position:center!important;background-attachment:scroll!important;
- }
- body.desk-enabled:not(.desk-custom) .cover-scene{
-  background-color:#91643f!important;
-  background-image:repeating-linear-gradient(3deg,rgba(64,39,22,.09) 0 1px,transparent 1px 13px,rgba(236,194,139,.08) 13px 15px,transparent 15px 29px),linear-gradient(104deg,#785132 0%,#a47749 22%,#956940 48%,#805632 75%,#a67b4f 100%)!important;
-  background-size:auto!important;background-position:center!important;background-repeat:repeat!important;
- }
-}
-`;
-
-/* Mobile uses a clean wood crop from the original desk photograph. */
-style.textContent+=`
-@media (max-width:767px) and (orientation:portrait){
- body.desk-enabled:not(.desk-custom){background-image:url('./a_clean_warmly_lit_top_down_angled_overhead_stil.png')!important;background-size:auto 100dvh!important;background-position:40% center!important;background-repeat:no-repeat!important;background-attachment:scroll!important}
- body.desk-enabled:not(.desk-custom) .cover-scene{background-image:url('./a_clean_warmly_lit_top_down_angled_overhead_stil.png')!important;background-size:auto 100%!important;background-position:40% center!important;background-repeat:no-repeat!important}
-}
-@media (max-width:1024px) and (max-height:600px) and (orientation:landscape){
- body.desk-enabled:not(.desk-custom){background-image:url('./a_clean_warmly_lit_top_down_angled_overhead_stil.png')!important;background-size:auto 340dvh!important;background-position:28% center!important;background-repeat:no-repeat!important;background-attachment:scroll!important}
- body.desk-enabled:not(.desk-custom) .cover-scene{background-image:url('./a_clean_warmly_lit_top_down_angled_overhead_stil.png')!important;background-size:auto 340%!important;background-position:28% center!important;background-repeat:no-repeat!important}
 }
 `;
