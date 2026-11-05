@@ -122,6 +122,25 @@ input[data-writing-key],textarea[data-writing-key]{font-family:var(--hand)}
 .day-section-heading{display:flex;align-items:center;gap:8px}.day-heading-icon{width:22px;height:22px;display:inline-grid;place-items:center;flex:0 0 22px;border-radius:50%;background:color-mix(in srgb,currentColor 12%,transparent)}.day-heading-icon svg{width:15px;height:15px}.day-heading-icon.terracotta{color:#a96650}.day-heading-icon.blue{color:#668ba0}.day-heading-icon.indigo{color:#72769a}.day-heading-icon.ochre{color:#a78943}.priority-input{gap:9px}.priority-input input.priority-completed{text-decoration:line-through;color:#89877e;opacity:.7}.priority-done{flex:0 0 auto;min-width:54px;min-height:32px;padding:4px 9px;border:1px solid #c9cabb;border-radius:16px;color:#69745f;background:#f5f5eb;font:11px var(--ui)}.priority-done[aria-pressed=true]{background:#e3eadc;border-color:#9cab8d;color:#526a4d}.priority-done[hidden]{display:none}.day-weather-wrap{position:relative}.day-weather{display:flex;align-items:center;gap:7px;padding:6px 10px;border:1px solid #ded8c8;border-radius:18px;background:#faf8f0;color:#52594d;font:13px var(--ui);white-space:nowrap}.day-weather span:first-child{font-size:17px}.day-weather small{color:#8e8b7e}.weather-scrim{position:fixed;inset:0;z-index:40}.weather-popover{position:absolute;z-index:41;right:0;top:calc(100% + 8px);width:min(310px,calc(100vw - 40px));padding:17px;border:1px solid #d8d0bf;border-radius:12px;background:#fffdf6;box-shadow:0 12px 32px #392d1d2e;font:12px var(--ui)}.weather-popover>strong{display:block;padding-right:25px;font:17px var(--serif)}.weather-close{position:absolute;right:9px;top:7px;font-size:22px}.weather-range{display:flex;justify-content:space-between;align-items:center;margin:14px 0;font-size:18px}.weather-range span{font:11px var(--ui);color:#787b6b}.weather-periods{display:grid;grid-template-columns:repeat(3,1fr);border-block:1px solid #e5e0d5;padding:10px 0}.weather-periods span{display:flex;flex-direction:column;gap:7px;color:#77796c;font-size:10px}.weather-periods b{font-size:13px;color:#4d554b}.weather-actions{display:flex;gap:14px;margin-top:12px}.weather-actions button{font-size:11px;color:#63785c;text-decoration:underline}.weather-city-entry{display:flex;gap:6px;align-items:end;margin-top:10px}.weather-city-entry input{width:110px;padding:5px;border:1px solid #ddd5c5;border-radius:5px}.weather-city-entry[hidden]{display:none}
 .idea-size-preview{display:inline-grid;place-items:center;width:26px;height:18px;margin-left:5px;color:#313a41;font-size:var(--preview-size,3px);line-height:1}
 
+/* Keep the compact forecast above the paper content on touch layouts. */
+.calendar-page-head{position:relative;z-index:12;overflow:visible}
+.calendar-page-head .date-controls{position:relative;z-index:13}
+.day-weather-wrap{z-index:14}
+.weather-scrim{z-index:30}
+.weather-popover{z-index:31}
+.weather-icon{display:block;width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.weather-icon-sun,.weather-icon-partly{color:#d99d22}
+.weather-icon-sun circle,.weather-icon-partly>circle{fill:#f4c84d;stroke:#d99d22}
+.weather-icon-cloud{color:#84939a}
+.weather-icon-partly .weather-cloud{fill:#eef1eb;stroke:#82949a}
+.weather-icon-rain{color:#668ca2}
+.weather-icon-storm{color:#b28b31}
+.day-weather-icon{display:inline-flex;align-items:center;justify-content:center}
+.weather-main-icon{display:inline-flex;align-items:center}
+.weather-period-icon{display:inline-flex;vertical-align:middle}
+.weather-period-icon .weather-icon{width:17px;height:17px}
+.weather-range>.weather-main-icon .weather-icon{width:23px;height:23px}
+
 /* Two peaks with an inward ribbon notch, matching the ribbon outside the calendar. */
 .bookmark-today{clip-path:polygon(0 0,100% 0,100% 100%,50% 88%,0 100%);padding-top:12px;padding-bottom:16px}
 
