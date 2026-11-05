@@ -127,3 +127,16 @@ style.textContent+=\x60
  body.desk-enabled:not(.desk-custom) .cover-scene{background-size:auto 190%!important;background-position:right center!important}
 }
 \x60;
+
+/* Include wide phones in landscape without affecting iPad landscape. */
+style.textContent+=\x60
+@media (max-width:1024px) and (max-height:600px) and (orientation:landscape){
+ body.desk-enabled:not(.desk-custom){background-size:auto 190%!important;background-position:right center!important}
+ body.desk-enabled:not(.desk-custom) .cover-scene{height:calc(100dvh - 115px);min-height:0;overflow:hidden;background-size:auto 190%!important;background-position:right center!important}
+ body.desk-enabled .cover-scene>.cover-book{width:min(58vw,calc((100dvh - 135px)*1.35));height:min(72dvh,calc(100dvh - 150px));transform:translateX(-12px)}
+ .cover-tab{right:-60px;width:63px;height:82px;font-size:14px}
+ .cover-tab[data-section="calendar"]{top:28px}.cover-tab[data-section="goals"]{top:125px}.cover-tab[data-section="launchpad"]{top:222px}
+ .cover-controls{top:8px;right:10px;gap:6px}.cover-controls .quiet-button{padding:6px 10px;font-size:11px}
+ .ribbon{bottom:-32px;height:52px}
+}
+\x60;
