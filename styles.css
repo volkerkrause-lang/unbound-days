@@ -1344,3 +1344,7 @@ dialog:has(#task-move-form) .modal-body,dialog:has(#task-date-form) .modal-body{
   .weather-icon-rain>path:last-child,.weather-icon-storm>path:first-child,
   .weather-icon-storm>path:last-child { animation:none!important; }
 }
+
+/* Render the forecast in a viewport layer so the notebook header cannot clip it. */
+body>.weather-scrim{position:fixed;inset:0;z-index:10000;background:transparent}
+body>.weather-popover{position:fixed;inset:auto auto auto auto;z-index:10001;width:min(310px,calc(100vw - 20px));max-height:calc(100dvh - 20px);overflow:auto}
