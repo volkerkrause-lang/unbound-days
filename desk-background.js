@@ -156,3 +156,15 @@ style.textContent+=`
  }
 }
 `;
+
+/* Mobile uses a clean wood crop from the original desk photograph. */
+style.textContent+=`
+@media (max-width:767px) and (orientation:portrait){
+ body.desk-enabled:not(.desk-custom){background-image:url('./a_clean_warmly_lit_top_down_angled_overhead_stil.png')!important;background-size:auto 100dvh!important;background-position:40% center!important;background-repeat:no-repeat!important;background-attachment:scroll!important}
+ body.desk-enabled:not(.desk-custom) .cover-scene{background-image:url('./a_clean_warmly_lit_top_down_angled_overhead_stil.png')!important;background-size:auto 100%!important;background-position:40% center!important;background-repeat:no-repeat!important}
+}
+@media (max-width:1024px) and (max-height:600px) and (orientation:landscape){
+ body.desk-enabled:not(.desk-custom){background-image:url('./a_clean_warmly_lit_top_down_angled_overhead_stil.png')!important;background-size:auto 340dvh!important;background-position:28% center!important;background-repeat:no-repeat!important;background-attachment:scroll!important}
+ body.desk-enabled:not(.desk-custom) .cover-scene{background-image:url('./a_clean_warmly_lit_top_down_angled_overhead_stil.png')!important;background-size:auto 340%!important;background-position:28% center!important;background-repeat:no-repeat!important}
+}
+`;
