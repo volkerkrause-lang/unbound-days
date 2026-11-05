@@ -24,7 +24,7 @@ try{
  await page.locator('#task-quick input[name="title"]').fill('Tab persistence check');await page.locator('#task-quick button').click();
  assert.ok(Math.abs(await page.locator('.task-ribbon-scroll').evaluate(el=>el.scrollLeft)-left)<2);
  await page.screenshot({path:`test-results/refinements-${name}-tasks.png`,fullPage:true});
- await page.locator('[data-section="goals"]').first().click();await page.locator('[data-planner-choice="forms"]').click();
+ await page.locator('[data-section="goals"]').first().click();await page.locator('[data-planner-choice="forms"]').click();await page.locator('[data-planner-manage]').click();
  await page.locator('[data-template-new-folder]').click();await page.locator('[name="name"]').fill('Work');await page.locator('#template-library-form [type="submit"]').click();
  await page.locator('.folder-art').waitFor();await page.screenshot({path:`test-results/refinements-${name}-folders.png`,fullPage:true});
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
