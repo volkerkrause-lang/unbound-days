@@ -122,7 +122,7 @@ style.textContent+=`
  body.desk-enabled:not(.desk-custom){background-size:auto 100dvh!important;background-position:40% center!important;background-repeat:no-repeat!important;background-attachment:scroll!important}
  body.desk-enabled:not(.desk-custom) .cover-scene{background-size:auto 100%!important;background-position:40% center!important;background-repeat:no-repeat!important}
 }
-@media (orientation:landscape) and (max-height:1000px) and (max-width:1300px){
+@media (orientation:landscape) and (max-height:1000px){
  body.desk-enabled:not(.desk-custom){background-size:auto 340dvh!important;background-position:28% center!important;background-repeat:no-repeat!important;background-attachment:scroll!important}
  body.desk-enabled:not(.desk-custom) .cover-scene{background:transparent!important}
  .cover-scene{overflow:visible!important}
@@ -135,7 +135,7 @@ style.textContent+=`
  .cover-scene{height:calc(100dvh - 115px)!important;min-height:0!important}
  .cover-book{height:min(72dvh,calc(100dvh - 150px))!important}
 }
-@media (orientation:landscape) and (max-height:1000px) and (min-width:768px) and (max-width:1300px){
+@media (orientation:landscape) and (max-height:1000px) and (min-width:768px){
  .cover-scene{height:100%!important;min-height:0!important}
  .cover-book{height:min(72dvh,100%)!important}
 }
