@@ -1,0 +1,51 @@
+import {chromium} from 'playwright';
+import assert from 'node:assert/strict';
+
+const base=process.env.UNBOUND_TEST_URL||'http://localhost:4173/';
+const browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||undefined,args:process.env.CHROMIUM_EXECUTABLE_PATH?['--no-sandbox','--disable-dev-shm-usage','--no-zygote','--single-process','--use-gl=angle','--use-angle=swiftshader','--disable-gpu-sandbox','--in-process-gpu']:[]});
+try{
+ const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+ const page=await context.newPage(),errors=[];
+ page.on('pageerror',error=>errors.push(error.message));
+ await page.goto(new URL('?quickCapture=1',base).href,{waitUntil:'domcontentloaded'});
+ await page.locator('#modal[open] .quick-capture').waitFor();
+ assert.equal(await page.locator('[data-qc-mode="dictate"]').getAttribute('aria-selected'),'true');
+ assert.equal(await page.locator('[data-qc-action="save"]').isDisabled(),true);
+ await page.locator('[data-qc-mode="type"]').click();
+ await page.locator('[data-qc-text]').fill('A thought captured on mobile.');
+ await page.locator('[data-qc-action="save"]').click();
+ await page.locator('#modal[open]').waitFor({state:'hidden'});
+ let saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('unbound-days-v1')));
+ let note=saved.notes.find(item=>item.quickCapture);
+ assert.ok(note);assert.equal(note.quickCaptureInbox,true);assert.equal(saved.entries[`note:${note.id}`],'A thought captured on mobile.');
+ assert.equal(saved.tasks.length,0);assert.equal(saved.events.length,0);
+ await page.locator('.quick-add-button').click();
+ await page.locator('#modal[open] .quick-capture').waitFor();
+ await page.locator('[data-qc-action="cancel"]').click();
+ await page.waitForTimeout(150);
+
+ const sharedUrl=new URL('?quickCapture=1&title=Shared%20article&url=https%3A%2F%2Fexample.org%2Fstory&text=Read%20this',base);
+ await page.goto(sharedUrl.href,{waitUntil:'domcontentloaded'});
+ await page.locator('#modal[open] .quick-capture').waitFor();
+ assert.equal(await page.locator('[data-qc-mode="type"]').getAttribute('aria-selected'),'true');
+ assert.equal(await page.locator('.quick-capture-link a').getAttribute('href'),'https://example.org/story');
+ await page.locator('[data-qc-action="save"]').click();
+ await page.locator('#modal[open]').waitFor({state:'hidden'});
+ saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('unbound-days-v1')));
+ note=saved.notes.find(item=>item.sharedUrl==='https://example.org/story');
+ assert.ok(note);assert.equal(note.sharedTitle,'Shared article');assert.equal(saved.entries[`note:${note.id}`],'Read this');
+
+ await page.goto(new URL('?quickCapture=1',base).href,{waitUntil:'domcontentloaded'});
+ await page.locator('#modal[open] .quick-capture').waitFor();
+ await page.locator('[data-qc-mode="camera"]').click();
+ await page.locator('[data-qc-file]').setInputFiles({name:'sample.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jWZ0AAAAASUVORK5CYII=','base64')});
+ await page.locator('.quick-capture-photo-preview img').waitFor();
+ assert.equal(await page.locator('[data-qc-action="save"]').isDisabled(),false);
+ await page.locator('[data-qc-action="save"]').click();
+ await page.locator('#modal[open]').waitFor({state:'hidden'});
+ saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('unbound-days-v1')));
+ note=saved.notes.find(item=>item.quickCapture&&item.title==='Photo');
+ assert.ok(note);assert.ok(JSON.parse(saved.entries[`idea:${note.id}:attachments`]).some(item=>item.type==='image/jpeg'));
+ assert.deepEqual(errors,[]);
+ console.log('Quick Capture mobile browser smoke passed: text, share target, photo, Inbox and task/calendar isolation');
+}finally{await browser.close();}

@@ -42,6 +42,7 @@ jobs:
             echo "::endgroup::"
           }
           run_check "Account synchronisation" npm run test:browser:account
+          run_check "Quick Capture mobile flow" npm run test:browser:quick-capture
           run_check "Task completion" node scripts/task-completion-smoke.mjs
           run_check "Mobile layout" node scripts/mobile-smoke.mjs
           run_check "Cover artwork" node scripts/cover-artwork-audit.mjs
