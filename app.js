@@ -28,7 +28,7 @@ import {mountQuickCapture,parseShareTarget,normaliseShareUrl} from './quick-capt
 
 const personalStorage=createPersonalStorage({client:Accounts.client,config:cloudConfig});
 let accountBackupProvider=null,accountBackupConnected=false;
-async function refreshAccountStoragePrefs(info=null){try{info=info||await personalStorage.status(true);accountBackupProvider=info.preferences?.backup_provider||null;accountBackupConnected=!!accountBackupProvider&&info.connections?.some(x=>x.provider===accountBackupProvider);if(info.preferences?.backup_last_success_at)lastCloud=new Date(info.preferences.backup_last_success_at).getTime();return info;}catch{accountBackupConnected=false;return null;}}
+async function refreshAccountStoragePrefs(info=null){try{info=info||await personalStorage.status(true);accountBackupProvider=info.preferences?.backup_provider||null;accountBackupConnected=!!accountBackupProvider&&info.connections?.some(x=>x.provider===accountBackupProvider);if(info.preferences?.backup_last_success_at)lastCloud=new Date(info.preferences.backup_last_success_at).getTime();if(accountBackupConnected&&cloudDirty)queueCloudBackup();return info;}catch{accountBackupConnected=false;return null;}}
 Accounts.client?.auth.onAuthStateChange((_event,session)=>{setTimeout(()=>{if(session?.user)refreshAccountStoragePrefs();else{accountBackupProvider=null;accountBackupConnected=false;}},0);});
 
 const captureQuery=new URLSearchParams(location.search);
