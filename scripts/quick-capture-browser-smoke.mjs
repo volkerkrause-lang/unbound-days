@@ -1,5 +1,6 @@
 import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 
 const base=process.env.UNBOUND_TEST_URL||'http://localhost:4173/';
 const browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||undefined,args:process.env.CHROMIUM_EXECUTABLE_PATH?['--no-sandbox','--disable-dev-shm-usage','--no-zygote','--single-process','--use-gl=angle','--use-angle=swiftshader','--disable-gpu-sandbox','--in-process-gpu']:[]});
@@ -38,7 +39,7 @@ try{
  await page.goto(new URL('?quickCapture=1',base).href,{waitUntil:'domcontentloaded'});
  await page.locator('#modal[open] .quick-capture').waitFor();
  await page.locator('[data-qc-mode="camera"]').click();
- await page.locator('[data-qc-file]').setInputFiles({name:'sample.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jWZ0AAAAASUVORK5CYII=','base64')});
+ await page.locator('[data-qc-file]').setInputFiles({name:'sample.png',mimeType:'image/png',buffer:readFileSync(new URL('../assets/icon-192.png',import.meta.url))});
  await page.locator('.quick-capture-photo-preview img').waitFor();
  assert.equal(await page.locator('[data-qc-action="save"]').isDisabled(),false);
  await page.locator('[data-qc-action="save"]').click();
