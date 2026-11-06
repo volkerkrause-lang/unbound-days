@@ -91,11 +91,11 @@ export function mountQuickCapture({ root, shared = null, dictation, onSave, onCl
       <div class="quick-capture-photo-actions"><button type="button" class="secondary" data-qc-action="camera">Take a photo</button><button type="button" class="secondary" data-qc-action="choose">Choose image</button><button type="button" class="text-action danger" data-qc-action="remove-photo" hidden>Remove photo</button></div>
     </div>
     <input type="file" data-qc-file accept="image/*" capture="environment" hidden>
-    <label class="quick-capture-writing"><span data-qc-label>${value.fromShare ? 'Add a comment · optional' : 'Your note'}</span><textarea data-qc-text rows="5" maxlength="8000" placeholder="${value.fromShare ? 'Add a thought about this page…' : 'Say what is on your mind…'}">${escapeHtml(value.text)}</textarea></label>
     <div class="quick-capture-controls">
       <button type="button" class="quick-capture-mic" data-qc-action="dictate" aria-label="${value.fromShare ? 'Dictate a comment' : 'Start dictation'}"><span aria-hidden="true">🎙</span><small>${value.fromShare ? 'Add spoken comment' : 'Start dictation'}</small></button>
       <span class="quick-capture-draft" role="status" data-qc-status></span>
     </div>
+    <label class="quick-capture-writing"><span data-qc-label>${value.fromShare ? 'Add a comment · optional' : 'Your note'}</span><textarea data-qc-text rows="5" maxlength="8000" placeholder="${value.fromShare ? 'Add a thought about this page…' : 'Say what is on your mind…'}">${escapeHtml(value.text)}</textarea></label>
     <footer class="quick-capture-footer"><button type="button" class="secondary" data-qc-action="cancel">Cancel</button><button type="button" class="primary" data-qc-action="save" disabled>Save to Inbox</button></footer>
   </section>`;
 
@@ -110,6 +110,7 @@ export function mountQuickCapture({ root, shared = null, dictation, onSave, onCl
     const canSave = !!(value.text.trim() || value.image || value.sharedUrl || value.sharedTitle);
     saveButton.disabled = busy || !canSave;
     saveButton.textContent = busy ? 'Saving…' : 'Save to Inbox';
+    root.querySelector('.quick-capture').dataset.mode = value.mode;
     root.querySelectorAll('[data-qc-mode]').forEach(button => button.setAttribute('aria-selected', String(button.dataset.qcMode === value.mode)));
     photoWrap.hidden = value.mode !== 'camera' && !value.image;
     root.querySelector('[data-qc-label]').textContent = value.fromShare ? 'Add a comment · optional' : value.mode === 'camera' ? 'Caption · optional' : 'Your note';

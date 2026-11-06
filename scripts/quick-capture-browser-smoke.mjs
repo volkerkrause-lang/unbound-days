@@ -10,6 +10,8 @@ try{
  page.on('pageerror',error=>errors.push(error.message));
  await page.goto(new URL('?quickCapture=1',base).href,{waitUntil:'domcontentloaded'});
  await page.locator('#modal[open] .quick-capture').waitFor();
+ assert.equal(await page.locator('body').evaluate(el=>el.classList.contains('quick-capture-launch')),true);
+ assert.equal(await page.locator('#app').isVisible(),false);
  assert.equal(await page.locator('[data-qc-mode="dictate"]').getAttribute('aria-selected'),'true');
  assert.equal(await page.locator('[data-qc-action="save"]').isDisabled(),true);
  await page.locator('[data-qc-mode="type"]').click();

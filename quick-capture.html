@@ -9,17 +9,19 @@
   <link rel="manifest" href="quick-capture.webmanifest">
   <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
   <style>
-    body{margin:0;min-height:100dvh;display:grid;place-items:center;background:#ede6dc;color:#453b2f;font-family:system-ui,sans-serif}
-    main{box-sizing:border-box;width:min(520px,calc(100% - 32px));padding:30px;border:1px solid #d7cfbf;border-radius:16px;background:#fffdf6;box-shadow:0 18px 55px #31261922}
-    h1{margin:0 0 10px;font:32px Georgia,serif}p{line-height:1.6;color:#6d675b}a{display:inline-block;margin-top:12px;padding:12px 16px;border-radius:8px;background:#536449;color:white;text-decoration:none}
+    *{box-sizing:border-box}body{margin:0;min-height:100dvh;display:grid;place-items:center;padding:20px;background:radial-gradient(ellipse at 50% 0%,#f8f3e9,#e9dfcf 76%);color:#453b2f;font-family:system-ui,-apple-system,sans-serif}
+    main{width:min(540px,100%);padding:clamp(22px,6vw,34px);border:1px solid #d7cfbf;border-radius:18px;background:#fffdf7;box-shadow:0 18px 55px #31261922}
+    .eyebrow{margin:0 0 8px;color:#708064;font-size:11px;letter-spacing:.14em;text-transform:uppercase}h1{margin:0 0 10px;font:clamp(29px,7vw,38px) Georgia,serif;font-weight:400}p{line-height:1.55;color:#6d675b}.steps{margin:20px 0;padding:15px 18px;border:1px solid #e0d8c9;border-radius:12px;background:#f7f3e9}.steps h2{margin:0 0 10px;font:19px Georgia,serif;font-weight:400}.steps ol{margin:0;padding-left:21px}.steps li{margin:9px 0;color:#565247;line-height:1.45}.note{font-size:12px;color:#777568}.actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:18px}a{display:inline-block;padding:12px 16px;border-radius:9px;background:#536449;color:white;text-decoration:none;font-weight:600}a.secondary{border:1px solid #d5cbb8;background:#f8f4eb;color:#4d5944}
   </style>
 </head>
 <body>
   <main>
-    <h1>Unbound Quick Capture</h1>
-    <p>Install this companion app from your browser menu. It opens directly to Dictate, Camera and Type, with every capture saved to your Notes &amp; Ideas Inbox.</p>
-    <p>On Samsung, after installation try <strong>Settings → Advanced features → Side button → Double press → Open app → Capture</strong>. Device menus vary; check that Capture opens straight into Quick Capture.</p>
-    <a href="./?quickCapture=1">Open Quick Capture</a>
+    <p class="eyebrow">Unbound · Notes &amp; Ideas</p>
+    <h1>Quick Capture</h1>
+    <p>Install this small companion app to open Dictate, Camera and Type straight into your Inbox.</p>
+    <section class="steps"><h2>Link it to the Samsung Side button</h2><ol><li>Open this page in <strong>Chrome</strong> on your Galaxy phone.</li><li>Tap <strong>⋮ → Install app</strong> (or <strong>Add to Home screen</strong> if that is what Chrome offers).</li><li>Open <strong>Settings → Advanced features → Side button → Double press → Open app</strong>.</li><li>Select <strong>Unbound Quick Capture</strong> or <strong>Capture</strong> from the app list.</li></ol></section>
+    <p class="note">Samsung’s app list can vary by software version. If Capture is not listed, the installed web app is not exposed to the Side button on this phone; use the Capture home-screen icon as the direct shortcut. Your double press can be changed back to Camera at any time in Side button settings.</p>
+    <div class="actions"><a href="./?quickCapture=1">Open Quick Capture</a><a class="secondary" href="./">Open Unbound</a></div>
   </main>
 </body>
 </html>
