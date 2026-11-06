@@ -1,4 +1,4 @@
-const requiredScopes=['https://www.googleapis.com/auth/calendar.events','https://www.googleapis.com/auth/calendar.calendarlist.readonly','https://www.googleapis.com/auth/tasks','https://www.googleapis.com/auth/drive.file'];
+const requiredScopes=['https://www.googleapis.com/auth/calendar.events','https://www.googleapis.com/auth/calendar.calendarlist.readonly','https://www.googleapis.com/auth/tasks'];
 const encoder=new TextEncoder(),decoder=new TextDecoder();
 export async function seal(token,keyText){
  const key=await crypto.subtle.importKey('raw',Uint8Array.from(atob(keyText),c=>c.charCodeAt(0)),'AES-GCM',false,['encrypt']);

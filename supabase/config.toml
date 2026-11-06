@@ -7,3 +7,6 @@ verify_jwt = false
 
 [functions.google-connection]
 verify_jwt = false
+
+[functions.personal-storage]
+verify_jwt = false

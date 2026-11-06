@@ -89,4 +89,18 @@ Supabase's [current egress documentation](https://supabase.com/docs/guides/platf
 - Box developer app registration, redirect URIs, scopes and refresh-token configuration.
 - Explicitly listed origins for the existing Unbound preview and the eventual standalone Quick Capture deployment.
 
-No provider was live-tested in this audit. No code, database, deployment, user attachment or provider file was changed.
+## Phase C–F — implementation status on the isolated feature branch
+
+The audit findings above describe the original development ref. The following implementation has since been added on `feature/personal-cloud-storage-audit-20261106`:
+
+- Added an additive Supabase migration for owner-scoped storage preferences and attachment metadata, plus a server-only encrypted connection table. RLS and a database constraint prevent selecting an unconnected provider. The migration has **not** been applied to any Supabase project.
+- Added a shared browser storage service with Google Drive, Dropbox and Box adapter paths, PKCE authorization, direct provider uploads/downloads and metadata-only Supabase writes. New file additions use this path; older Base64 attachments remain readable and are not migrated.
+- Added an authenticated edge-function broker for OAuth code exchange and token refresh. Refresh tokens are AES-GCM encrypted server-side; short-lived access tokens stay in memory. The function does not proxy file bytes.
+- Removed Drive permission from the Google identity sign-in scopes. Drive consent is requested separately by the storage flow. Existing Google Calendar and Tasks scopes remain.
+- Added a bounded IndexedDB attachment queue for offline/pending captures. In-app Quick Capture uses the Notes & Ideas attachment route and therefore the same selected provider. The future separate-origin Quick Capture app is **not** implemented; it will need its own authenticated session or a narrowly scoped handoff and an explicit allowed origin.
+- Added Settings → Storage & Backups for account-level **attachment destination** selection and connection status. Notebook-backup provider selection remains in the older backup flow and is still device/notebook scoped; account-level backup preference, Box notebook backups and last-successful-backup status remain unfinished.
+- Expanded CSP for provider API, upload and OAuth endpoints. Added mocked broker, migration/RLS, OAuth and adapter tests.
+
+Verification in this workspace: `npm run check`, `npm test` (145 passing), `npm run build`, and `git diff --check` pass. Provider calls in tests are mocked; no Google, Dropbox or Box live OAuth/upload smoke test has been run. Browser end-to-end tests could not run because Playwright Chromium is unavailable in this environment. No Supabase migration/function deployment or Cloudflare preview deployment was performed. No provider credentials were available, and Supabase usage dashboard metrics remain unavailable; the traffic attribution above is therefore still a confirmed payload risk, not an exact measured cause.
+
+Required before enabling live providers: configure exact development origins and redirect URIs, register each provider application, store broker secrets in the isolated development Supabase project, apply the migration there, deploy the edge function, then run live consent/upload/download/reconnect tests. Do not configure these secrets in browser code. Notebook backup integration and standalone Quick Capture origin/session integration need follow-up implementation before the complete requested architecture is finished.

@@ -4,9 +4,9 @@ import {googleLoginOptions,googleScopes,authStorage,createGoogleSession} from '.
 import {createHandler,seal,unseal} from '../supabase/functions/google-connection/handler.js';
 import {PGlite} from '@electric-sql/pglite';
 import {readFile} from 'node:fs/promises';
-test('one redirect login requests Calendar, Tasks, Drive and offline renewal',()=>{
+test('Google identity login requests Calendar and Tasks but keeps Drive consent separate',()=>{
  const r=googleLoginOptions('https://development.example/','owner@example.test');
- assert.equal(r.options.redirectTo,'https://development.example/');assert.equal(r.options.queryParams.access_type,'offline');assert.equal(r.options.queryParams.prompt,undefined);assert.equal(googleLoginOptions('https://development.example/',null,true).options.queryParams.prompt,'consent');for(const scope of googleScopes)assert.ok(r.options.scopes.includes(scope));
+ assert.equal(r.options.redirectTo,'https://development.example/');assert.equal(r.options.queryParams.access_type,'offline');assert.equal(r.options.queryParams.prompt,undefined);assert.equal(googleLoginOptions('https://development.example/',null,true).options.queryParams.prompt,'consent');for(const scope of googleScopes)assert.ok(r.options.scopes.includes(scope));assert.doesNotMatch(r.options.scopes,/drive\.file/);
 });
 test('provider credentials are excluded from persistent auth session',()=>{
  const map=new Map(),s=authStorage({getItem:k=>map.get(k),setItem:(k,v)=>map.set(k,v),removeItem:k=>map.delete(k)});
