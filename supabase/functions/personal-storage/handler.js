@@ -26,9 +26,9 @@ export function createHandler({env,authenticate,admin,fetch:request=fetch,now=Da
    const provider=safeProvider(body.provider),table=()=>admin.from('personal_storage_connections');
    const getStored=async()=>{const r=await table().select('provider_account_id,refresh_ciphertext,scopes,updated_at').eq('user_id',user.id).eq('provider',provider).maybeSingle();if(r.error)throw Error('Storage connection unavailable');return r.data;};
    if(body.action==='status'){
-    const [connections,prefs]=await Promise.all([table().select('provider,provider_account_id,connected_at,updated_at').eq('user_id',user.id),admin.from('storage_preferences').select('attachment_provider,backup_provider,updated_at').eq('user_id',user.id).maybeSingle()]);
+    const [connections,prefs]=await Promise.all([table().select('provider,provider_account_id,connected_at,updated_at').eq('user_id',user.id),admin.from('storage_preferences').select('attachment_provider,backup_provider,backup_last_success_at,updated_at').eq('user_id',user.id).maybeSingle()]);
     if(connections.error||prefs.error)throw Error('Storage preferences unavailable');
-    return reply(200,{connections:(connections.data||[]).map(x=>({provider:x.provider,account:x.provider_account_id,connectedAt:x.connected_at,updatedAt:x.updated_at})),preferences:prefs.data||{attachment_provider:null,backup_provider:null}});
+    return reply(200,{connections:(connections.data||[]).map(x=>({provider:x.provider,account:x.provider_account_id,connectedAt:x.connected_at,updatedAt:x.updated_at})),preferences:prefs.data||{attachment_provider:null,backup_provider:null,backup_last_success_at:null}});
    }
    if(!provider)return reply(400,{message:'Unsupported storage provider'});
    if(body.action==='disconnect'){

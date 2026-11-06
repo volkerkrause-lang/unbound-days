@@ -4,9 +4,9 @@ const encode=bytes=>btoa(String.fromCharCode(...bytes)).replace(/\+/g,'-').repla
 const safeName=value=>String(value||'attachment').replace(/[\\/:*?"<>|\u0000-\u001f]/g,'_').slice(0,180);
 
 export function createPersonalStorage({client,config,fetcher=fetch,storage=sessionStorage,preferenceStorage=globalThis.localStorage,locationRef=location,historyRef=history}){
- const tokens=new Map();let cachedStatus=null,statusAt=0;
+ const tokens=new Map(),backupFolders=new Map();let cachedStatus=null,statusAt=0;
  const preferenceKey=async()=>{try{const {data}=await client?.auth.getSession();return data?.session?.user?.id?`unbound-personal-storage-preference-${data.session.user.id}`:null;}catch{return null;}};
- const persistPreference=async info=>{const key=await preferenceKey();if(key&&preferenceStorage)try{preferenceStorage.setItem(key,JSON.stringify({attachment_provider:info.preferences?.attachment_provider||null,backup_provider:info.preferences?.backup_provider||null}));}catch{}};
+ const persistPreference=async info=>{const key=await preferenceKey();if(key&&preferenceStorage)try{preferenceStorage.setItem(key,JSON.stringify({attachment_provider:info.preferences?.attachment_provider||null,backup_provider:info.preferences?.backup_provider||null,backup_last_success_at:info.preferences?.backup_last_success_at||null}));}catch{}};
  const invoke=async body=>{if(!client)throw Error('Sign in to Unbound before connecting cloud storage.');const {data,error}=await client.functions.invoke('personal-storage',{body});if(error)throw Error(data?.message||'Personal storage is unavailable. Please retry.');return data;};
  const redirectUri=()=>new URL(locationRef.pathname,locationRef.origin).href;
  const ready=provider=>provider==='google-drive'?!!config.googleClientId:provider==='dropbox'?!!config.dropboxAppKey:provider==='box'?!!config.boxClientId:false;
@@ -19,7 +19,7 @@ export function createPersonalStorage({client,config,fetcher=fetch,storage=sessi
   if(provider==='google-drive'){
    query.set('client_id',config.googleClientId);query.set('scope','openid email https://www.googleapis.com/auth/drive.file');query.set('access_type','offline');query.set('include_granted_scopes','true');query.set('prompt','consent');url='https://accounts.google.com/o/oauth2/v2/auth?'+query;
   }else if(provider==='dropbox'){
-   query.set('client_id',config.dropboxAppKey);query.set('token_access_type','offline');query.set('scope','files.content.read files.content.write files.content.delete files.metadata.read');url='https://www.dropbox.com/oauth2/authorize?'+query;
+   query.set('client_id',config.dropboxAppKey);query.set('token_access_type','offline');query.set('scope','files.content.read files.content.write files.metadata.read');url='https://www.dropbox.com/oauth2/authorize?'+query;
   }else{
    query.set('client_id',config.boxClientId);url='https://account.box.com/api/oauth2/authorize?'+query;
   }
@@ -29,7 +29,7 @@ export function createPersonalStorage({client,config,fetcher=fetch,storage=sessi
   const params=new URLSearchParams(locationRef.search),code=params.get('code'),returnedState=params.get('state'),raw=storage.getItem(AUTH_KEY);if(!raw||(!code&&!params.has('error')))return false;
   storage.removeItem(AUTH_KEY);historyRef.replaceState(null,'',redirectUri());if(params.has('error'))throw Error('Cloud storage connection was cancelled.');
   let pending;try{pending=JSON.parse(raw||'null');}catch{}if(!pending||pending.state!==returnedState||Date.now()-pending.createdAt>10*60*1000)throw Error('Storage sign-in expired. Please try again.');
-  const data=await invoke({action:'exchange',provider:pending.provider,code,codeVerifier:pending.verifier,redirectUri:redirectUri()});tokens.set(pending.provider,{accessToken:data.accessToken,expiresAt:Date.now()+data.expiresIn*1000,account:data.account});cachedStatus=null;return data;
+  const data=await invoke({action:'exchange',provider:pending.provider,code,codeVerifier:pending.verifier,redirectUri:redirectUri()});tokens.set(pending.provider,{accessToken:data.accessToken,expiresAt:Date.now()+data.expiresIn*1000,account:data.account});backupFolders.delete(pending.provider);cachedStatus=null;return data;
  }
  async function status(force=false){if(!force&&cachedStatus&&Date.now()-statusAt<15000)return cachedStatus;try{cachedStatus=await invoke({action:'status'});statusAt=Date.now();await persistPreference(cachedStatus);return cachedStatus;}catch(error){const key=await preferenceKey();if(key&&preferenceStorage)try{const preferences=JSON.parse(preferenceStorage.getItem(key)||'null');if(preferences)return {connections:[],preferences,offline:true};}catch{}throw error;}}
  async function accessToken(provider){const cached=tokens.get(provider);if(cached&&cached.expiresAt>Date.now()+60000)return cached.accessToken;const data=await invoke({action:'refresh',provider});if(data.status!=='connected')throw Error('Reconnect '+label(provider)+' to continue.');tokens.set(provider,{accessToken:data.accessToken,expiresAt:Date.now()+data.expiresIn*1000,account:data.account});return data.accessToken;}
@@ -38,10 +38,10 @@ export function createPersonalStorage({client,config,fetcher=fetch,storage=sessi
   if(provider!==null&&!PROVIDERS.has(provider))throw Error('Unsupported storage provider.');
   const current=await status(),connected=new Set(current.connections.map(x=>x.provider));if(provider&&!connected.has(provider))throw Error('Connect '+label(provider)+' first.');
   const user=(await client.auth.getSession()).data.session?.user;if(!user)throw Error('Sign in to save storage preferences.');
-  const values={user_id:user.id,attachment_provider:current.preferences?.attachment_provider||null,backup_provider:current.preferences?.backup_provider||null,updated_at:new Date().toISOString()};values[kind==='backup'?'backup_provider':'attachment_provider']=provider;
-  const result=await client.from('storage_preferences').upsert(values,{onConflict:'user_id'});if(result.error)throw Error(result.error.message||'Storage preference could not be saved.');cachedStatus={...(current||{connections:[]}),preferences:{attachment_provider:values.attachment_provider,backup_provider:values.backup_provider}};statusAt=Date.now();await persistPreference(cachedStatus);
+  const values={user_id:user.id,attachment_provider:current.preferences?.attachment_provider||null,backup_provider:current.preferences?.backup_provider||null,backup_last_success_at:current.preferences?.backup_last_success_at||null,updated_at:new Date().toISOString()};values[kind==='backup'?'backup_provider':'attachment_provider']=provider;
+  const result=await client.from('storage_preferences').upsert(values,{onConflict:'user_id'});if(result.error)throw Error(result.error.message||'Storage preference could not be saved.');cachedStatus={...(current||{connections:[]}),preferences:{attachment_provider:values.attachment_provider,backup_provider:values.backup_provider,backup_last_success_at:current.preferences?.backup_last_success_at||null}};statusAt=Date.now();await persistPreference(cachedStatus);
  }
- async function disconnect(provider){tokens.delete(provider);cachedStatus=null;const result=await invoke({action:'disconnect',provider});return result;}
+ async function disconnect(provider){tokens.delete(provider);backupFolders.delete(provider);cachedStatus=null;const result=await invoke({action:'disconnect',provider});return result;}
  async function providerUpload(provider,file,id){
   const token=await accessToken(provider),name=safeName(file.name||'attachment'),capture=id||crypto.randomUUID();
   if(provider==='google-drive'){
@@ -91,10 +91,58 @@ export function createPersonalStorage({client,config,fetcher=fetch,storage=sessi
   else response=await fetcher('https://api.box.com/2.0/files/'+encodeURIComponent(fileId)+'/content',{headers:{Authorization:'Bearer '+token}});
   if(!response.ok)throw Error(response.status===401?'Reconnect '+label(provider)+' to preview this file.':'This file could not be opened from '+label(provider)+'.');return response.blob();
  }
+ async function backupFolder(provider){
+  if(backupFolders.has(provider))return backupFolders.get(provider);
+  const token=await accessToken(provider);
+  if(provider==='google-drive'){
+   const q=new URLSearchParams({q:"trashed=false and mimeType='application/vnd.google-apps.folder' and name='Unbound'",fields:'files(id,name)',pageSize:'10'});
+   const found=await fetcher('https://www.googleapis.com/drive/v3/files?'+q,{headers:{Authorization:'Bearer '+token}});if(!found.ok)throw Error('Google Drive backup folder could not be checked.');const rows=(await found.json()).files||[];if(rows[0]){backupFolders.set(provider,rows[0].id);return rows[0].id;}
+   const made=await fetcher('https://www.googleapis.com/drive/v3/files?fields=id',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({name:'Unbound',mimeType:'application/vnd.google-apps.folder'})});if(!made.ok)throw Error('Google Drive backup folder could not be created.');const folder=(await made.json()).id;backupFolders.set(provider,folder);return folder;
+  }
+  if(provider==='dropbox'){
+   for(const path of ['/Unbound Days']){const r=await fetcher('https://api.dropboxapi.com/2/files/create_folder_v2',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({path,autorename:false})});if(!r.ok&&r.status!==409)throw Error('Dropbox backup folder could not be prepared.');}
+   backupFolders.set(provider,'/Unbound Days');return '/Unbound Days';
+  }
+  const list=await fetcher('https://api.box.com/2.0/folders/0/items?limit=1000&fields=entries(id,name,type)',{headers:{Authorization:'Bearer '+token}});if(!list.ok)throw Error('Box backup folder could not be checked.');const rows=(await list.json()).entries||[];const existing=rows.find(x=>x.type==='folder'&&x.name==='Unbound');if(existing){backupFolders.set(provider,existing.id);return existing.id;}
+  const made=await fetcher('https://api.box.com/2.0/folders',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({name:'Unbound',parent:{id:'0'}})});if(!made.ok)throw Error('Box backup folder could not be created.');const folder=(await made.json()).id;backupFolders.set(provider,folder);return folder;
+ }
+ async function backupNotebook(data,device){
+  const info=await status(),provider=info.preferences?.backup_provider;if(!provider)throw Error('Choose a notebook backup provider in Storage & Backups.');
+  if(!info.connections?.some(x=>x.provider===provider))throw Error('Reconnect '+label(provider)+' before backing up.');
+  const token=await accessToken(provider),time=new Date().toISOString(),name='unbound-days-'+time.replace(/[:.]/g,'-')+'-'+safeName(device)+'.json',body=JSON.stringify(data);
+  if(provider==='google-drive'){
+   const folder=await backupFolder(provider),boundary='unbound-backup-'+crypto.randomUUID(),metadata={name,parents:[folder],mimeType:'application/json',description:'Unbound notebook backup '+time};
+   const multipart=new Blob(['--'+boundary+'\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n',JSON.stringify(metadata),'\r\n--'+boundary+'\r\nContent-Type: application/json\r\n\r\n',body,'\r\n--'+boundary+'--'],{type:'multipart/related; boundary='+boundary});
+   const r=await fetcher('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,createdTime',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'multipart/related; boundary='+boundary},body:multipart});if(!r.ok)throw Error('Google Drive notebook backup failed. Your notebook remains saved in Unbound.');const saved=await r.json();try{await pruneBackups(provider,token);}catch{}return {id:saved.id,createdTime:saved.createdTime||time};
+  }
+  if(provider==='dropbox'){
+   const folder=await backupFolder(provider),path=folder+'/'+name,r=await fetcher('https://content.dropboxapi.com/2/files/upload',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/octet-stream','Dropbox-API-Arg':JSON.stringify({path,mode:'add',autorename:false,mute:true})},body});if(!r.ok)throw Error('Dropbox notebook backup failed. Your notebook remains saved in Unbound.');const saved=await r.json();try{await pruneBackups(provider,token);}catch{}return {id:saved.path_lower,createdTime:saved.server_modified||time};
+  }
+  const folder=await backupFolder(provider),form=new FormData();form.append('attributes',JSON.stringify({name,parent:{id:folder}}));form.append('file',new Blob([body],{type:'application/json'}),name);const r=await fetcher('https://upload.box.com/api/2.0/files/content',{method:'POST',headers:{Authorization:'Bearer '+token},body:form});if(!r.ok)throw Error('Box notebook backup failed. Your notebook remains saved in Unbound.');const saved=(await r.json()).entries?.[0];if(!saved)throw Error('Box did not confirm the notebook backup.');try{await pruneBackups(provider,token);}catch{}return {id:saved.id,createdTime:saved.created_at||time};
+ }
+ async function pruneBackups(provider,token){const old=(await listBackups()).slice(20);for(const item of old){let r;if(provider==='google-drive')r=await fetcher('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(item.id),{method:'DELETE',headers:{Authorization:'Bearer '+token}});else if(provider==='dropbox')r=await fetcher('https://api.dropboxapi.com/2/files/delete_v2',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({path:item.id})});else r=await fetcher('https://api.box.com/2.0/files/'+encodeURIComponent(item.id),{method:'DELETE',headers:{Authorization:'Bearer '+token}});if(!r.ok&&r.status!==404)throw Error('Older backup could not be removed.');}}
+ async function listBackups(){
+  const info=await status(),provider=info.preferences?.backup_provider;if(!provider)throw Error('Choose a notebook backup provider in Storage & Backups.');const token=await accessToken(provider);
+  if(provider==='google-drive'){
+   const folder=await backupFolder(provider),q=new URLSearchParams({q:`trashed=false and '${folder}' in parents and name contains 'unbound-days-'`,fields:'files(id,name,createdTime)',pageSize:'100',orderBy:'createdTime desc'}),r=await fetcher('https://www.googleapis.com/drive/v3/files?'+q,{headers:{Authorization:'Bearer '+token}});if(!r.ok)throw Error('Google Drive notebook backups could not be listed.');return (await r.json()).files||[];
+  }
+  if(provider==='dropbox'){
+   const folder=await backupFolder(provider),r=await fetcher('https://api.dropboxapi.com/2/files/list_folder',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({path:folder})});if(!r.ok)throw Error('Dropbox notebook backups could not be listed.');let page=await r.json(),entries=[...(page.entries||[])];while(page.has_more){const next=await fetcher('https://api.dropboxapi.com/2/files/list_folder/continue',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({cursor:page.cursor})});if(!next.ok)throw Error('Dropbox notebook backups could not be listed.');page=await next.json();entries.push(...(page.entries||[]));}return entries.filter(x=>x['.tag']==='file'&&x.name.startsWith('unbound-days-')&&x.name.endsWith('.json')).map(x=>({id:x.path_lower,name:x.name,createdTime:x.server_modified})).sort((a,b)=>b.createdTime.localeCompare(a.createdTime));
+  }
+  const folder=await backupFolder(provider),r=await fetcher('https://api.box.com/2.0/folders/'+folder+'/items?limit=1000&fields=entries(id,name,type,created_at)',{headers:{Authorization:'Bearer '+token}});if(!r.ok)throw Error('Box notebook backups could not be listed.');return ((await r.json()).entries||[]).filter(x=>x.type==='file'&&x.name.startsWith('unbound-days-')&&x.name.endsWith('.json')).map(x=>({id:x.id,name:x.name,createdTime:x.created_at})).sort((a,b)=>b.createdTime.localeCompare(a.createdTime));
+ }
+ async function readBackup(id){
+  const info=await status(),provider=info.preferences?.backup_provider;if(!provider)throw Error('Choose a notebook backup provider in Storage & Backups.');const token=await accessToken(provider);let response;
+  if(provider==='google-drive')response=await fetcher('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(id)+'?alt=media',{headers:{Authorization:'Bearer '+token}});
+  else if(provider==='dropbox')response=await fetcher('https://content.dropboxapi.com/2/files/download',{method:'POST',headers:{Authorization:'Bearer '+token,'Dropbox-API-Arg':JSON.stringify({path:id})}});
+  else response=await fetcher('https://api.box.com/2.0/files/'+encodeURIComponent(id)+'/content',{headers:{Authorization:'Bearer '+token}});
+  if(!response.ok)throw Error(label(provider)+' notebook backup could not be read.');try{return await response.json();}catch{throw Error('Notebook backup file is invalid.');}
+ }
+ async function markBackupSuccess(){const user=(await client.auth.getSession()).data.session?.user;if(!user)throw Error('Sign in to save backup status.');const time=new Date().toISOString(),result=await client.from('storage_preferences').update({backup_last_success_at:time,updated_at:time}).eq('user_id',user.id);if(result.error)throw Error('Backup completed, but its status could not be saved.');if(cachedStatus?.preferences)cachedStatus.preferences.backup_last_success_at=time;return time;}
  async function deleteAttachment(attachment,{deleteCloudFile=false}={}){
   const provider=attachment.storage?.provider||attachment.provider,fileId=attachment.storage?.fileId||attachment.provider_file_id;
   if(deleteCloudFile)await removeProviderFile(provider,fileId);
   const result=await client.from('attachments').delete().eq('id',attachment.storage?.attachmentId||attachment.id);if(result.error)throw Error('Attachment reference could not be removed.');
  }
- return {ready:!!client,startConnect,finishConnect,status,setDefault,disconnect,upload,download,deleteAttachment,hasConfig:ready};
+ return {ready:!!client,startConnect,finishConnect,status,setDefault,disconnect,upload,download,deleteAttachment,backupNotebook,listBackups,readBackup,markBackupSuccess,hasConfig:ready};
 }

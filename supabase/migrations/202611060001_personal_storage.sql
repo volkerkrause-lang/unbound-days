@@ -17,6 +17,7 @@ create table public.storage_preferences (
  user_id uuid primary key references auth.users(id) on delete cascade,
  attachment_provider text check (attachment_provider is null or attachment_provider in ('google-drive','dropbox','box')),
  backup_provider text check (backup_provider is null or backup_provider in ('google-drive','dropbox','box')),
+ backup_last_success_at timestamptz,
  updated_at timestamptz not null default now()
 );
 
