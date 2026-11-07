@@ -71,6 +71,28 @@ dialog{border:1px solid #d7cfbf;border-radius:12px;padding:0;width:min(740px,cal
 .quick-capture-footer button,.quick-capture-footer a{min-height:48px;display:flex;align-items:center;justify-content:center;text-decoration:none}
 .quick-capture-footer .primary{background:linear-gradient(#5e7b3e,#3e6028);border:1px solid #31511f;border-radius:12px;box-shadow:0 3px 7px #3a4f2728;font-weight:650}
 .quick-capture-photo{margin:0 0 10px}.quick-capture-photo-preview{max-height:160px}
+/* Heritage details: etched parchment, warm brass and dimensional enamel objects. */
+body.quick-capture-launch{background-color:#e9dcc2;background-image:radial-gradient(ellipse at 8% 4%,#fff6df 0,transparent 47%),radial-gradient(ellipse at 95% 70%,#dbc49a2e 0,transparent 55%),repeating-linear-gradient(117deg,#80673505 0 1px,transparent 1px 5px),linear-gradient(140deg,#f5efdf,#e9ddc6)}
+body.quick-capture-launch #modal:has(.quick-capture)[open]{border:1px solid #c6a76c;background-color:#f5e9cf;background-image:radial-gradient(ellipse at 50% 0%,#fff8e8 0,transparent 62%),repeating-linear-gradient(31deg,#826b3c08 0 1px,transparent 1px 6px),linear-gradient(145deg,#fff5df,#f0e2c4);box-shadow:0 22px 48px #34241655,inset 0 0 0 4px #fff9e6,inset 0 0 0 6px #d8bd87}
+body.quick-capture-launch #modal:has(.quick-capture) .modal-head,body.quick-capture-launch #modal:has(.quick-capture) .modal-body{background:transparent}
+body.quick-capture-launch #modal:has(.quick-capture) .modal-head{border-bottom:1px solid #cbb37d75}
+body.quick-capture-launch #modal:has(.quick-capture) .modal-head h2{color:#382c20;text-shadow:0 1px #fff9e8}
+body.quick-capture-launch .quick-capture-intro{position:relative;margin:2px auto 18px!important;color:#574b36!important;font-size:clamp(17px,2.4vw,22px)!important}
+body.quick-capture-launch .quick-capture-intro::after{content:"";display:block;width:min(42%,200px);height:3px;margin:8px auto 0;border-radius:100%;background:linear-gradient(90deg,transparent,#788052,#b09257,transparent);transform:rotate(-1.2deg)}
+.quick-capture-method{overflow:visible;border:1px solid #c5a361;background:radial-gradient(ellipse at 33% 18%,#fffef1 0,#fff6df 38%,#eed9ae 100%);box-shadow:0 9px 15px #50381f30,0 2px 2px #fff9,inset 0 2px 4px #fff,inset 0 -5px 9px #a87c3d21}
+.quick-capture-method::before{content:"";position:absolute;inset:5px;border:1px solid #d4bd8a;border-radius:50%;pointer-events:none;box-shadow:inset 0 1px 2px #fff9}
+.quick-capture-method::after{content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;background:linear-gradient(145deg,#fff9 0 13%,transparent 39%);opacity:.8}
+.quick-capture-method .quick-capture-vintage-icon{position:relative;z-index:1;width:76%;height:66%;max-width:98px;max-height:82px;fill:none;stroke:none;filter:drop-shadow(0 3px 2px #3926184a)}
+.quick-capture-method small{position:relative;z-index:1;color:#343526;font-family:var(--ui,system-ui,sans-serif);font-size:clamp(14px,2.3vw,18px);font-weight:650;text-shadow:0 1px #fff9e9}
+.quick-capture-method:hover{transform:translateY(-2px);box-shadow:0 12px 17px #50381f3c,0 2px 2px #fff9,inset 0 2px 4px #fff,inset 0 -5px 9px #a87c3d21}
+.quick-capture-mic{background:radial-gradient(ellipse at 35% 20%,#fffef5 0,#e9edd9 58%,#c6d0b4);border-color:#6e7953;box-shadow:0 0 0 4px #8a865a32,0 8px 18px #3b462c35,inset 0 2px 5px #fff}
+.quick-capture-mic::before{content:"";position:absolute;inset:5px;border:1px solid #9a9a6a;border-radius:50%;pointer-events:none}
+.quick-capture-mic.recording{background:radial-gradient(ellipse at 45% 28%,#ff9584,#e22d22 55%,#971b17);border-color:#a51f17;box-shadow:0 0 0 5px #df392e35,0 8px 24px #ae2b2577,inset 0 2px 6px #fff9}
+.quick-capture-footer{padding-top:13px;border-top-color:#cbb37d9c}
+.quick-capture-footer .primary{background:linear-gradient(180deg,#668b42 0%,#4f702f 46%,#385c26 100%);border:1px solid #345120;border-radius:12px;box-shadow:0 5px 9px #42542d42,inset 0 1px 1px #ffffff75;font-weight:700}
+.quick-capture-footer .secondary{border:1px solid #c2a46d;border-radius:11px;background:linear-gradient(180deg,#fffdf4,#f1e4c7);box-shadow:0 3px 7px #59432a21,inset 0 1px 2px #fff;color:#493b29}
+.quick-capture-footer .quick-capture-open-app{color:#4c5f38}
+@media(max-width:650px){body.quick-capture-launch #modal:has(.quick-capture)[open]{border-bottom:0;box-shadow:0 -12px 32px #4b382252,inset 0 0 0 3px #fff9e6,inset 0 0 0 5px #d8bd87}.quick-capture-method .quick-capture-vintage-icon{width:78%;height:64%;max-width:80px;max-height:72px}.quick-capture-method small{font-size:clamp(13px,3.5vw,16px)}body.quick-capture-launch .quick-capture-intro{margin-bottom:13px!important}}
 @media(max-width:650px){.quick-capture-intro{margin-bottom:11px!important}.quick-capture-writing textarea{min-height:clamp(118px,22dvh,200px);padding:14px;border-radius:14px}.quick-capture-controls{min-height:0;margin:13px 0 8px;gap:clamp(8px,3.2vw,16px)}.quick-capture-method{width:min(100%,126px);min-height:76px;gap:6px}.quick-capture-mic{width:min(100%,148px);gap:5px}.quick-capture-footer{position:sticky;bottom:-14px;margin:7px -17px -15px;padding:11px 17px max(12px,env(safe-area-inset-bottom));background:#fffdf7}.quick-capture-footer button,.quick-capture-footer a{min-height:46px}.quick-capture-photo-preview{max-height:130px}}
 @media(max-height:650px) and (max-width:800px){.quick-capture-writing textarea{min-height:100px;max-height:23dvh}.quick-capture-controls{margin:8px 0 5px}.quick-capture-method{max-width:95px}.quick-capture-mic{max-width:112px}.quick-capture-footer{padding-top:7px}}
 @media(prefers-reduced-motion:reduce){.quick-capture-mic.recording{animation:none}}
