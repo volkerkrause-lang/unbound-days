@@ -24,7 +24,7 @@ import {chooseRecovery,readMirror,writeMirror} from './storage.js?v=0.4.18';
 import {createPlanningBuilder,renderBuilder,renderCustomLibrary,definitionFromTemplate,compactFormToolbar} from './planning-builder.js?v=0.4.17';
 import {drawInkStroke,normaliseStroke,selectedStrokeIndexes,selectionBounds,moveStrokes,scaleStrokes,eraseWholeStrokes,paperEntry} from './idea-workspace.js?v=0.4.18';
 import {isScheduled,isComplete,ritualProgress,currentStreak,toggleCompletion,weekdayLabels,rangeDates} from './rituals.js?v=0.4.0';
-import {mountQuickCapture,parseShareTarget,normaliseShareUrl} from './quick-capture.js?v=0.1.0';
+import {mountQuickCapture,parseShareTarget,normaliseShareUrl} from './quick-capture.js?v=0.1.1';
 
 const captureQuery=new URLSearchParams(location.search);
 const incomingShare=(captureQuery.has('url')||captureQuery.has('text')||captureQuery.has('title'))?parseShareTarget(captureQuery):null;
