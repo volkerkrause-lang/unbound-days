@@ -110,21 +110,13 @@ export function mountQuickCapture({ root, shared = null, standalone = false, dic
   const showState = text => { if (status) status.textContent = text; };
   const micButton = root.querySelector('.quick-capture-mic');
   const micLabel = root.querySelector('[data-qc-dictate-label]');
-  const updateMicState = () => {
+  const micState = new MutationObserver(() => {
     const active = micButton.classList.contains('recording') || micButton.classList.contains('reconnecting');
     micButton.setAttribute('aria-pressed', String(active));
     micButton.setAttribute('aria-label', active ? 'Stop dictation' : 'Start dictation');
     micLabel.textContent = active ? 'Stop' : 'Dictate';
-  };
-  const micState = new MutationObserver(updateMicState);
-  micState.observe(micButton, { attributes: true, attributeFilter: ['class'] });
-  micButton.addEventListener('click', event => {
-    if (micButton.getAttribute('aria-pressed') !== 'true') return;
-    event.preventDefault(); event.stopImmediatePropagation();
-    dictation?.stop(); micButton.classList.remove('recording','reconnecting');
-    micButton.setAttribute('aria-pressed','false'); micButton.setAttribute('aria-label','Start dictation');
-    micLabel.textContent='Dictate'; updateMicState();
   });
+  micState.observe(micButton, { attributes: true, attributeFilter: ['class'] });
   const update = () => {
     value.text = field.value;
     const canSave = !!(value.text.trim() || value.image || value.sharedUrl || value.sharedTitle);
@@ -178,7 +170,7 @@ export function mountQuickCapture({ root, shared = null, standalone = false, dic
     if (action === 'remove-photo') { value.image = null; displayPhoto(); persist(); return; }
     if (action === 'dictate') {
       if (!dictation) { toast('Speech dictation is unavailable. Use the keyboard microphone.'); return; }
-      if (button.getAttribute('aria-pressed') === 'true' || button.classList.contains('recording') || button.classList.contains('reconnecting')) { dictation.stop(); button.classList.remove('recording','reconnecting'); button.setAttribute('aria-pressed','false'); button.setAttribute('aria-label','Start dictation'); micLabel.textContent='Dictate'; updateMicState(); return; }
+      if (button.classList.contains('recording') || button.classList.contains('reconnecting')) { dictation.stop(); button.classList.remove('recording','reconnecting'); return; }
       dictation.start(field, button);
       return;
     }
