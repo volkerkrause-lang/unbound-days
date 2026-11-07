@@ -1,4 +1,8 @@
 // Decorative desk layer; independent of notebook layout and cover personalisation.
+const quickCaptureQuery=new URLSearchParams(location.search);
+if(quickCaptureQuery.has('quickCapture')||['url','text','title'].some(key=>quickCaptureQuery.has(key))){
+ document.body.classList.add('quick-capture-launch');
+}else{
 const KEY='unbound-desk-background-v1';
 const dbName='unbound-desk-images';
 function openDB(){return new Promise((resolve,reject)=>{const r=indexedDB.open(dbName,1);r.onupgradeneeded=()=>r.result.createObjectStore('images');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});}
@@ -146,3 +150,4 @@ style.textContent+=`@media (min-width:768px) and (orientation:landscape){body.de
 
 /* Use one full-screen photograph on tablet and desktop, without a second crop inside the cover scene. */
 style.textContent+=`@media (min-width:768px){body.desk-enabled:not(.desk-custom){background-size:cover!important;background-position:center center!important;background-repeat:no-repeat!important}body.desk-enabled:not(.desk-custom) .cover-scene{background:transparent!important}}@media (orientation:portrait) and (min-width:768px) and (max-width:1100px){body.desk-enabled:not(.desk-custom){background-size:auto 100dvh!important;background-position:right center!important;background-repeat:no-repeat!important;background-attachment:scroll!important}}`;
+}

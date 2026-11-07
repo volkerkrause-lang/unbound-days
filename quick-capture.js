@@ -70,7 +70,7 @@ async function imageToJpeg(file) {
   throw Error('This photo is too large to store safely. Try a smaller image.');
 }
 
-export function mountQuickCapture({ root, shared = null, dictation, onSave, onClose, toast }) {
+export function mountQuickCapture({ root, shared = null, standalone = false, dictation, onSave, onClose, toast }) {
   const mode = shared?.fromShare ? 'type' : 'dictate';
   const draftKey = shared?.fromShare ? `share:${shared.url || shared.title || 'incoming'}` : 'capture';
   let value = { mode, text: shared?.text || '', image: null, sharedTitle: shared?.title || '', sharedUrl: normaliseShareUrl(shared?.url) || '', fromShare: !!shared?.fromShare, captureId: crypto.randomUUID() };
@@ -79,7 +79,7 @@ export function mountQuickCapture({ root, shared = null, dictation, onSave, onCl
   let saveTimer;
 
   root.innerHTML = `<section class="quick-capture" aria-label="Quick Capture">
-    <div class="quick-capture-intro"><p>Capture now. Organise later.</p><span>Save to Inbox</span></div>
+    <div class="quick-capture-intro"><p>Capture now. Organise later.</p><span>Save to Inbox</span>${standalone ? '<a class="quick-capture-open-app" href="./">Open Unbound</a>' : ''}</div>
     ${value.sharedUrl ? `<article class="quick-capture-link"><small>Shared page</small><strong>${escapeHtml(value.sharedTitle || new URL(value.sharedUrl).hostname)}</strong><a href="${escapeHtml(value.sharedUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(value.sharedUrl)}</a></article>` : ''}
     <nav class="quick-capture-methods" role="tablist" aria-label="Choose a capture method">
       <button type="button" role="tab" data-qc-mode="dictate" aria-selected="${mode === 'dictate'}"><span aria-hidden="true">◉</span><small>Dictate</small></button>
