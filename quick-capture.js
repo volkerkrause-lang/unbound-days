@@ -118,6 +118,13 @@ export function mountQuickCapture({ root, shared = null, standalone = false, dic
   };
   const micState = new MutationObserver(updateMicState);
   micState.observe(micButton, { attributes: true, attributeFilter: ['class'] });
+  micButton.addEventListener('click', event => {
+    if (micButton.getAttribute('aria-pressed') !== 'true') return;
+    event.preventDefault(); event.stopImmediatePropagation();
+    dictation?.stop(); micButton.classList.remove('recording','reconnecting');
+    micButton.setAttribute('aria-pressed','false'); micButton.setAttribute('aria-label','Start dictation');
+    micLabel.textContent='Dictate'; updateMicState();
+  });
   const update = () => {
     value.text = field.value;
     const canSave = !!(value.text.trim() || value.image || value.sharedUrl || value.sharedTitle);

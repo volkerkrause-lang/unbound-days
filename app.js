@@ -23,7 +23,7 @@ import {chooseRecovery,readMirror,writeMirror} from './storage.js?v=0.4.18';
 import {createPlanningBuilder,renderBuilder,renderCustomLibrary,definitionFromTemplate,compactFormToolbar} from './planning-builder.js?v=0.4.17';
 import {drawInkStroke,normaliseStroke,selectedStrokeIndexes,selectionBounds,moveStrokes,scaleStrokes,eraseWholeStrokes,paperEntry} from './idea-workspace.js?v=0.4.18';
 import {isScheduled,isComplete,ritualProgress,currentStreak,toggleCompletion,weekdayLabels,rangeDates} from './rituals.js?v=0.4.0';
-import {mountQuickCapture,parseShareTarget,normaliseShareUrl,shareSource} from './quick-capture.js?v=0.1.5';
+import {mountQuickCapture,parseShareTarget,normaliseShareUrl,shareSource} from './quick-capture.js?v=0.1.6';
 
 const captureQuery=new URLSearchParams(location.search);
 const shareSessionKey='unbound-save-to-ideas-intake';
