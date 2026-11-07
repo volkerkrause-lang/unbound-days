@@ -2,7 +2,18 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { videoInfo, fetchLinkPreview, saveCaptureIdea } from '../link-preview.js';
 import { mergeNotebook } from '../sync.js';
-import { isPublicIp, parseMetadata } from '../functions/api/link-preview.js';
+import { createPreviewRateLimiter, isPublicIp, parseMetadata } from '../functions/api/link-preview.js';
+
+test('preview endpoint limiter bounds per-client bursts and expires old windows', () => {
+  let now = 0;
+  const allow = createPreviewRateLimiter({ limit: 2, windowMs: 1000, maxClients: 3, now: () => now });
+  assert.equal(allow('phone'), true);
+  assert.equal(allow('phone'), true);
+  assert.equal(allow('phone'), false);
+  assert.equal(allow('tablet'), true);
+  now = 1000;
+  assert.equal(allow('phone'), true);
+});
 
 test('video URLs identify YouTube videos and Shorts with a lightweight thumbnail', () => {
   assert.deepEqual(videoInfo('https://www.youtube.com/watch?v=abcdefghijk'), { type: 'video', platform: 'YouTube', thumbnailUrl: 'https://i.ytimg.com/vi/abcdefghijk/hqdefault.jpg' });

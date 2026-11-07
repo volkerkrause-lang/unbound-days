@@ -1,6 +1,18 @@
 const MAX_BYTES = 512 * 1024;
 const TIMEOUT_MS = 3500;
 const MAX_REDIRECTS = 3;
+export function createPreviewRateLimiter({limit=30,windowMs=60_000,maxClients=5000,now=Date.now}={}){
+  const clients=new Map();
+  return key=>{
+    const time=now();let current=clients.get(key);
+    if(current&&time-current.startedAt>=windowMs){clients.delete(key);current=null;}
+    if(!current&&clients.size>=maxClients){for(const [client,entry] of clients)if(time-entry.startedAt>=windowMs)clients.delete(client);if(clients.size>=maxClients)return false;}
+    current=current||{startedAt:time,count:0};if(current.count>=limit)return false;current.count++;clients.set(key,current);return true;
+  };
+}
+// Pages isolates reuse this short-lived limiter between requests; metadata is
+// additionally edge-cacheable for one hour to avoid repeat third-party fetches.
+const allowPreviewRequest=createPreviewRateLimiter();
 
 export function isPublicIp(host) {
   const h = host.toLowerCase().replace(/^\[|\]$/gu, '');
@@ -96,6 +108,8 @@ async function readLimited(response) {
   return new TextDecoder().decode(bytes);
 }
 export async function onRequestGet({ request }) {
+  const client=request.headers.get('CF-Connecting-IP')||'unknown-client';
+  if(!allowPreviewRequest(client))return Response.json({error:'rate_limited'},{status:429,headers:{'Cache-Control':'no-store','Retry-After':'60'}});
   const incoming = new URL(request.url).searchParams.get('url');
   let target = safeUrl(incoming);
   if (!target) return Response.json({ error: 'invalid_url' }, { status: 400, headers: { 'Cache-Control': 'no-store' } });
