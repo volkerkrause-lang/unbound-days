@@ -35,6 +35,6 @@ test('cancelling an active recording cannot write into another notebook',async()
  const h=harness();await h.controller.toggle('a','b',{});h.controller.cancel();await flush();assert.equal(h.saved.length,0);assert.equal(h.controller.session,null);assert.ok(h.stops>=1);
 });
 test('playback CSP explicitly permits stored audio and device permission is same-origin',()=>{
- const headers=fs.readFileSync(new URL('../_headers',import.meta.url),'utf8');assert.match(headers,/media-src 'self' data: blob:/);assert.match(headers,/microphone=\(self\)/);
+ const headers=fs.readFileSync(new URL('../_headers',import.meta.url),'utf8');assert.match(headers,/media-src 'self' data: blob:/);assert.match(headers,/connect-src[^\n]*https:\/\/dl\.boxcloud\.com/);assert.match(headers,/microphone=\(self\)/);
  assert.deepEqual(recorderOptions({isTypeSupported:()=>false}),{});
 });

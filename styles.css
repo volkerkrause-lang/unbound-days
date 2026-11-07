@@ -1444,3 +1444,4 @@ body>.weather-popover{position:fixed;inset:auto auto auto auto;z-index:10001;wid
  .cover-controls{top:8px;right:10px;gap:6px}.quiet-button{padding:6px 10px;font-size:11px}
  .ribbon{bottom:-32px;height:52px}
 }
+.storage-provider-list{display:grid;gap:8px;margin:12px 0}.storage-provider-row{display:grid;grid-template-columns:minmax(90px,1fr) auto auto;align-items:center;gap:10px;padding:10px 12px;border:1px solid rgba(103,82,66,.18);border-radius:10px;background:rgba(255,255,255,.32)}.storage-provider-row>span{font-size:.86rem;color:var(--muted,#74685f)}.storage-provider-row>div{display:flex;gap:8px;align-items:center}.storage-provider-row button{white-space:nowrap}@media(max-width:560px){.storage-provider-row{grid-template-columns:1fr auto}.storage-provider-row>div{grid-column:1/-1;flex-wrap:wrap}.storage-provider-row button{flex:1}}
