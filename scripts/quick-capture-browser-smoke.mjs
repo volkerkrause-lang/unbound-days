@@ -6,15 +6,23 @@ const base=process.env.UNBOUND_TEST_URL||'http://localhost:4173/';
 const browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_EXECUTABLE_PATH||undefined,args:process.env.CHROMIUM_EXECUTABLE_PATH?['--no-sandbox','--disable-dev-shm-usage','--no-zygote','--single-process','--use-gl=angle','--use-angle=swiftshader','--disable-gpu-sandbox','--in-process-gpu']:[]});
 try{
  const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+ await context.addInitScript(()=>{window.SpeechRecognition=class{start(){this.onstart?.()}stop(){this.onend?.()}abort(){this.onend?.()}}});
  const page=await context.newPage(),errors=[];
  page.on('pageerror',error=>errors.push(error.message));
  await page.goto(new URL('?quickCapture=1',base).href,{waitUntil:'domcontentloaded'});
  await page.locator('#modal[open] .quick-capture').waitFor();
  assert.equal(await page.locator('body').evaluate(el=>el.classList.contains('quick-capture-launch')),true);
  assert.equal(await page.locator('#app').isVisible(),false);
- assert.equal(await page.locator('[data-qc-mode="dictate"]').getAttribute('aria-selected'),'true');
+ assert.deepEqual(await page.locator('.quick-capture-controls button').evaluateAll(items=>items.map(item=>item.querySelector('small')?.textContent)),['Type','Camera','Dictate']);
+ assert.ok(await page.locator('[data-qc-text]').evaluate(el=>el.compareDocumentPosition(document.querySelector('.quick-capture-controls'))&Node.DOCUMENT_POSITION_FOLLOWING));
  assert.equal(await page.locator('[data-qc-action="save"]').isDisabled(),true);
- await page.locator('[data-qc-mode="type"]').click();
+ const mic=page.locator('[data-qc-action="dictate"]');
+ await mic.click();
+ assert.equal(await mic.getAttribute('aria-pressed'),'true');
+ assert.match(await mic.evaluate(el=>getComputedStyle(el).animationName),/qc-recording-halo/);
+ await mic.click();
+ assert.equal(await mic.getAttribute('aria-pressed'),'false');
+ await page.locator('[data-qc-action="type"]').click();
  await page.locator('[data-qc-text]').fill('A thought captured on mobile.');
  await page.locator('[data-qc-action="save"]').click();
  await page.locator('#modal[open]').waitFor({state:'hidden'});
@@ -30,7 +38,7 @@ try{
  const sharedUrl=new URL('?quickCapture=1&title=Shared%20article&url=https%3A%2F%2Fexample.org%2Fstory&text=Read%20this',base);
  await page.goto(sharedUrl.href,{waitUntil:'domcontentloaded'});
  await page.locator('#modal[open] .quick-capture').waitFor();
- assert.equal(await page.locator('[data-qc-mode="type"]').getAttribute('aria-selected'),'true');
+ assert.deepEqual(await page.locator('.quick-capture-controls button').evaluateAll(items=>items.map(item=>item.querySelector('small')?.textContent)),['Type','Camera','Dictate']);
  assert.equal(await page.locator('.quick-capture-link a').getAttribute('href'),'https://example.org/story');
  await page.locator('[data-qc-action="save"]').click();
  await page.locator('#modal[open]').waitFor({state:'hidden'});
@@ -40,7 +48,7 @@ try{
 
  await page.goto(new URL('?quickCapture=1',base).href,{waitUntil:'domcontentloaded'});
  await page.locator('#modal[open] .quick-capture').waitFor();
- await page.locator('[data-qc-mode="camera"]').click();
+ await page.locator('[data-qc-action="camera"]').click();
  await page.locator('[data-qc-file]').setInputFiles({name:'sample.png',mimeType:'image/png',buffer:readFileSync(new URL('../assets/icon-192.png',import.meta.url))});
  await page.locator('.quick-capture-photo-preview img').waitFor();
  assert.equal(await page.locator('[data-qc-action="save"]').isDisabled(),false);

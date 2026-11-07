@@ -79,24 +79,21 @@ export function mountQuickCapture({ root, shared = null, standalone = false, dic
   let saveTimer;
 
   root.innerHTML = `<section class="quick-capture" aria-label="Quick Capture">
-    <div class="quick-capture-intro"><p>Capture now. Organise later.</p><span>Save to Inbox</span>${standalone ? '<a class="quick-capture-open-app" href="./">Open Unbound</a>' : ''}</div>
+    <p class="quick-capture-intro">Capture now. Save to Inbox. Organise later.</p>
     ${value.sharedUrl ? `<article class="quick-capture-link"><small>Shared page</small><strong>${escapeHtml(value.sharedTitle || new URL(value.sharedUrl).hostname)}</strong><a href="${escapeHtml(value.sharedUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(value.sharedUrl)}</a></article>` : ''}
-    <nav class="quick-capture-methods" role="tablist" aria-label="Choose a capture method">
-      <button type="button" role="tab" data-qc-mode="dictate" aria-selected="${mode === 'dictate'}"><span aria-hidden="true">◉</span><small>Dictate</small></button>
-      <button type="button" role="tab" data-qc-mode="camera" aria-selected="false"><span aria-hidden="true">▣</span><small>Camera</small></button>
-      <button type="button" role="tab" data-qc-mode="type" aria-selected="${mode === 'type'}"><span aria-hidden="true">⌨</span><small>Type</small></button>
-    </nav>
     <div class="quick-capture-photo" data-qc-photo-wrap hidden>
       <div class="quick-capture-photo-preview" data-qc-photo-preview hidden></div>
-      <div class="quick-capture-photo-actions"><button type="button" class="secondary" data-qc-action="camera">Take a photo</button><button type="button" class="secondary" data-qc-action="choose">Choose image</button><button type="button" class="text-action danger" data-qc-action="remove-photo" hidden>Remove photo</button></div>
+      <div class="quick-capture-photo-actions"><button type="button" class="text-action danger" data-qc-action="remove-photo" hidden>Remove photo</button></div>
     </div>
     <input type="file" data-qc-file accept="image/*" capture="environment" hidden>
-    <div class="quick-capture-controls">
-      <button type="button" class="quick-capture-mic" data-qc-action="dictate" aria-label="${value.fromShare ? 'Dictate a comment' : 'Start dictation'}"><span aria-hidden="true">🎙</span><small>${value.fromShare ? 'Add spoken comment' : 'Start dictation'}</small></button>
+    <label class="quick-capture-writing"><span data-qc-label>${value.fromShare ? 'Add a comment · optional' : 'Your note'}</span><textarea data-qc-text rows="5" maxlength="8000" placeholder="Your note...">${escapeHtml(value.text)}</textarea></label>
+    <div class="quick-capture-controls" aria-label="Capture methods">
+      <button type="button" class="quick-capture-method" data-qc-action="type" aria-label="Type a note"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M6 9h1m3 0h1m3 0h1m3 0h1M6 12h1m3 0h1m3 0h1m3 0h1M8 15h8"/></svg><small>Type</small></button>
+      <button type="button" class="quick-capture-method" data-qc-action="camera" aria-label="Add a photo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h3l1.5-2h7L17 7h3a1 1 0 0 1 1 1v11H3V8a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13" r="4"/></svg><small>Camera</small></button>
+      <button type="button" class="quick-capture-mic" data-qc-action="dictate" aria-label="Start dictation" aria-pressed="false"><svg class="vintage-mic" viewBox="0 0 64 88" aria-hidden="true"><defs><linearGradient id="mic-metal" x1="0" x2="1"><stop stop-color="#7c5730"/><stop offset=".22" stop-color="#f6e0a7"/><stop offset=".48" stop-color="#a16c34"/><stop offset=".7" stop-color="#fff0bc"/><stop offset="1" stop-color="#76502c"/></linearGradient></defs><rect x="20" y="5" width="24" height="50" rx="12" fill="url(#mic-metal)" stroke="#53391d" stroke-width="2"/><path d="M24 17h16M24 23h16M24 29h16M24 35h16M24 41h16" stroke="#493a29" stroke-width="2.4" stroke-linecap="round"/><path d="M14 35v7a18 18 0 0 0 36 0v-7M32 60v12m-10 0h20" fill="none" stroke="url(#mic-metal)" stroke-width="5" stroke-linecap="round"/><path d="M27 75h10" stroke="#674621" stroke-width="4" stroke-linecap="round"/></svg><small data-qc-dictate-label>Dictate</small></button>
       <span class="quick-capture-draft" role="status" data-qc-status></span>
     </div>
-    <label class="quick-capture-writing"><span data-qc-label>${value.fromShare ? 'Add a comment · optional' : 'Your note'}</span><textarea data-qc-text rows="5" maxlength="8000" placeholder="${value.fromShare ? 'Add a thought about this page…' : 'Say what is on your mind…'}">${escapeHtml(value.text)}</textarea></label>
-    <footer class="quick-capture-footer"><button type="button" class="secondary" data-qc-action="cancel">Cancel</button><button type="button" class="primary" data-qc-action="save" disabled>Save to Inbox</button></footer>
+    <footer class="quick-capture-footer">${standalone ? '<a class="secondary quick-capture-open-app" href="./">Open Unbound</a>' : '<button type="button" class="secondary" data-qc-action="cancel">Close</button>'}<button type="button" class="primary" data-qc-action="save" disabled>Save to Inbox</button></footer>
   </section>`;
 
   const field = root.querySelector('[data-qc-text]');
@@ -105,13 +102,21 @@ export function mountQuickCapture({ root, shared = null, standalone = false, dic
   const photoWrap = root.querySelector('[data-qc-photo-wrap]');
   const fileInput = root.querySelector('[data-qc-file]');
   const showState = text => { if (status) status.textContent = text; };
+  const micButton = root.querySelector('.quick-capture-mic');
+  const micLabel = root.querySelector('[data-qc-dictate-label]');
+  const micState = new MutationObserver(() => {
+    const active = micButton.classList.contains('recording') || micButton.classList.contains('reconnecting');
+    micButton.setAttribute('aria-pressed', String(active));
+    micButton.setAttribute('aria-label', active ? 'Stop dictation' : 'Start dictation');
+    micLabel.textContent = active ? 'Stop' : 'Dictate';
+  });
+  micState.observe(micButton, { attributes: true, attributeFilter: ['class'] });
   const update = () => {
     value.text = field.value;
     const canSave = !!(value.text.trim() || value.image || value.sharedUrl || value.sharedTitle);
     saveButton.disabled = busy || !canSave;
     saveButton.textContent = busy ? 'Saving…' : 'Save to Inbox';
     root.querySelector('.quick-capture').dataset.mode = value.mode;
-    root.querySelectorAll('[data-qc-mode]').forEach(button => button.setAttribute('aria-selected', String(button.dataset.qcMode === value.mode)));
     photoWrap.hidden = value.mode !== 'camera' && !value.image;
     root.querySelector('[data-qc-label]').textContent = value.fromShare ? 'Add a comment · optional' : value.mode === 'camera' ? 'Caption · optional' : 'Your note';
   };
@@ -152,18 +157,14 @@ export function mountQuickCapture({ root, shared = null, standalone = false, dic
   root.addEventListener('click', async event => {
     const button = event.target.closest('button');
     if (!button || !root.contains(button)) return;
-    if (button.dataset.qcMode) {
-      value.mode = button.dataset.qcMode;
-      update(); persist();
-      if (value.mode === 'type') field.focus({ preventScroll: true });
-      return;
-    }
     const action = button.dataset.qcAction;
     if (action === 'cancel') { onClose(); return; }
-    if (action === 'camera' || action === 'choose') { fileInput.setAttribute('capture', action === 'camera' ? 'environment' : 'user'); fileInput.click(); return; }
+    if (action === 'type') { value.mode = 'type'; update(); field.focus({ preventScroll: true }); return; }
+    if (action === 'camera' || action === 'choose') { value.mode = 'camera'; fileInput.setAttribute('capture', action === 'camera' ? 'environment' : 'user'); update(); fileInput.click(); return; }
     if (action === 'remove-photo') { value.image = null; displayPhoto(); persist(); return; }
     if (action === 'dictate') {
       if (!dictation) { toast('Speech dictation is unavailable. Use the keyboard microphone.'); return; }
+      if (button.classList.contains('recording') || button.classList.contains('reconnecting')) { dictation.stop(); button.classList.remove('recording','reconnecting'); return; }
       dictation.start(field, button);
       return;
     }
@@ -193,5 +194,5 @@ export function mountQuickCapture({ root, shared = null, standalone = false, dic
   });
   update();
   if (!value.fromShare && value.mode === 'dictate') root.querySelector('[data-qc-action="dictate"]')?.focus({ preventScroll: true });
-  return { destroy() { if (!busy) flushDraft(); else clearTimeout(saveTimer); document.removeEventListener('visibilitychange', flushWhenHidden); window.removeEventListener('pagehide', flushDraft); dictation?.dismiss(); if (imageUrl) URL.revokeObjectURL(imageUrl); } };
+  return { destroy() { if (!busy) flushDraft(); else clearTimeout(saveTimer); document.removeEventListener('visibilitychange', flushWhenHidden); window.removeEventListener('pagehide', flushDraft); micState.disconnect(); dictation?.dismiss(); if (imageUrl) URL.revokeObjectURL(imageUrl); } };
 }
