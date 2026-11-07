@@ -171,7 +171,7 @@ export function mountQuickCapture({ root, shared = null, standalone = false, dic
     if (action === 'remove-photo') { value.image = null; displayPhoto(); persist(); return; }
     if (action === 'dictate') {
       if (!dictation) { toast('Speech dictation is unavailable. Use the keyboard microphone.'); return; }
-      if (button.classList.contains('recording') || button.classList.contains('reconnecting')) { dictation.stop(); button.classList.remove('recording','reconnecting'); updateMicState(); return; }
+      if (button.getAttribute('aria-pressed') === 'true' || button.classList.contains('recording') || button.classList.contains('reconnecting')) { dictation.stop(); button.classList.remove('recording','reconnecting'); button.setAttribute('aria-pressed','false'); button.setAttribute('aria-label','Start dictation'); micLabel.textContent='Dictate'; updateMicState(); return; }
       dictation.start(field, button);
       return;
     }
