@@ -1514,3 +1514,11 @@ body>.weather-popover{position:fixed;inset:auto auto auto auto;z-index:10001;wid
 
 body.quick-capture-launch .quick-capture-mic.recording{border-color:#c51f19;background:radial-gradient(circle at 50% 40%,#ff776b,#d8231c 62%,#9c1715);color:#fff;box-shadow:0 0 0 5px #ec392b25,0 0 26px #f0463d85,inset 0 2px 6px #fff8;animation:qc-recording-halo 1.25s ease-out infinite}
 @media(prefers-reduced-motion:reduce){body.quick-capture-launch .quick-capture-mic.recording{animation:none}}
+/* Save to Ideas: link cards reuse notebook ink and paper colours. */
+.idea-inbox-card{display:grid;gap:4px;padding:10px 12px;margin:7px 0;border:1px solid #d9c9a7;border-radius:12px;background:linear-gradient(145deg,#fffdf7,#f3ead8);box-shadow:0 2px 5px #4a38200d}
+.idea-inbox-card.active{border-color:#a98245;box-shadow:0 0 0 2px #b9945530}
+.idea-inbox-card>button{padding:0;border:0;background:transparent;text-align:left;color:#493b2c;font-weight:650;line-height:1.35}
+.idea-inbox-card>a,.saved-link>a{color:#536c43;font-size:.88rem;text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere}
+.idea-inbox-card>p{margin:2px 0 0;color:#716858;font-size:.86rem;line-height:1.35;overflow-wrap:anywhere}
+.saved-link{display:grid;gap:6px;margin:0 0 12px;padding:14px;border:1px solid #d5c29b;border-radius:14px;background:linear-gradient(145deg,#fffdf7,#f3ead8);box-shadow:0 3px 10px #4a382012}
+.saved-link time{font-size:.8rem;color:#7d715d}

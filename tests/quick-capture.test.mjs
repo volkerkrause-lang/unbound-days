@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {normaliseShareUrl,parseShareTarget} from '../quick-capture.js';
+import {normaliseShareUrl,parseShareTarget,shareSource} from '../quick-capture.js';
 
 test('share target keeps the browser title, safe URL and optional comment',()=>{
  const result=parseShareTarget(new URLSearchParams({title:'A useful article',text:'Worth reading',url:'https://example.org/story?ref=share'}));
@@ -25,4 +25,16 @@ test('title-only shares remain savable content without fabricating a URL',()=>{
  assert.equal(result.title,'Shared title');
  assert.equal(result.url,null);
  assert.equal(result.text,'');
+});
+
+test('share source is derived only from a safe HTTP URL',()=>{
+ assert.equal(shareSource('https://www.example.org/article?id=2'),'example.org');
+ assert.equal(shareSource('javascript:alert(1)'),'');
+});
+
+test('main PWA share target is separate from the Quick Capture shortcut',async()=>{
+ const manifest=JSON.parse(await (await import('node:fs/promises')).readFile(new URL('../manifest.webmanifest',import.meta.url),'utf8'));
+ assert.equal(manifest.shortcuts.find(item=>item.name==='Quick Capture').url,'./?quickCapture=1');
+ assert.equal(manifest.share_target.action,'./?saveToIdeas=1');
+ assert.deepEqual(manifest.share_target.params,{title:'title',text:'text',url:'url'});
 });

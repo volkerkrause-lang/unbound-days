@@ -35,9 +35,11 @@ try{
  await page.locator('[data-qc-action="cancel"]').click();
  await page.waitForTimeout(150);
 
- const sharedUrl=new URL('?quickCapture=1&title=Shared%20article&url=https%3A%2F%2Fexample.org%2Fstory&text=Read%20this',base);
+ const sharedUrl=new URL('?saveToIdeas=1&title=Shared%20article&url=https%3A%2F%2Fexample.org%2Fstory&text=Read%20this',base);
  await page.goto(sharedUrl.href,{waitUntil:'domcontentloaded'});
  await page.locator('#modal[open] .quick-capture').waitFor();
+ assert.equal(await page.locator('#modal-title').textContent(),'Quick Preview');
+ assert.equal(await page.locator('[data-qc-action="save"]').textContent(),'Save to Ideas');
  assert.deepEqual(await page.locator('.quick-capture-controls button').evaluateAll(items=>items.map(item=>item.querySelector('small')?.textContent)),['Type','Camera','Dictate']);
  assert.equal(await page.locator('.quick-capture-link a').getAttribute('href'),'https://example.org/story');
  await page.locator('[data-qc-action="save"]').click();
@@ -45,6 +47,13 @@ try{
  saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('unbound-days-v1')));
  note=saved.notes.find(item=>item.sharedUrl==='https://example.org/story');
  assert.ok(note);assert.equal(note.sharedTitle,'Shared article');assert.equal(saved.entries[`note:${note.id}`],'Read this');
+ assert.equal(note.source,'example.org');assert.ok(note.capturedAt);assert.equal(note.previewMetadata.thumbnailUrl,null);
+ await page.goto(sharedUrl.href,{waitUntil:'domcontentloaded'});
+ await page.locator('#modal[open] .quick-capture').waitFor();
+ await page.locator('[data-qc-action="save"]').click();
+ await page.locator('#modal[open]').waitFor({state:'hidden'});
+ saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('unbound-days-v1')));
+ assert.equal(saved.notes.filter(item=>item.sharedUrl==='https://example.org/story').length,1,'sharing a saved URL again must not create a duplicate');
 
  await page.goto(new URL('?quickCapture=1',base).href,{waitUntil:'domcontentloaded'});
  await page.locator('#modal[open] .quick-capture').waitFor();
