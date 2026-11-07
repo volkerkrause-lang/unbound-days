@@ -18,7 +18,10 @@ test('untrusted metadata is returned as plain bounded strings and safe image URL
   assert.equal(result.image, 'https://cdn.example.org/preview.jpg');
   assert.equal(result.favicon, 'https://example.org/favicon.ico');
   assert.equal(result.contentType, 'webpage');
-  assert.equal(parseMetadata('<html><title>Only title</title></html>', 'https://example.org').title, 'Only title');
+  const noImage=parseMetadata('<html><title>Only title</title></html>', 'https://example.org/story');
+  assert.equal(noImage.title, 'Only title');
+  assert.equal(noImage.image, '');
+  assert.equal(noImage.favicon, 'https://example.org/favicon.ico');
 });
 
 test('metadata parser rejects unsafe image URL schemes and private address literals', () => {

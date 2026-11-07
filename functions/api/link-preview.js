@@ -54,14 +54,14 @@ export function parseMetadata(html, finalUrl) {
       if (!icon && /(?:^|\s)(?:icon|shortcut icon)(?:\s|$)/iu.test(a.rel || '') && a.href) icon = a.href;
     }
   }
-  const absolute = value => { try { const safe=safeUrl(new URL(value, finalUrl).href); return safe?.href || ''; } catch { return ''; } };
+  const absolute = value => { if (!String(value || '').trim()) return ''; try { const safe=safeUrl(new URL(value, finalUrl).href); return safe?.href || ''; } catch { return ''; } };
   const docTitle=html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/iu)?.[1]?.replace(/<[^>]*>/gu,'')||'';
   return {
     title: meta['og:title'] || meta['twitter:title'] || meta.title || decode(docTitle),
     description: meta['og:description'] || meta['twitter:description'] || meta.description || '',
     image: absolute(meta['og:image'] || meta['og:image:url'] || meta['twitter:image'] || meta['twitter:image:src'] || ''),
     favicon: absolute(icon || '/favicon.ico'),
-    contentType: /video/iu.test(meta['og:type'] || '') || /video/iu.test(meta['twitter:card'] || '') ? 'video' : 'webpage',
+    contentType: /video/iu.test(meta['og:type'] || '') || /^(?:player|video)/iu.test(meta['twitter:card'] || '') ? 'video' : 'webpage',
   };
 }
 async function isPublicTarget(url, signal) {
