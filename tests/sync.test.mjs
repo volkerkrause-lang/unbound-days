@@ -24,6 +24,14 @@ test('legacy habit definitions and completion history remain in the version-one 
  const content=notebookContent({events:[],tasks:[],notes:[],habits:[legacy],entries:{},ink:{},trash:[],bookmarks:[],settings:{}});
  assert.deepEqual(content.habits,[legacy]);assert.equal(content.version,1);
 });
+test('collection records and saved-item membership are included in the account sync payload',()=>{
+ const item={id:'share-a',title:'Shared video',collectionId:'videos'};
+ const collection={id:'videos',name:'Videos to Watch'};
+ const content=notebookContent({notes:[item],collections:[collection]});
+ assert.deepEqual(content.notes,[item]);assert.deepEqual(content.collections,[collection]);
+ const merged=mergeNotebook({notes:[item],collections:[collection]},{notes:[{...item,collectionId:null}],collections:[collection]},{notes:[item],collections:[collection]});
+ assert.equal(merged.data.notes[0].collectionId,null);assert.equal(merged.data.collections[0].name,'Videos to Watch');
+});
 test('cloud content excludes session credentials and Google caches',()=>{const x=notebookContent({settings:{googleClientId:'id',selectedCalendars:['a'],cover:2},cachedGoogle:['private']});assert.deepEqual(x.settings,{cover:2});assert.equal(x.cachedGoogle,undefined);assert.deepEqual(unwrapBackup({format:'unbound-days-snapshot-v2',data:{version:1}}),{version:1});});
 test('account cloud payload carries the full saved cover, including its year and lettering options',()=>{const x=notebookContent({settings:{cover:112,coverYear:2027,owner:'Volker',title:'Planner',coverInk:'#273238',coverPosition:64,customCover:'data:image/jpeg;base64,abc'},entries:{'cover:personalisation':'{"lettering":"name","press":"deboss"}'}});assert.deepEqual(x.settings,{cover:112,coverYear:2027,owner:'Volker',title:'Planner',coverInk:'#273238',coverPosition:64,customCover:'data:image/jpeg;base64,abc'});assert.equal(x.entries['cover:personalisation'],'{"lettering":"name","press":"deboss"}');});
 test('competing cover changes remain available for explicit resolution',()=>{const base={settings:{cover:4,coverYear:2026,owner:'A',title:'Old',coverInk:'#e4c18c'}},local={settings:{cover:112,coverYear:2027,owner:'Volker',title:'Local title',coverInk:'#273238'}},remote={settings:{cover:89,coverYear:2028,owner:'Vossi',title:'Cloud title',coverInk:'#fff9ec'}};const result=mergeNotebook(base,local,remote);assert.equal(result.data.settings.cover,112);assert.equal(result.data.settings.coverYear,2027);assert.deepEqual(result.conflicts.map(c=>c.path.join('.')).sort(),['settings.cover','settings.coverYear','settings.coverInk','settings.owner','settings.title'].sort());for(const conflict of result.conflicts)resolveConflict(result.data,conflict,'remote');assert.deepEqual(result.data.settings,remote.settings);});

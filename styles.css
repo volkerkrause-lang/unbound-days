@@ -1548,3 +1548,16 @@ body.quick-capture-launch .quick-capture-mic.recording{border-color:#c51f19;back
 .saved-link>time{margin-bottom:12px}
 @media(min-width:900px){.launchpad-layout .idea-inbox-card .idea-preview-image{aspect-ratio:16/8}.launchpad-layout .idea-preview-copy{padding:12px 14px}}
 @media(max-width:767px){.launchpad-layout .idea-inbox-card .idea-preview-image{aspect-ratio:16/7}.idea-preview-play{width:42px;height:42px}.idea-preview-copy{padding:9px 10px 11px}}
+.idea-inbox-nav{display:flex;gap:6px;overflow-x:auto;padding:2px 1px 9px;margin-bottom:9px;scrollbar-width:thin}
+.idea-inbox-nav button,.idea-collection-manage button{flex:0 0 auto;padding:7px 10px;border:1px solid #d8d0c1;border-radius:18px;background:#fffcf6;color:var(--ink);font:11px var(--ui);white-space:nowrap}
+.idea-inbox-nav button[aria-pressed=true]{background:#3e5146;border-color:#3e5146;color:#fffdf7}
+.idea-inbox-nav small{font-size:9px;opacity:.8}
+.idea-inbox-nav button:last-child{border-style:dashed;color:#80613b}
+.idea-collection-manage{display:flex;gap:7px;margin:0 0 10px}
+.idea-collection-manage button{font-size:10px}
+.idea-link-card-actions{display:flex;gap:14px;margin-top:6px}
+.idea-link-card-actions button{min-height:34px;padding:4px 0;color:#80613b;font:10px var(--ui);text-decoration:underline;text-underline-offset:2px}
+.idea-link-card-actions button+button{color:#874b3f}
+.idea-note-card>button:first-child{width:100%;padding:0;text-align:left;font:600 1rem/1.3 var(--hand,Georgia,serif)}
+.idea-new-collection-name[hidden]{display:none}
+@media(max-width:767px){.idea-inbox-nav button{min-height:40px}.idea-link-card-actions button{min-height:40px}}
