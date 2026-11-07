@@ -18,11 +18,12 @@ class Query{
  execute(){const matching=this.match();if(this.operation==='select')return {data:matching,error:null};if(this.operation==='upsert'){const row={...this.patch};this.rows.set(this.table==='personal_storage_connections'?row.user_id+'|'+row.provider:row.user_id,row);return {data:row,error:null};}if(this.operation==='update'){for(const row of matching)Object.assign(row,this.patch);return {data:matching,error:null};}if(this.operation==='delete'){for(const row of matching)this.rows.delete(this.table==='personal_storage_connections'?row.user_id+'|'+row.provider:row.user_id);return {data:matching,error:null};}return {data:null,error:null};}
  then(resolve,reject){return Promise.resolve(this.execute()).then(resolve,reject);}
 }
-function fixture({providerResponse,identityResponse}={}){
+function fixture({providerResponse,identityResponse,fetcher}={}){
  const rows={personal_storage_connections:new Map(),storage_preferences:new Map(),attachments:new Map()},calls=[];
- const env={APP_ORIGINS:'https://dev.test',STORAGE_TOKEN_KEY:key,GOOGLE_STORAGE_CLIENT_ID:'google-client',GOOGLE_STORAGE_CLIENT_SECRET:'google-secret',DROPBOX_APP_KEY:'dropbox-key',DROPBOX_APP_SECRET:'dropbox-secret'};
+ const env={APP_ORIGINS:'https://dev.test',STORAGE_TOKEN_KEY:key,GOOGLE_STORAGE_CLIENT_ID:'google-client',GOOGLE_STORAGE_CLIENT_SECRET:'google-secret',DROPBOX_APP_KEY:'dropbox-key',DROPBOX_APP_SECRET:'dropbox-secret',BOX_CLIENT_ID:'box-client',BOX_CLIENT_SECRET:'box-secret'};
  const admin={from:table=>new Query(table,rows[table])};
- const handler=createHandler({env,admin,authenticate:async token=>token==='valid'?{id:'user-1'}:null,fetch:async(url,options)=>{calls.push({url,options});if(url==='https://oauth2.googleapis.com/token')return Response.json(providerResponse||{access_token:'short-lived',refresh_token:'long-lived-secret',expires_in:3600,scope:'openid email https://www.googleapis.com/auth/drive.file'});if(url==='https://www.googleapis.com/oauth2/v3/userinfo')return Response.json(identityResponse||{sub:'provider-user'});throw Error('unexpected request '+url);}});
+ const defaultFetch=async(url,options)=>{calls.push({url,options});if(url==='https://oauth2.googleapis.com/token')return Response.json(providerResponse||{access_token:'short-lived',refresh_token:'long-lived-secret',expires_in:3600,scope:'openid email https://www.googleapis.com/auth/drive.file'});if(url==='https://www.googleapis.com/oauth2/v3/userinfo')return Response.json(identityResponse||{sub:'provider-user'});throw Error('unexpected request '+url);};
+ const handler=createHandler({env,admin,authenticate:async token=>token==='valid'?{id:'user-1'}:null,fetch:fetcher||defaultFetch});
  const send=(body,origin='https://dev.test',token='valid')=>handler(new Request('https://supabase.test/functions/v1/personal-storage',{method:'POST',headers:{Origin:origin,Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify(body)}));
  return {send,rows,calls};
 }
@@ -49,6 +50,18 @@ test('status returns account connection metadata without refresh-token ciphertex
 
 test('token encryption uses unique authenticated ciphertext',async()=>{
  const a=await seal('refresh',key),b=await seal('refresh',key);assert.notEqual(a,b);assert.equal(await unseal(a,key),'refresh');const bytes=Uint8Array.from(atob(a),c=>c.charCodeAt(0));bytes[bytes.length-1]^=1;await assert.rejects(unseal(btoa(String.fromCharCode(...bytes)),key));
+});
+
+test('Box refresh stores its rotated single-use refresh token before returning access',async()=>{
+ const f=fixture({fetcher:async(url,options)=>{f.calls.push({url,options});return Response.json({access_token:'box-access',refresh_token:'box-refresh-rotated',expires_in:3600});}});
+ f.rows.personal_storage_connections.set('user-1|box',{user_id:'user-1',provider:'box',provider_account_id:'box-account',refresh_ciphertext:await seal('box-refresh-old',key)});
+ const response=await f.send({action:'refresh',provider:'box'}),body=await response.json();assert.equal(response.status,200);assert.equal(body.accessToken,'box-access');assert.equal(await unseal(f.rows.personal_storage_connections.get('user-1|box').refresh_ciphertext,key),'box-refresh-rotated');
+});
+
+test('Box refresh fails closed if the provider does not rotate its single-use token',async()=>{
+ const f=fixture({fetcher:async(url,options)=>{f.calls.push({url,options});return Response.json({access_token:'box-access',expires_in:3600});}});
+ f.rows.personal_storage_connections.set('user-1|box',{user_id:'user-1',provider:'box',provider_account_id:'box-account',refresh_ciphertext:await seal('box-refresh-old',key)});
+ const response=await f.send({action:'refresh',provider:'box'}),body=await response.json();assert.equal(response.status,502);assert.match(body.message,/Reconnect Box/);assert.equal(await unseal(f.rows.personal_storage_connections.get('user-1|box').refresh_ciphertext,key),'box-refresh-old');
 });
 
 test('storage migration enforces owner-only metadata and keeps refresh credentials server-only',async()=>{

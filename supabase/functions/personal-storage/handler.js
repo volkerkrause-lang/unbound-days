@@ -54,6 +54,9 @@ export function createHandler({env,authenticate,admin,fetch:request=fetch,now=Da
     const refreshToken=await unseal(stored.refresh_ciphertext,env.STORAGE_TOKEN_KEY);
     const token=await jsonResponse(await request(cfg.refresh,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({grant_type:'refresh_token',refresh_token:refreshToken,client_id:clientId,client_secret:secret})}));
     if(typeof token.access_token!=='string'||!Number.isFinite(Number(token.expires_in)))return reply(502,{message:'Provider could not renew access'});
+    // Box refresh tokens are single-use. Never return a new access token while
+    // leaving the consumed refresh token stored for the next device/request.
+    if(provider==='box'&&typeof token.refresh_token!=='string')return reply(502,{message:'Box did not return a replacement refresh token. Reconnect Box to continue.'});
     if(typeof token.refresh_token==='string'){
      const updated=await table().update({refresh_ciphertext:await seal(token.refresh_token,env.STORAGE_TOKEN_KEY),updated_at:new Date(now()).toISOString()}).eq('user_id',user.id).eq('provider',provider);if(updated.error)throw Error('Storage connection could not be renewed');
     }
