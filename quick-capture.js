@@ -110,12 +110,13 @@ export function mountQuickCapture({ root, shared = null, standalone = false, dic
   const showState = text => { if (status) status.textContent = text; };
   const micButton = root.querySelector('.quick-capture-mic');
   const micLabel = root.querySelector('[data-qc-dictate-label]');
-  const micState = new MutationObserver(() => {
+  const updateMicState = () => {
     const active = micButton.classList.contains('recording') || micButton.classList.contains('reconnecting');
     micButton.setAttribute('aria-pressed', String(active));
     micButton.setAttribute('aria-label', active ? 'Stop dictation' : 'Start dictation');
     micLabel.textContent = active ? 'Stop' : 'Dictate';
-  });
+  };
+  const micState = new MutationObserver(updateMicState);
   micState.observe(micButton, { attributes: true, attributeFilter: ['class'] });
   const update = () => {
     value.text = field.value;
@@ -170,7 +171,7 @@ export function mountQuickCapture({ root, shared = null, standalone = false, dic
     if (action === 'remove-photo') { value.image = null; displayPhoto(); persist(); return; }
     if (action === 'dictate') {
       if (!dictation) { toast('Speech dictation is unavailable. Use the keyboard microphone.'); return; }
-      if (button.classList.contains('recording') || button.classList.contains('reconnecting')) { dictation.stop(); button.classList.remove('recording','reconnecting'); return; }
+      if (button.classList.contains('recording') || button.classList.contains('reconnecting')) { dictation.stop(); button.classList.remove('recording','reconnecting'); updateMicState(); return; }
       dictation.start(field, button);
       return;
     }
