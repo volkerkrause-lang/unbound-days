@@ -29,6 +29,9 @@ try{
  let saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('unbound-days-v1')));
  let note=saved.notes.find(item=>item.quickCapture);
  assert.ok(note);assert.equal(note.quickCaptureInbox,true);assert.equal(saved.entries[`note:${note.id}`],'A thought captured on mobile.');
+ await page.locator('.idea-collection-popover').waitFor();
+ assert.equal(await page.locator('.idea-collection-popover').isVisible(),true,'the Inbox opens automatically when saved items exist');
+ await page.locator('.idea-collection-popover [data-action="idea-collections"]').click();
  assert.equal(saved.tasks.length,0);assert.equal(saved.events.length,0);
  await page.locator('.quick-add-button').click();
  await page.locator('#modal[open] .quick-capture').waitFor();
