@@ -24,6 +24,7 @@ import {createPlanningBuilder,renderBuilder,renderCustomLibrary,definitionFromTe
 import {drawInkStroke,normaliseStroke,selectedStrokeIndexes,selectionBounds,moveStrokes,scaleStrokes,eraseWholeStrokes,paperEntry} from './idea-workspace.js?v=0.4.18';
 import {isScheduled,isComplete,ritualProgress,currentStreak,toggleCompletion,weekdayLabels,rangeDates} from './rituals.js?v=0.4.0';
 import {mountQuickCapture,parseShareTarget,normaliseShareUrl,shareSource} from './quick-capture.js?v=0.1.4';
+import {saveCaptureIdea,fetchLinkPreview} from './link-preview.js?v=0.1.2';
 
 const captureQuery=new URLSearchParams(location.search);
 const shareSessionKey='unbound-save-to-ideas-intake';
@@ -156,24 +157,16 @@ function showQuickCapture(shared=null){
  if(accountLocked||externalChange||storageCorrupt){toast('Notebook needs recovery before a new capture can be saved.');return;}
  openModal(shared?.fromShare?'Quick Preview':'Quick Capture','<div id="quick-capture-root"></div>');
  const root=document.querySelector('#quick-capture-root');
- quickCaptureController=mountQuickCapture({root,shared,standalone:launchQuickCapture,dictation,toast,onClose:()=>{if(shared?.fromShare){try{sessionStorage.removeItem(shareSessionKey);}catch{}history.replaceState(null,'',location.pathname+location.hash);}closeModal();},onSave:async capture=>{
+ const previewPromise=shared?.url?fetchLinkPreview(shared.url):Promise.resolve(null);
+ quickCaptureController=mountQuickCapture({root,shared,standalone:launchQuickCapture,dictation,toast,previewPromise,onClose:()=>{if(shared?.fromShare){try{sessionStorage.removeItem(shareSessionKey);}catch{}history.replaceState(null,'',location.pathname+location.hash);}closeModal();},onSave:async capture=>{
   if(accountLocked||externalChange||storageCorrupt)throw Error('Notebook changed or needs recovery. Your draft is still here.');
   const noteKey=capture.captureId;
-  let note=state.notes.find(item=>item.quickCaptureId===noteKey);
-  const firstLine=capture.text.trim().split(/\r?\n/u).find(line=>line.trim())?.trim().slice(0,120)||'';
   const safeUrl=normaliseShareUrl(capture.sharedUrl);
-  const title=capture.sharedTitle||firstLine||(safeUrl?shareSource(safeUrl):capture.image?'Photo':'Quick capture · '+new Date().toLocaleDateString('en-GB'));
-  const existingShared=safeUrl?state.notes.find(item=>item.idea&&normaliseShareUrl(item.sharedUrl)===safeUrl):null;
-  if(!note&&existingShared)note=existingShared;
-  const capturedAt=new Date().toISOString();
-  if(!note){note={id:id(),quickCaptureId:noteKey,quickCapture:true,quickCaptureInbox:true,idea:true,ideaStatus:'parked',createdAt:capturedAt,title};state.notes.push(note);}
-  note.quickCapture=true;note.quickCaptureInbox=note.quickCaptureInbox!==false;note.idea=true;note.ideaStatus=note.ideaStatus||'parked';note.title=note.title||title;
-  if(safeUrl){note.sharedUrl=safeUrl;note.source=shareSource(safeUrl);note.sharedTitle=capture.sharedTitle||note.sharedTitle||title;note.capturedAt=note.capturedAt||capturedAt;note.previewMetadata={source:note.source,title:note.sharedTitle,thumbnailUrl:null};note.quickCaptureId=noteKey;}
-  else delete note.sharedUrl;
-  if(capture.text.trim()||!existingShared)state.entries['note:'+note.id]=capture.text.trim();
+  const note=saveCaptureIdea({notes:state.notes,entries:state.entries,capture,makeId:id,now:new Date().toISOString()});
   state.entries[paperEntry(note.id,'mode')]='text';
   noteId=note.id;section='launchpad';closed=false;
   save();await mirrorQueue;
+  if(safeUrl&&previewPromise){previewPromise.then(metadata=>{if(!metadata)return;const saved=state.notes.find(item=>item.id===note.id);if(!saved)return;saved.previewMetadata={...metadata};saved.contentType=metadata.contentType;saved.source=metadata.source;saved.sharedTitle=metadata.title||saved.sharedTitle;saved.title=saved.title||saved.sharedTitle;save();if(section==='launchpad'&&!modal.open)render();}).catch(()=>{});}
   if(storageError)throw Error('The device could not confirm a safe save. Keep this window open and try again.');
   if(capture.image){
    const file=new File([capture.image],'Quick Capture image.jpg',{type:'image/jpeg',lastModified:Date.now()});
@@ -184,7 +177,7 @@ function showQuickCapture(shared=null){
   history.replaceState(null,'',location.pathname+location.hash);
   render();
   try{sessionStorage.removeItem(shareSessionKey);}catch{}
-  toast(`${existingShared?'Already in Inbox · updated the saved link':'Saved to Ideas'}${Accounts.user?' · account sync status is shown in the header':''}.`);
+  toast(`Saved to Ideas${Accounts.user?' · account sync status is shown in the header':''}.`);
  }});
 }
 document.addEventListener('click',event=>{
@@ -324,7 +317,7 @@ function renderLaunchpad(){
  const idea=n?.parentIdeaId?ideas.find(candidate=>candidate.id===n.parentIdeaId)||n:n;
  const pages=idea?[idea,...ideas.filter(candidate=>candidate.parentIdeaId===idea.id)]:[];
  const inboxItems=ideas.filter(item=>!item.parentIdeaId&&item.quickCapture&&item.quickCaptureInbox!==false).sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
- const inboxList=`<h2 class="small-heading">Inbox</h2>${inboxItems.map(item=>{const safe=normaliseShareUrl(item.sharedUrl),title=item.sharedTitle||item.title||entry('note:'+item.id).trim().split('\\n')[0].slice(0,50)||'Quick capture';return safe?`<article class="idea-inbox-card ${item.id===idea?.id?'active':''}"><button data-note="${item.id}">${esc(title)}</button><a href="${esc(safe)}" target="_blank" rel="noopener noreferrer">${esc(item.source||shareSource(safe))} ↗</a>${entry('note:'+item.id).trim()?`<p>${esc(entry('note:'+item.id).trim().slice(0,140))}</p>`:''}</article>`:`<button class="${item.id===idea?.id?'active':''}" data-note="${item.id}">${esc(title)}</button>`;}).join('')}`;
+ const inboxList=`<h2 class="small-heading">Inbox</h2>${inboxItems.map(item=>{const safe=normaliseShareUrl(item.sharedUrl),title=item.previewMetadata?.title||item.sharedTitle||item.title||entry('note:'+item.id).trim().split('\\n')[0].slice(0,50)||'Quick capture',meta=item.previewMetadata||{},thumb=normaliseShareUrl(meta.thumbnailUrl),favicon=normaliseShareUrl(meta.faviconUrl),description=meta.description||'',video=(item.contentType||meta.contentType)==='video';return safe?`<article class="idea-inbox-card ${item.id===idea?.id?'active':''} ${video?'is-video':''}">${thumb?`<a class="idea-preview-image" href="${esc(safe)}" target="_blank" rel="noopener noreferrer" aria-label="${video?'Watch':'Open'} ${esc(title)}"><img src="${esc(thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.closest('.idea-preview-image').hidden=true">${video?'<span class="idea-preview-play" aria-hidden="true">▶</span>':''}</a>`:''}<div class="idea-preview-copy"><button data-note="${item.id}">${esc(title)}</button><small>${favicon?`<img class="idea-favicon" src="${esc(favicon)}" alt="" loading="lazy" referrerpolicy="no-referrer">`:''}${video?'Video · ':''}${esc(item.source||shareSource(safe))}${item.capturedAt?` · Saved ${esc(new Date(item.capturedAt).toLocaleDateString('en-GB'))}`:''}</small>${description?`<p>${esc(description)}</p>`:''}${entry('note:'+item.id).trim()?`<p class="idea-preview-note">${esc(entry('note:'+item.id).trim().slice(0,140))}</p>`:''}<a class="idea-preview-open" href="${esc(safe)}" target="_blank" rel="noopener noreferrer">${video?'Watch video':'Open website'} ↗</a></div></article>`:`<button class="${item.id===idea?.id?'active':''}" data-note="${item.id}">${esc(title)}</button>`;}).join('')}`;
  const savedList=['parked','ignited'].map(status=>`<h2 class="small-heading">${status==='parked'?'Saved Ideas':'Ideas turned into plans'}</h2>${ideas.filter(item=>!item.parentIdeaId&&(!item.quickCapture||item.quickCaptureInbox===false)&&(item.ideaStatus==='ignited'?'ignited':'parked')===status).map(item=>`<button class="${item.id===idea?.id?'active':''}" data-note="${item.id}">${esc(item.title||entry('note:'+item.id).trim().split('\\n')[0].slice(0,50)||'New idea')}</button>`).join('')}`).join('');
  const list=inboxList+savedList;
  if(!n)return `<div class="launchpad-empty"><p class="empty-note">Start with a blank page for your next thought.</p><div class="launchpad-empty-actions"><button class="primary" data-action="quick-capture">+ Quick Capture</button><button class="secondary" data-action="idea-page">New idea</button></div></div>`;
@@ -348,7 +341,7 @@ function renderLaunchpad(){
 
 const pageTabs=pages.length>1?`<nav class="idea-page-tabs" aria-label="Pages">${pages.map((item,index)=>`<button type="button" class="${item.id===n.id?'active':''}" data-note="${item.id}" aria-current="${item.id===n.id?'page':'false'}">Page ${index+1}</button>`).join('')}</nav>`:'';
 const safeSharedUrl=normaliseShareUrl(n.sharedUrl);
-const linkPreview=safeSharedUrl?`<article class="quick-capture-link saved-link"><small>Website · ${esc(n.source||shareSource(safeSharedUrl))}</small><strong>${esc(n.sharedTitle||'Saved page')}</strong><a href="${esc(safeSharedUrl)}" target="_blank" rel="noopener noreferrer">Open original page ↗</a>${n.capturedAt?`<time datetime="${esc(n.capturedAt)}">Saved ${esc(new Date(n.capturedAt).toLocaleDateString('en-GB'))}</time>`:''}</article>`:'';
+const linkPreview=safeSharedUrl?(()=>{const meta=n.previewMetadata||{},thumb=normaliseShareUrl(meta.thumbnailUrl),favicon=normaliseShareUrl(meta.faviconUrl),video=(n.contentType||meta.contentType)==='video';return `<article class="quick-capture-link saved-link ${video?'is-video':''}">${thumb?`<a class="saved-link-image" href="${esc(safeSharedUrl)}" target="_blank" rel="noopener noreferrer" aria-label="${video?'Watch':'Open'} ${esc(meta.title||n.sharedTitle||'saved link')}"><img src="${esc(thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.closest('.saved-link-image').hidden=true">${video?'<span class="idea-preview-play" aria-hidden="true">▶</span>':''}</a>`:''}<small>${favicon?`<img class="idea-favicon" src="${esc(favicon)}" alt="" referrerpolicy="no-referrer">`:''}${video?'Video · ':''}${esc(n.source||shareSource(safeSharedUrl))}</small><strong>${esc(meta.title||n.sharedTitle||'Saved page')}</strong>${meta.description?`<p>${esc(meta.description)}</p>`:''}<a href="${esc(safeSharedUrl)}" target="_blank" rel="noopener noreferrer">${video?'Open original video':'Open original website'} ↗</a>${n.capturedAt?`<time datetime="${esc(n.capturedAt)}">Saved ${esc(new Date(n.capturedAt).toLocaleDateString('en-GB'))}</time>`:''}</article>`;})():'';
 const page=converted?`<div class="idea-converted-wrap">${linkPreview}<textarea class="idea-converted-editor" data-entry="note:${n.id}" aria-label="Converted note text" placeholder="Your note">${esc(entry('note:'+n.id))}</textarea><button class="secondary" data-action="idea-restore-ink">Return to handwriting</button></div>`:`<div class="idea-page-surface idea-paper-${paper}">${background}<canvas class="ink-canvas idea-native-canvas" id="ink-canvas" aria-label="Handwriting and sketch canvas"></canvas><div class="idea-selection-status" aria-live="polite"></div></div>`;
  return `<div class="launchpad-layout bright-ideas-enhanced"><section class="note-editor">${toolbar}<div class="idea-editor-head"><input type="text" data-note-title="${idea.id}" aria-label="Idea title" placeholder="Title · optional" maxlength="120" value="${esc(idea.title)}"><div class="idea-page-actions"><button class="secondary quick-add-button" data-action="quick-capture">+ Quick Add</button>${n.quickCapture&&n.quickCaptureInbox!==false?`<span class="scratch-note quick-capture-destination">In Inbox</span><button class="secondary" data-action="quick-capture-organise" data-note-id="${n.id}">Move to Saved Ideas</button>`:''}${idea.ideaStatus==='ignited'?`<span class="scratch-note">Ignited · original preserved</span><button class="secondary" data-park-idea="${idea.id}">Park again</button>`:`<button class="secondary" data-ignite-idea="${idea.id}">Ignite idea</button>`}<button class="text-action danger" data-delete-note="${n.id}">${n.parentIdeaId?'Delete page':'Delete idea'}</button></div></div>${pageTabs}${page}${noteMedia.html(n.id)}</section><aside class="idea-collection-popover" hidden><div class="idea-collection-head"><strong>Inbox &amp; Saved Ideas</strong><button type="button" class="idea-mini-close" data-action="idea-collections" aria-label="Close Saved Ideas">×</button></div><button class="primary" data-action="quick-capture">+ Quick Add</button><div class="note-list">${list}</div></aside></div>`;
 }

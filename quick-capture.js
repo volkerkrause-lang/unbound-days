@@ -76,17 +76,29 @@ async function imageToJpeg(file) {
   throw Error('This photo is too large to store safely. Try a smaller image.');
 }
 
-export function mountQuickCapture({ root, shared = null, standalone = false, dictation, onSave, onClose, toast }) {
+export function mountQuickCapture({ root, shared = null, standalone = false, dictation, onSave, onClose, toast, previewPromise = null }) {
   const mode = shared?.fromShare ? 'type' : 'dictate';
   const draftKey = shared?.fromShare ? `share:${shared.url || shared.title || 'incoming'}` : 'capture';
-  let value = { mode, text: shared?.text || '', image: null, sharedTitle: shared?.title || '', sharedUrl: normaliseShareUrl(shared?.url) || '', fromShare: !!shared?.fromShare, captureId: crypto.randomUUID() };
+  const sharedUrl = normaliseShareUrl(shared?.url) || '';
+  const sourceHost = sharedUrl ? shareSource(sharedUrl) : '';
+  const videoId = sharedUrl ? (() => { const u=new URL(sharedUrl),h=u.hostname.toLowerCase(); return h==='youtu.be'?u.pathname.split('/').filter(Boolean)[0]||'':(h==='youtube.com'||h==='www.youtube.com'||h==='m.youtube.com')?(u.searchParams.get('v')||u.pathname.match(/^\/(?:shorts|embed|live)\/([^/?]+)/u)?.[1]||''):''; })() : '';
+  const fallbackThumbnail = /^[\w-]{11}$/u.test(videoId) ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` : '';
+  const isVideo = !!fallbackThumbnail || (sharedUrl && /^(?:www\.)?(?:vimeo\.com|player\.vimeo\.com)$/iu.test(new URL(sharedUrl).hostname));
+  let value = { mode, text: shared?.text || '', image: null, sharedTitle: shared?.title || '', sharedUrl, previewMetadata: sharedUrl ? { source: sourceHost, title: shared?.title || sourceHost, thumbnailUrl: fallbackThumbnail, contentType: isVideo ? 'video' : 'webpage' } : null, fromShare: !!shared?.fromShare, captureId: crypto.randomUUID() };
   let imageUrl = '';
   let busy = false;
   let saveTimer;
+  if (previewPromise && value.fromShare) previewPromise.then(preview => {
+    if (!preview) return;
+    value.previewMetadata = preview;
+    value.sharedTitle = preview.title || value.sharedTitle;
+    const card=root.querySelector('[data-qc-preview]');
+    if(card){const image=preview.thumbnailUrl?`<a class="quick-preview-image" href="${escapeHtml(value.sharedUrl)}" target="_blank" rel="noopener noreferrer" aria-label="Open shared ${preview.contentType==='video'?'video':'website'}"><img src="${escapeHtml(preview.thumbnailUrl)}" alt="" referrerpolicy="no-referrer"><span class="idea-preview-play" aria-hidden="true">▶</span></a>`:'';card.classList.toggle('is-video',preview.contentType==='video');card.innerHTML=`${image}<small>${preview.faviconUrl?`<img class="idea-favicon" src="${escapeHtml(preview.faviconUrl)}" alt="" referrerpolicy="no-referrer">`:''}${preview.contentType==='video'?'Video · ':''}${escapeHtml(preview.source||sourceHost)}</small><strong>${escapeHtml(preview.title||sourceHost)}</strong>${preview.description?`<p>${escapeHtml(preview.description)}</p>`:''}<a href="${escapeHtml(value.sharedUrl)}" target="_blank" rel="noopener noreferrer">Open original ${preview.contentType==='video'?'video':'website'} ↗</a>`;}
+  }).catch(()=>{});
 
   root.innerHTML = `<section class="quick-capture" aria-label="Quick Capture">
-    <p class="quick-capture-intro">${value.fromShare ? 'Save this page to Notes &amp; Ideas · Inbox.' : 'Capture now. Save to Inbox. Organise later.'}</p>
-    ${value.sharedUrl ? `<article class="quick-capture-link"><small>Website · ${escapeHtml(shareSource(value.sharedUrl))}</small><strong>${escapeHtml(value.sharedTitle || shareSource(value.sharedUrl))}</strong><a href="${escapeHtml(value.sharedUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(value.sharedUrl)}</a></article>` : ''}
+    <p class="quick-capture-intro">${value.fromShare ? (value.previewMetadata?.contentType === 'video' ? 'Save this video to Notes &amp; Ideas · Inbox.' : 'Save this page to Notes &amp; Ideas · Inbox.') : 'Capture now. Save to Inbox. Organise later.'}</p>
+    ${value.sharedUrl ? `<article class="quick-capture-link quick-preview-card ${isVideo?'is-video':''}" data-qc-preview>${fallbackThumbnail?`<a class="quick-preview-image" href="${escapeHtml(value.sharedUrl)}" target="_blank" rel="noopener noreferrer" aria-label="Open shared video"><img src="${fallbackThumbnail}" alt="" referrerpolicy="no-referrer"><span class="idea-preview-play" aria-hidden="true">▶</span></a>`:''}<small>${isVideo?'Video · ':''}${escapeHtml(sourceHost)}</small><strong>${escapeHtml(value.sharedTitle || sourceHost)}</strong><a href="${escapeHtml(value.sharedUrl)}" target="_blank" rel="noopener noreferrer">Open original ${isVideo?'video':'website'} ↗</a></article>` : ''}
     <div class="quick-capture-photo" data-qc-photo-wrap hidden>
       <div class="quick-capture-photo-preview" data-qc-photo-preview hidden></div>
       <div class="quick-capture-photo-actions"><button type="button" class="text-action danger" data-qc-action="remove-photo" hidden>Remove photo</button></div>
@@ -153,7 +165,7 @@ export function mountQuickCapture({ root, shared = null, standalone = false, dic
   let editedBeforeRestore = false;
   draftStore('get', draftKey).then(draft => {
     if (!draft || editedBeforeRestore) return;
-    value = { ...value, ...draft, fromShare: !!shared?.fromShare };
+    value = { ...value, ...draft, sharedUrl, fromShare: !!shared?.fromShare, captureId: draft.captureId || value.captureId, previewMetadata: value.previewMetadata };
     field.value = value.text || '';
     displayPhoto();
     showState('Draft restored');

@@ -47,13 +47,28 @@ try{
  saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('unbound-days-v1')));
  note=saved.notes.find(item=>item.sharedUrl==='https://example.org/story');
  assert.ok(note);assert.equal(note.sharedTitle,'Shared article');assert.equal(saved.entries[`note:${note.id}`],'Read this');
- assert.equal(note.source,'example.org');assert.ok(note.capturedAt);assert.equal(note.previewMetadata.thumbnailUrl,null);
+ assert.equal(note.source,'example.org');assert.ok(note.capturedAt);assert.equal(note.contentType,'webpage');
  await page.goto(sharedUrl.href,{waitUntil:'domcontentloaded'});
  await page.locator('#modal[open] .quick-capture').waitFor();
  await page.locator('[data-qc-action="save"]').click();
  await page.locator('#modal[open]').waitFor({state:'hidden'});
  saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('unbound-days-v1')));
- assert.equal(saved.notes.filter(item=>item.sharedUrl==='https://example.org/story').length,1,'sharing a saved URL again must not create a duplicate');
+ assert.equal(saved.notes.filter(item=>item.sharedUrl==='https://example.org/story').length,2,'a new share event for the same URL creates a new Idea');
+ for(let i=0;i<10;i++){
+  const url=`https://example.org/item-${i}`;
+  await page.goto(new URL(`?saveToIdeas=1&title=Bookmark%20${i}&url=${encodeURIComponent(url)}`,base).href,{waitUntil:'domcontentloaded'});
+  await page.locator('#modal[open] .quick-capture').waitFor();
+  await page.locator('[data-qc-action=save]').click();
+  await page.locator('#modal[open]').waitFor({state:'hidden'});
+ }
+ saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('unbound-days-v1')));
+ const shared=saved.notes.filter(item=>item.quickCapture&&item.quickCaptureInbox&&item.sharedUrl);
+ assert.equal(shared.length,12,'all share events remain separately persisted');
+ assert.equal(new Set(shared.map(item=>item.id)).size,12,'each share event has its own persistent note ID');
+ await page.reload({waitUntil:'domcontentloaded'});
+ await page.locator('.idea-collection-popover').waitFor();
+ assert.equal(await page.locator('.idea-inbox-card').count(),12,'all saved links remain visible after reopening the app');
+ assert.equal(await page.locator('.idea-inbox-card').filter({hasText:'Bookmark 9'}).count(),1);
 
  await page.goto(new URL('?quickCapture=1',base).href,{waitUntil:'domcontentloaded'});
  await page.locator('#modal[open] .quick-capture').waitFor();
@@ -67,5 +82,5 @@ try{
  note=saved.notes.find(item=>item.quickCapture&&item.title==='Photo');
  assert.ok(note);assert.ok(JSON.parse(saved.entries[`idea:${note.id}:attachments`]).some(item=>item.type==='image/jpeg'));
  assert.deepEqual(errors,[]);
- console.log('Quick Capture mobile browser smoke passed: text, share target, photo, Inbox and task/calendar isolation');
+ console.log('Quick Capture mobile browser smoke passed: ten consecutive share saves, repeat URL, reload persistence, text, photo and task/calendar isolation');
 }finally{await browser.close();}
