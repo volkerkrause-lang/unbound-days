@@ -40,6 +40,10 @@ try{
  await page.locator('#modal[open] .quick-capture').waitFor();
  assert.equal(await page.locator('#modal-title').textContent(),'Quick Preview');
  assert.equal(await page.locator('[data-qc-action="save"]').textContent(),'Save to Ideas');
+ const footerLayout=await page.locator('.quick-capture-footer').evaluate(footer=>{const buttons=[...footer.querySelectorAll('a,button')].map(item=>{const rect=item.getBoundingClientRect();return {left:rect.left,right:rect.right,top:rect.top,bottom:rect.bottom}});return {buttons,viewportWidth:innerWidth,viewportHeight:innerHeight}});
+ assert.equal(footerLayout.buttons.length,3,'share preview exposes Open Unbound, Cancel and Save actions');
+ assert.ok(footerLayout.buttons.every(item=>item.left>=0&&item.right<=footerLayout.viewportWidth&&item.top>=0&&item.bottom<=footerLayout.viewportHeight),'all share actions fit inside the mobile viewport');
+ assert.ok(footerLayout.buttons.every((item,index)=>index===0||footerLayout.buttons[index-1].right<=item.left),'share actions do not overlap');
  assert.deepEqual(await page.locator('.quick-capture-controls button').evaluateAll(items=>items.map(item=>item.querySelector('small')?.textContent)),['Type','Camera','Dictate']);
  assert.equal(await page.locator('.quick-capture-link a').getAttribute('href'),'https://example.org/story');
  await page.locator('[data-qc-action="save"]').click();
