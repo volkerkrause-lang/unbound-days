@@ -124,6 +124,20 @@ export function mountQuickCapture({ root, shared = null, standalone = false, dic
   const showState = text => { if (status) status.textContent = text; };
   const micButton = root.querySelector('.quick-capture-mic');
   const micLabel = root.querySelector('[data-qc-dictate-label]');
+  let dictationState = 'idle';
+  const setDictationState = state => {
+    dictationState = state;
+    micButton.dataset.state = state;
+    const active = state === 'starting' || state === 'listening';
+    micButton.setAttribute('aria-pressed', String(active));
+    micButton.setAttribute('aria-label', active ? 'Stop dictation' : state === 'error' ? 'Retry dictation' : 'Start dictation');
+    micLabel.textContent = state === 'listening' ? 'Stop' : state === 'starting' ? 'Starting…' : 'Dictate';
+    micButton.classList.toggle('starting', state === 'starting');
+    if (state === 'listening') micButton.classList.remove('starting', 'reconnecting', 'error');
+    else micButton.classList.remove('recording');
+    if (state === 'error') micButton.classList.add('error');
+    else micButton.classList.remove('error');
+  };
   const undoButton = root.querySelector('[data-qc-action="undo-text"]');
   const editHistory = [];
   let followingText = true;
@@ -144,13 +158,6 @@ export function mountQuickCapture({ root, shared = null, standalone = false, dic
   const fitOnViewportChange = () => fitTextArea();
   window.visualViewport?.addEventListener('resize', fitOnViewportChange);
   field.addEventListener('scroll', () => { followingText = field.scrollHeight - field.clientHeight - field.scrollTop < 20; });
-  const micState = new MutationObserver(() => {
-    const active = micButton.classList.contains('recording') || micButton.classList.contains('reconnecting');
-    micButton.setAttribute('aria-pressed', String(active));
-    micButton.setAttribute('aria-label', active ? 'Stop dictation' : 'Start dictation');
-    micLabel.textContent = active ? 'Stop' : 'Dictate';
-  });
-  micState.observe(micButton, { attributes: true, attributeFilter: ['class'] });
   const update = () => {
     value.text = field.value;
     const canSave = !!(value.text.trim() || value.image || value.sharedUrl || value.sharedTitle);
@@ -246,12 +253,12 @@ export function mountQuickCapture({ root, shared = null, standalone = false, dic
     if (action === 'remove-photo') { value.image = null; displayPhoto(); persist(); return; }
     if (action === 'dictate') {
       if (!dictation) { toast('Speech dictation is unavailable. Use the keyboard microphone.'); return; }
-      if (button.classList.contains('recording') || button.classList.contains('reconnecting')) { dictation.stop(); button.classList.remove('recording','reconnecting'); return; }
+      if (dictationState === 'starting' || dictationState === 'listening') { dictation.stop(); button.classList.remove('recording','reconnecting','starting'); return; }
       // Do not focus the textarea here: on Android that opens the IME and
       // obscures the capture controls. Speech recognition can update its value
       // without moving input focus.
       field.blur();
-      dictation.start(field, button, { focusField: false });
+      dictation.start(field, button, { focusField: false, onStateChange: setDictationState });
       return;
     }
     if (action === 'save') {
@@ -283,5 +290,5 @@ export function mountQuickCapture({ root, shared = null, standalone = false, dic
   });
   fitTextArea();
   update();
-  return { destroy() { clearTimeout(successCloseTimer); if (!busy && !discarding) flushDraft(); else clearTimeout(saveTimer); document.removeEventListener('visibilitychange', flushWhenHidden); window.removeEventListener('pagehide', flushDraft); window.visualViewport?.removeEventListener('resize', fitOnViewportChange); micState.disconnect(); dictation?.dismiss(); if (imageUrl) URL.revokeObjectURL(imageUrl); } };
+  return { destroy() { clearTimeout(successCloseTimer); if (!busy && !discarding) flushDraft(); else clearTimeout(saveTimer); document.removeEventListener('visibilitychange', flushWhenHidden); window.removeEventListener('pagehide', flushDraft); window.visualViewport?.removeEventListener('resize', fitOnViewportChange); dictation?.dismiss(); if (imageUrl) URL.revokeObjectURL(imageUrl); } };
 }

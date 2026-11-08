@@ -34,16 +34,20 @@ test('Quick Capture dictation can transcribe and restart without focusing its te
  globalThis.document=new Element();document.body={append(){}};document.createElement=()=>new Element();globalThis.window={};globalThis.innerHeight=800;
  const field=new Element(),button=new Element();let rec;
  class Recognition{constructor(){rec=this;}start(){this.onstart?.();}stop(){this.onend?.();}abort(){this.onend?.();}}
+ const states=[];
  const api=createDictation({toast(){},identity:()=> 'quick-capture',Recognition:()=>Recognition});
- api.start(field,button,{focusField:false});
+ api.start(field,button,{focusField:false,onStateChange:state=>states.push(state)});
+ assert.equal(states.at(-1),'listening','the state machine exposes successful recognition start');
  assert.equal(field.focusCount||0,0,'starting dictation must not focus the textarea');
  rec.onresult?.({resultIndex:0,results:[Object.assign([{transcript:'Spoken words'}],{isFinal:true})]});
  assert.equal(field.value,'Spoken words','transcribed text remains visible in the field');
  assert.equal(field.focusCount||0,0,'transcription must not focus the textarea');
  const ended=rec;ended.onend();
+ assert.equal(states.at(-1),'starting','unexpected session endings expose the automatic restart state');
  await new Promise(resolve=>setTimeout(resolve,400));
  assert.notEqual(rec,ended,'speech recognition can restart');
  assert.equal(field.focusCount||0,0,'recognition restarts without opening the keyboard');
+ api.stop();assert.deepEqual(states.slice(-2),['stopping','idle'],'intentional stop transitions cleanly to idle');
  api.destroy();
 });
 
@@ -51,9 +55,11 @@ test('Quick Capture microphone denial reports the error and releases recognition
  globalThis.document=new Element();document.body={append(){}};document.createElement=()=>new Element();globalThis.window={};globalThis.innerHeight=800;
  const field=new Element(),button=new Element();let rec,message='';
  class Recognition{constructor(){rec=this;}start(){this.onstart?.();}stop(){}abort(){this.aborted=true;}}
+ const states=[];
  const api=createDictation({toast(value){message=value;},identity:()=> 'quick-capture',Recognition:()=>Recognition});
- api.start(field,button,{focusField:false});
+ api.start(field,button,{focusField:false,onStateChange:state=>states.push(state)});
  rec.onerror?.({error:'not-allowed'});
+ assert.equal(states.at(-1),'error','permission denial ends in a visible error state');
  assert.match(message,/Allow microphone and speech recognition/);
  assert.equal(rec.aborted,true,'failed permission aborts the recognition session');
  assert.equal(rec.onresult,null);assert.equal(rec.onerror,null);assert.equal(rec.onend,null);
