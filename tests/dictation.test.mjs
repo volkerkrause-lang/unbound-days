@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {createDictation} from '../dictation.js';
 class Element extends EventTarget{
  constructor(){super();this.value='';this.isConnected=true;this.classes=new Set();this.classList={add:(...xs)=>xs.forEach(x=>this.classes.add(x)),remove:(...xs)=>xs.forEach(x=>this.classes.delete(x)),toggle:(x,on)=>on?this.classes.add(x):this.classes.delete(x)};this.style={};this.children=new Map();}
- setAttribute(){}setSelectionRange(a,b){this.selectionStart=a;this.selectionEnd=b;}focus(){}remove(){this.isConnected=false;}contains(){return false;}
+ setAttribute(){}setSelectionRange(a,b){this.selectionStart=a;this.selectionEnd=b;}focus(){this.focusCount=(this.focusCount||0)+1;}remove(){this.isConnected=false;}contains(){return false;}
  querySelector(key){if(!this.children.has(key))this.children.set(key,new Element());return this.children.get(key);}
 }
 test('dictation restarts unexpected session endings, stops on second tap, and inserts each final once',async()=>{
@@ -13,7 +13,7 @@ test('dictation restarts unexpected session endings, stops on second tap, and in
  const options={toast(){},identity:()=>user,Recognition:()=>Recognition};const api=createDictation(options);
  const emit=(slots,resultIndex=0)=>rec.onresult?.({resultIndex,results:slots.map(([transcript,isFinal])=>Object.assign([{transcript}],{isFinal}))});
  api.start(field,button);assert.equal(rec.continuous,false);assert.equal(rec.interimResults,true);assert.ok(button.classes.has('recording'));
- emit([['Keep this',false]]);emit([['Keep this safe',true]]);assert.equal(field.value,'Keep this safe');const count=writes;emit([['Keep this safe',true]]);assert.equal(writes,count);
+ emit([['Keep this',false]]);assert.equal(field.value,'Keep this','interim speech is shown progressively');emit([['Keep this safe',true]]);assert.equal(field.value,'Keep this safe');const count=writes;emit([['Keep this safe',true]]);assert.equal(writes,count);
  const ended=rec;ended.onend();assert.ok(button.classes.has('reconnecting'));assert.ok(!button.classes.has('recording'));
  await new Promise(resolve=>setTimeout(resolve,400));assert.notEqual(rec,ended);assert.ok(button.classes.has('recording'));assert.equal(field.value,'Keep this safe');
  const intentional=rec;api.start(field,button);assert.ok(!button.classes.has('recording'));assert.ok(!button.classes.has('reconnecting'));intentional.onend?.();await new Promise(resolve=>setTimeout(resolve,400));assert.equal(rec,intentional);assert.equal(field.value,'Keep this safe');
@@ -24,7 +24,40 @@ test('dictation restarts unexpected session endings, stops on second tap, and in
  field.value='Done. every detail';field.setSelectionRange(6,11);api.start(field,button);emit([['every',true]]);assert.equal(field.value,'Done. Every detail');api.stop();
  field.value='Bring blue folder';field.setSelectionRange(6,10);api.start(field,button);emit([['NASA',true]]);assert.equal(field.value,'Bring NASA folder');api.stop();
  field.value='';field.setSelectionRange(0,0);api.start(field,button);emit([['so',true],['so it is possible to dictate',true]],1);assert.equal(field.value,'So it is possible to dictate');api.stop();
- api.start(field,button);const stale=rec.onresult;api.stop();stale?.({results:[],resultIndex:0});assert.equal(field.value,'So it is possible to dictate');
+ field.value='So it is possible to dictate';field.setSelectionRange(field.value.length,field.value.length);api.start(field,button);emit([['a phrase recognised so far',false]]);api.stop();assert.equal(field.value,'So it is possible to dictate a phrase recognised so far','stopping preserves the latest interim transcript');
+ api.start(field,button);const stale=rec.onresult;api.stop();stale?.({results:[],resultIndex:0});assert.equal(field.value,'So it is possible to dictate a phrase recognised so far');
  api.start(field,button);const previous=rec;const replacement=createDictation(options);assert.equal(previous.onresult,null);assert.equal(previous.onerror,null);assert.equal(previous.onend,null);
  field.value='Manual';field.setSelectionRange(6,6);replacement.start(field,button);user='two';rec.onresult?.({resultIndex:0,results:[Object.assign([{transcript:'wrong account'}],{isFinal:true})]});assert.equal(field.value,'Manual');replacement.destroy();
+});
+
+test('Quick Capture dictation can transcribe and restart without focusing its text field',async()=>{
+ globalThis.document=new Element();document.body={append(){}};document.createElement=()=>new Element();globalThis.window={};globalThis.innerHeight=800;
+ const field=new Element(),button=new Element();let rec;
+ class Recognition{constructor(){rec=this;}start(){this.onstart?.();}stop(){this.onend?.();}abort(){this.onend?.();}}
+ const api=createDictation({toast(){},identity:()=> 'quick-capture',Recognition:()=>Recognition});
+ api.start(field,button,{focusField:false});
+ assert.equal(field.focusCount||0,0,'starting dictation must not focus the textarea');
+ rec.onresult?.({resultIndex:0,results:[Object.assign([{transcript:'Spoken words'}],{isFinal:false})]});
+ assert.equal(field.value,'Spoken words','interim transcription remains visible in the field');
+ assert.equal(field.focusCount||0,0,'transcription must not focus the textarea');
+ const ended=rec;ended.onend();
+ await new Promise(resolve=>setTimeout(resolve,400));
+ assert.notEqual(rec,ended,'speech recognition can restart');
+ assert.equal(field.focusCount||0,0,'recognition restarts without opening the keyboard');
+ api.destroy();
+});
+
+test('Quick Capture microphone denial reports the error and releases recognition handlers',()=>{
+ globalThis.document=new Element();document.body={append(){}};document.createElement=()=>new Element();globalThis.window={};globalThis.innerHeight=800;
+ const field=new Element(),button=new Element();let rec,message='';
+ class Recognition{constructor(){rec=this;}start(){this.onstart?.();}stop(){}abort(){this.aborted=true;}}
+ const api=createDictation({toast(value){message=value;},identity:()=> 'quick-capture',Recognition:()=>Recognition});
+ api.start(field,button,{focusField:false});
+ rec.onerror?.({error:'not-allowed'});
+ assert.match(message,/Allow microphone and speech recognition/);
+ assert.equal(rec.aborted,true,'failed permission aborts the recognition session');
+ assert.equal(rec.onresult,null);assert.equal(rec.onerror,null);assert.equal(rec.onend,null);
+ assert.equal(field.focusCount||0,0,'permission errors do not open the keyboard');
+ assert.equal(button.classes.has('recording'),false);
+ api.destroy();
 });

@@ -61,10 +61,7 @@ dialog{border:1px solid #d7cfbf;border-radius:12px;padding:0;width:min(740px,cal
 .quick-capture-method small,.quick-capture-mic small{font-size:clamp(12px,2.1vw,17px);font-weight:600}
 .quick-capture-mic{width:min(100%,176px);justify-self:center;aspect-ratio:1;border:2px solid #71815c;background:radial-gradient(circle at 38% 25%,#fffef9,#dce4d0 73%,#c3cfb2);color:#405139;box-shadow:0 0 0 4px #71815c1b,0 6px 17px #39452c29,inset 0 2px 6px #fff}
 .quick-capture-mic .vintage-mic{width:36%;height:55%;filter:drop-shadow(0 2px 2px #46331860)}
-.quick-capture-mic.recording{border-color:#c51f19;background:radial-gradient(circle at 50% 40%,#ff776b,#d8231c 62%,#9c1715);color:white;box-shadow:0 0 0 5px #ec392b25,0 0 26px #f0463d85,inset 0 2px 6px #fff8;animation:qc-recording-halo 1.25s ease-out infinite}
-.quick-capture-mic.recording .vintage-mic{filter:drop-shadow(0 0 6px #fff9)}
 .quick-capture-mic.reconnecting{border-color:#d38b35;box-shadow:0 0 0 5px #e5b86535,0 0 20px #ce913b80,inset 0 2px 6px #fff8}
-@keyframes qc-recording-halo{0%{box-shadow:0 0 0 4px #f13b3330,0 0 18px #f0463d65,inset 0 2px 6px #fff8}70%{box-shadow:0 0 0 14px #f13b3300,0 0 25px #f0463d85,inset 0 2px 6px #fff8}100%{box-shadow:0 0 0 4px #f13b3300,0 0 18px #f0463d65,inset 0 2px 6px #fff8}}
 .quick-capture-method:active,.quick-capture-mic:active{transform:scale(.97)}
 .quick-capture-controls .quick-capture-draft{grid-column:1/-1;min-height:14px;text-align:center;color:#727365;font-size:11px}
 .quick-capture-footer{display:grid;grid-template-columns:1fr 1.35fr;gap:12px;margin:6px 0 0;padding:10px 0 0;border-top:1px solid #e3dac9;background:transparent}
@@ -87,7 +84,6 @@ body.quick-capture-launch .quick-capture-intro::after{content:"";display:block;w
 .quick-capture-method:hover{transform:translateY(-2px);box-shadow:0 12px 17px #50381f3c,0 2px 2px #fff9,inset 0 2px 4px #fff,inset 0 -5px 9px #a87c3d21}
 .quick-capture-mic{background:radial-gradient(ellipse at 35% 20%,#fffef5 0,#e9edd9 58%,#c6d0b4);border-color:#6e7953;box-shadow:0 0 0 4px #8a865a32,0 8px 18px #3b462c35,inset 0 2px 5px #fff}
 .quick-capture-mic::before{content:"";position:absolute;inset:5px;border:1px solid #9a9a6a;border-radius:50%;pointer-events:none}
-.quick-capture-mic.recording{background:radial-gradient(ellipse at 45% 28%,#ff9584,#e22d22 55%,#971b17);border-color:#a51f17;box-shadow:0 0 0 5px #df392e35,0 8px 24px #ae2b2577,inset 0 2px 6px #fff9}
 .quick-capture-footer{padding-top:13px;border-top-color:#cbb37d9c}
 .quick-capture-footer .primary{background:linear-gradient(180deg,#668b42 0%,#4f702f 46%,#385c26 100%);border:1px solid #345120;border-radius:12px;box-shadow:0 5px 9px #42542d42,inset 0 1px 1px #ffffff75;font-weight:700}
 .quick-capture-footer .secondary{border:1px solid #c2a46d;border-radius:11px;background:linear-gradient(180deg,#fffdf4,#f1e4c7);box-shadow:0 3px 7px #59432a21,inset 0 1px 2px #fff;color:#493b29}
@@ -1515,8 +1511,16 @@ body>.weather-popover{position:fixed;inset:auto auto auto auto;z-index:10001;wid
  .ribbon{bottom:-32px;height:52px}
 }
 
-body.quick-capture-launch .quick-capture-mic.recording{border-color:#c51f19;background:radial-gradient(circle at 50% 40%,#ff776b,#d8231c 62%,#9c1715);color:#fff;box-shadow:0 0 0 5px #ec392b25,0 0 26px #f0463d85,inset 0 2px 6px #fff8;animation:qc-recording-halo 1.25s ease-out infinite}
-@media(prefers-reduced-motion:reduce){body.quick-capture-launch .quick-capture-mic.recording{animation:none}}
+/* Keep recording feedback visible but gentle, without obscuring the microphone artwork. */
+.quick-capture-mic.recording,body.quick-capture-launch .quick-capture-mic.recording{border-color:#b98279;background:radial-gradient(circle at 42% 28%,#fff8f4,#f1d9d4 70%,#e5c2bc);color:#634b45;box-shadow:0 0 0 4px #bd766b22,0 7px 19px #8d514122,inset 0 2px 6px #fff9;animation:qc-recording-soft 1.8s ease-in-out infinite}
+.quick-capture-mic.recording .vintage-mic,body.quick-capture-launch .quick-capture-mic.recording .vintage-mic{filter:drop-shadow(0 2px 3px #46331860)}
+.quick-capture-controls .quick-capture-draft{color:transparent!important;font-size:0!important}
+@keyframes qc-recording-soft{0%,100%{box-shadow:0 0 0 3px #bd766b18,0 6px 17px #8d514118,inset 0 2px 6px #fff9}50%{box-shadow:0 0 0 7px #bd766b2b,0 8px 21px #8d51412a,inset 0 2px 6px #fff9}}
+@media(prefers-reduced-motion:reduce){.quick-capture-mic.recording,body.quick-capture-launch .quick-capture-mic.recording{animation:none}}
+body.quick-capture-launch .quick-capture-closed{position:fixed;inset:0;display:grid;align-content:center;justify-items:center;gap:12px;padding:24px;background:#f3eee3;color:#453b2f;text-align:center}
+body.quick-capture-launch .quick-capture-closed h1{margin:0;font-size:24px}
+body.quick-capture-launch .quick-capture-closed p{max-width:32rem;margin:0 0 8px;line-height:1.5}
+body.quick-capture-launch .quick-capture-closed a{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 18px;border:1px solid #cbb37d;border-radius:10px;background:#fffdf7;color:#506548;text-decoration:none}
 /* Save to Ideas: link cards reuse notebook ink and paper colours. */
 .idea-inbox-card{display:grid;gap:4px;padding:10px 12px;margin:7px 0;border:1px solid #d9c9a7;border-radius:12px;background:linear-gradient(145deg,#fffdf7,#f3ead8);box-shadow:0 2px 5px #4a38200d}
 .idea-inbox-card.active{border-color:#a98245;box-shadow:0 0 0 2px #b9945530}

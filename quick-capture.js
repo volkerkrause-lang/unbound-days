@@ -87,6 +87,7 @@ export function mountQuickCapture({ root, shared = null, standalone = false, dic
   let value = { mode, text: shared?.text || '', image: null, sharedTitle: shared?.title || '', sharedUrl, previewMetadata: sharedUrl ? { source: sourceHost, title: shared?.title || sourceHost, thumbnailUrl: fallbackThumbnail, contentType: isVideo ? 'video' : 'webpage' } : null, fromShare: !!shared?.fromShare, captureId: crypto.randomUUID() };
   let imageUrl = '';
   let busy = false;
+  let discarding = false;
   let saveTimer;
   if (previewPromise && value.fromShare) previewPromise.then(preview => {
     if (!preview) return;
@@ -176,14 +177,35 @@ export function mountQuickCapture({ root, shared = null, standalone = false, dic
     const button = event.target.closest('button');
     if (!button || !root.contains(button)) return;
     const action = button.dataset.qcAction;
-    if (action === 'cancel') { onClose(); return; }
+    if (action === 'cancel') {
+      value.text = field.value;
+      const hasContent = !!(value.text.trim() || value.image || value.sharedUrl || value.sharedTitle);
+      if (hasContent && !window.confirm('Discard this unsaved capture?')) return;
+      discarding = true;
+      clearTimeout(saveTimer);
+      dictation?.stop();
+      button.disabled = true;
+      try { await draftStore('delete', draftKey); } catch {
+        discarding = false;
+        button.disabled = false;
+        showState('This capture could not be discarded. Try again.');
+        toast('Could not remove this capture from recovery storage. Try again before closing.');
+        return;
+      }
+      onClose();
+      return;
+    }
     if (action === 'type') { value.mode = 'type'; update(); field.focus({ preventScroll: true }); return; }
     if (action === 'camera' || action === 'choose') { value.mode = 'camera'; fileInput.setAttribute('capture', action === 'camera' ? 'environment' : 'user'); update(); fileInput.click(); return; }
     if (action === 'remove-photo') { value.image = null; displayPhoto(); persist(); return; }
     if (action === 'dictate') {
       if (!dictation) { toast('Speech dictation is unavailable. Use the keyboard microphone.'); return; }
       if (button.classList.contains('recording') || button.classList.contains('reconnecting')) { dictation.stop(); button.classList.remove('recording','reconnecting'); return; }
-      dictation.start(field, button);
+      // Do not focus the textarea here: on Android that opens the IME and
+      // obscures the capture controls. Speech recognition can update its value
+      // without moving input focus.
+      field.blur();
+      dictation.start(field, button, { focusField: false });
       return;
     }
     if (action === 'save') {
@@ -211,6 +233,5 @@ export function mountQuickCapture({ root, shared = null, standalone = false, dic
     } catch (error) { toast(error.message); }
   });
   update();
-  if (!value.fromShare && value.mode === 'dictate') root.querySelector('[data-qc-action="dictate"]')?.focus({ preventScroll: true });
-  return { destroy() { if (!busy) flushDraft(); else clearTimeout(saveTimer); document.removeEventListener('visibilitychange', flushWhenHidden); window.removeEventListener('pagehide', flushDraft); micState.disconnect(); dictation?.dismiss(); if (imageUrl) URL.revokeObjectURL(imageUrl); } };
+  return { destroy() { if (!busy && !discarding) flushDraft(); else clearTimeout(saveTimer); document.removeEventListener('visibilitychange', flushWhenHidden); window.removeEventListener('pagehide', flushDraft); micState.disconnect(); dictation?.dismiss(); if (imageUrl) URL.revokeObjectURL(imageUrl); } };
 }
