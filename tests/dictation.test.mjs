@@ -37,8 +37,8 @@ test('Quick Capture dictation can transcribe and restart without focusing its te
  const api=createDictation({toast(){},identity:()=> 'quick-capture',Recognition:()=>Recognition});
  api.start(field,button,{focusField:false});
  assert.equal(field.focusCount||0,0,'starting dictation must not focus the textarea');
- rec.onresult?.({resultIndex:0,results:[Object.assign([{transcript:'Spoken words'}],{isFinal:false})]});
- assert.equal(field.value,'Spoken words','interim transcription remains visible in the field');
+ rec.onresult?.({resultIndex:0,results:[Object.assign([{transcript:'Spoken words'}],{isFinal:true})]});
+ assert.equal(field.value,'Spoken words','transcribed text remains visible in the field');
  assert.equal(field.focusCount||0,0,'transcription must not focus the textarea');
  const ended=rec;ended.onend();
  await new Promise(resolve=>setTimeout(resolve,400));

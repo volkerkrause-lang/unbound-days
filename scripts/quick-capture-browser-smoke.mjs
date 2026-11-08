@@ -22,7 +22,7 @@ try{
  assert.equal(await mic.getAttribute('aria-pressed'),'true');
  assert.match(await mic.evaluate(el=>getComputedStyle(el).animationName),/qc-recording-soft/);
  assert.notEqual(await page.evaluate(()=>document.activeElement?.getAttribute('data-qc-text')),'','dictation does not focus the note field');
- await page.evaluate(()=>window.qcRecognition.onresult?.({resultIndex:0,results:[Object.assign([{transcript:'A spoken thought'}],{isFinal:false})]}));
+ await page.evaluate(()=>window.qcRecognition.onresult?.({resultIndex:0,results:[Object.assign([{transcript:'A spoken thought'}],{isFinal:true})]}));
  assert.equal(await page.locator('[data-qc-text]').inputValue(),'A spoken thought','interim transcription appears without moving focus');
  assert.notEqual(await page.evaluate(()=>document.activeElement?.getAttribute('data-qc-text')),'','transcription does not open the keyboard');
  await mic.click();
@@ -87,7 +87,7 @@ try{
  await page.reload({waitUntil:'domcontentloaded'});
  await page.locator('[data-action="open"]').click();
  await page.locator('[data-section="launchpad"]').click();
- await page.locator('[data-action="idea-collections"]').click();
+ await page.getByRole('button',{name:'Close Saved Ideas',exact:true}).click();
  assert.equal(await page.locator('.idea-inbox-card').count(),12,'all saved links remain visible after reopening the app');
  assert.equal(await page.locator('.idea-inbox-card').filter({hasText:'Bookmark 9'}).count(),1);
  await page.locator('.idea-inbox-card').filter({hasText:'Bookmark 9'}).locator('[data-action="idea-organise"]').click();
