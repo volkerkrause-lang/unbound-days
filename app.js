@@ -23,7 +23,7 @@ import {chooseRecovery,readMirror,writeMirror} from './storage.js?v=0.4.18';
 import {createPlanningBuilder,renderBuilder,renderCustomLibrary,definitionFromTemplate,compactFormToolbar} from './planning-builder.js?v=0.4.17';
 import {drawInkStroke,normaliseStroke,selectedStrokeIndexes,selectionBounds,moveStrokes,scaleStrokes,eraseWholeStrokes,paperEntry} from './idea-workspace.js?v=0.4.18';
 import {isScheduled,isComplete,ritualProgress,currentStreak,toggleCompletion,weekdayLabels,rangeDates} from './rituals.js?v=0.4.0';
-import {mountQuickCapture,parseShareTarget,normaliseShareUrl,shareSource} from './quick-capture.js?v=0.1.5';
+import {mountQuickCapture,parseShareTarget,normaliseShareUrl,shareSource} from './quick-capture.js?v=0.1.6';
 import {saveCaptureIdea,fetchLinkPreview} from './link-preview.js?v=0.1.2';
 
 const captureQuery=new URLSearchParams(location.search);
@@ -165,21 +165,14 @@ function showQuickCapture(shared=null){
   const safeUrl=normaliseShareUrl(capture.sharedUrl);
   const note=saveCaptureIdea({notes:state.notes,entries:state.entries,capture,makeId:id,now:new Date().toISOString()});
   state.entries[paperEntry(note.id,'mode')]='text';
-  noteId=note.id;section='launchpad';closed=false;
   save();await mirrorQueue;
-  if(safeUrl&&previewPromise){previewPromise.then(metadata=>{if(!metadata)return;const saved=state.notes.find(item=>item.id===note.id);if(!saved)return;saved.previewMetadata={...metadata};saved.contentType=metadata.contentType;saved.source=metadata.source;saved.sharedTitle=metadata.title||saved.sharedTitle;saved.title=saved.title||saved.sharedTitle;save();if(section==='launchpad'&&!modal.open)render();}).catch(()=>{});}
+  if(safeUrl&&previewPromise){previewPromise.then(metadata=>{if(!metadata)return;const saved=state.notes.find(item=>item.id===note.id);if(!saved)return;saved.previewMetadata={...metadata};saved.contentType=metadata.contentType;saved.source=metadata.source;saved.sharedTitle=metadata.title||saved.sharedTitle;saved.title=saved.title||saved.sharedTitle;save();}).catch(()=>{});}
   if(storageError)throw Error('The device could not confirm a safe save. Keep this window open and try again.');
   if(capture.image){
    const file=new File([capture.image],'Quick Capture image.jpg',{type:'image/jpeg',lastModified:Date.now()});
    await noteMedia.addTo(note.id,file,noteKey,KEY);await mirrorQueue;
    if(storageError)throw Error('The photo could not be safely saved. Your text and draft are preserved; try again.');
   }
-  launchQuickCapture=false;
-  closeModal();
-  history.replaceState(null,'',location.pathname+location.hash);
-  render();
-  try{sessionStorage.removeItem(shareSessionKey);}catch{}
-  toast(`Saved to Ideas${Accounts.user?' · account sync status is shown in the header':''}.`);
  }});
 }
 document.addEventListener('click',event=>{

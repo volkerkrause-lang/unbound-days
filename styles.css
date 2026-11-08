@@ -54,6 +54,13 @@ dialog{border:1px solid #d7cfbf;border-radius:12px;padding:0;width:min(740px,cal
 .quick-capture-writing{display:grid;gap:7px;color:#777467;font-size:11px}
 .quick-capture-writing textarea{width:100%;min-height:clamp(130px,27dvh,245px);resize:vertical;padding:16px 17px;border:1px solid #cdbf9e;border-radius:17px;background:linear-gradient(135deg,#fffdf8,#f8f1e4);box-shadow:inset 0 1px 4px #715c3210,0 3px 8px #4c3d2510;color:#40382f;font:clamp(20px,3vw,27px)/1.4 var(--hand,serif);outline:none}
 .quick-capture-writing textarea::placeholder{color:#988f79}
+.quick-capture-editor{position:relative;display:block;min-width:0}
+.quick-capture-editor textarea{display:block;max-height:42dvh;overflow-y:auto;resize:none;padding-bottom:42px;scrollbar-width:thin;overscroll-behavior:contain}
+.quick-capture-edit-actions{position:absolute;right:7px;bottom:6px;display:flex;z-index:1}
+.quick-capture-edit-actions button{display:grid;place-items:center;width:42px;height:42px;padding:11px;color:#898779;opacity:.72;touch-action:manipulation}
+.quick-capture-edit-actions button:hover,.quick-capture-edit-actions button:focus-visible{opacity:1;color:#5f6657}
+.quick-capture-edit-actions button:disabled{opacity:.28}
+.quick-capture-edit-actions svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .quick-capture-controls{display:grid;grid-template-columns:1fr 1fr 1.25fr;align-items:center;gap:clamp(10px,3vw,22px);margin:18px 0 12px;min-height:150px}
 .quick-capture-method,.quick-capture-mic{position:relative;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:9px;min-width:0;aspect-ratio:1;border:1px solid #d4c39e;border-radius:50%;background:radial-gradient(circle at 35% 25%,#fffef9,#f1e5c9 76%,#e1c896);box-shadow:0 5px 12px #47372220,inset 0 2px 4px #fff9;touch-action:manipulation;color:#283727}
 .quick-capture-method{width:min(100%,150px);justify-self:center;min-height:92px}

@@ -89,6 +89,7 @@ export function mountQuickCapture({ root, shared = null, standalone = false, dic
   let busy = false;
   let discarding = false;
   let saveTimer;
+  let successCloseTimer;
   if (previewPromise && value.fromShare) previewPromise.then(preview => {
     if (!preview) return;
     value.previewMetadata = preview;
@@ -105,7 +106,7 @@ export function mountQuickCapture({ root, shared = null, standalone = false, dic
       <div class="quick-capture-photo-actions"><button type="button" class="text-action danger" data-qc-action="remove-photo" hidden>Remove photo</button></div>
     </div>
     <input type="file" data-qc-file accept="image/*" capture="environment" hidden>
-    <label class="quick-capture-writing"><span data-qc-label>${value.fromShare ? 'Why save this? · optional' : 'Your note'}</span><textarea data-qc-text rows="5" maxlength="8000" placeholder="${value.fromShare ? 'Add a note for later…' : 'Your note…'}">${escapeHtml(value.text)}</textarea></label>
+    <label class="quick-capture-writing"><span data-qc-label>${value.fromShare ? 'Why save this? · optional' : 'Your note'}</span><span class="quick-capture-editor"><textarea data-qc-text rows="5" maxlength="8000" placeholder="${value.fromShare ? 'Add a note for later…' : 'Your note…'}">${escapeHtml(value.text)}</textarea><span class="quick-capture-edit-actions"><button type="button" data-qc-action="undo-text" aria-label="Undo last text change" title="Undo" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5 4 10l5 5M4 10h10a6 6 0 0 1 0 12"/></svg></button><button type="button" data-qc-action="delete-text" aria-label="Delete all text" title="Delete"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6m4-6v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button></span></span></label>
     <div class="quick-capture-controls" aria-label="Capture methods">
       <button type="button" class="quick-capture-method" data-qc-action="type" aria-label="Type a note"><svg class="quick-capture-vintage-icon quick-capture-typewriter" viewBox="0 0 120 100" aria-hidden="true"><defs><linearGradient id="type-enamel" x1="0" y1="0" x2="0.9" y2="1"><stop stop-color="#78906a"/><stop offset=".45" stop-color="#43583c"/><stop offset="1" stop-color="#26372c"/></linearGradient><linearGradient id="type-brass" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff0bd"/><stop offset=".3" stop-color="#bd9250"/><stop offset=".64" stop-color="#f3d18a"/><stop offset="1" stop-color="#8b602b"/></linearGradient><linearGradient id="type-key" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff9e8"/><stop offset=".48" stop-color="#e5d3a9"/><stop offset="1" stop-color="#b69a6c"/></linearGradient></defs><ellipse cx="62" cy="88" rx="48" ry="6" fill="#4c38254d"/><path d="M21 43 13 76q-1 5 5 7l79 1q7 0 8-6l-9-35Z" fill="#213025" opacity=".45" transform="translate(2 3)"/><path d="M19 40h82l9 34q2 7-6 9H17q-8-2-6-9l8-34Z" fill="url(#type-enamel)" stroke="#3c3123" stroke-width="2.5"/><path d="M18 42h84l-2 8H16Z" fill="url(#type-brass)" stroke="#76542c" stroke-width="1.6"/><path d="M26 38V26q0-5 5-5h58q5 0 5 5v12M28 21V15h59v6m-50-6V9h42v6" fill="none" stroke="url(#type-brass)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M32 29h56" stroke="#5a4426" stroke-width="7" stroke-linecap="round"/><path d="M31 57h57" stroke="#d6b875" stroke-width="2" opacity=".9"/><g fill="url(#type-key)" stroke="#725a35" stroke-width="1"><rect x="27" y="52" width="10" height="8" rx="2"/><rect x="40" y="52" width="10" height="8" rx="2"/><rect x="53" y="52" width="10" height="8" rx="2"/><rect x="66" y="52" width="10" height="8" rx="2"/><rect x="79" y="52" width="10" height="8" rx="2"/><rect x="32" y="63" width="10" height="8" rx="2"/><rect x="45" y="63" width="10" height="8" rx="2"/><rect x="58" y="63" width="10" height="8" rx="2"/><rect x="71" y="63" width="10" height="8" rx="2"/><path d="M42 75h35q2 0 2 2v2H40v-2q0-2 2-2Z"/></g><path d="M96 25 107 17M104 17h7v8" fill="none" stroke="#9a432f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="100" cy="31" r="3" fill="url(#type-brass)"/></svg><small>Type</small></button>
       <button type="button" class="quick-capture-method" data-qc-action="camera" aria-label="Add a photo"><svg class="quick-capture-vintage-icon quick-capture-camera" viewBox="0 0 120 100" aria-hidden="true"><defs><linearGradient id="cam-leather" x1="0" y1="0" x2="0.9" y2="1"><stop stop-color="#b86f49"/><stop offset=".5" stop-color="#80452f"/><stop offset="1" stop-color="#4c3028"/></linearGradient><linearGradient id="cam-brass" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff1bf"/><stop offset=".34" stop-color="#c39343"/><stop offset=".7" stop-color="#f2d58c"/><stop offset="1" stop-color="#815728"/></linearGradient><radialGradient id="cam-glass" cx="35%" cy="28%"><stop stop-color="#8bc3c3"/><stop offset=".35" stop-color="#304e54"/><stop offset=".72" stop-color="#192a34"/><stop offset="1" stop-color="#080e16"/></radialGradient></defs><ellipse cx="61" cy="87" rx="48" ry="6" fill="#4c38254d"/><path d="M18 35h84q6 0 6 6v34q0 6-7 7H18q-7 0-7-7V42q0-7 7-7Z" fill="#382a25" opacity=".4" transform="translate(2 3)"/><path d="M18 32h84q6 0 6 6v34q0 6-7 7H18q-7 0-7-7V39q0-7 7-7Z" fill="url(#cam-leather)" stroke="#493322" stroke-width="2.5"/><path d="M18 34h84v8H18Z" fill="url(#cam-brass)" stroke="#755125" stroke-width="1.5"/><path d="M29 31 36 20h26l7 11M30 20h31" fill="url(#cam-brass)" stroke="#755125" stroke-width="2" stroke-linejoin="round"/><rect x="76" y="23" width="16" height="9" rx="2" fill="#24312b" stroke="url(#cam-brass)" stroke-width="2"/><circle cx="84" cy="27" r="2.4" fill="#f7df9a"/><path d="M16 49h8v24h-8Zm82 0h7v24h-7Z" fill="#e5c783" opacity=".55"/><circle cx="60" cy="56" r="25" fill="#202324" stroke="url(#cam-brass)" stroke-width="5"/><circle cx="60" cy="56" r="19" fill="#604731" stroke="#e6c781" stroke-width="2.5"/><circle cx="60" cy="56" r="14" fill="url(#cam-glass)" stroke="#2d3234" stroke-width="3"/><circle cx="55" cy="50" r="4" fill="#e5ffff" opacity=".58"/><path d="M33 77h54" stroke="#e0bd78" stroke-width="2" opacity=".8"/><circle cx="29" cy="46" r="2" fill="#f2d18c"/><circle cx="91" cy="46" r="2" fill="#f2d18c"/><path d="M40 82h41" stroke="#463126" stroke-width="2" stroke-linecap="round"/></svg><small>Camera</small></button>
@@ -123,6 +124,26 @@ export function mountQuickCapture({ root, shared = null, standalone = false, dic
   const showState = text => { if (status) status.textContent = text; };
   const micButton = root.querySelector('.quick-capture-mic');
   const micLabel = root.querySelector('[data-qc-dictate-label]');
+  const undoButton = root.querySelector('[data-qc-action="undo-text"]');
+  const editHistory = [];
+  let followingText = true;
+  let undoing = false;
+  let lastKnownText = field.value;
+  const rememberText = (text = lastKnownText) => {
+    if (undoing) return;
+    if (editHistory.at(-1)?.text !== text) editHistory.push({ text, start: Math.min(field.selectionStart, text.length), end: Math.min(field.selectionEnd, text.length) });
+    if (editHistory.length > 60) editHistory.shift();
+    undoButton.disabled = !editHistory.length;
+  };
+  const fitTextArea = () => {
+    field.style.height = 'auto';
+    const maxHeight = Math.max(120, Math.floor(window.innerHeight * 0.42));
+    field.style.height = `${Math.min(field.scrollHeight, maxHeight)}px`;
+    field.style.overflowY = field.scrollHeight > maxHeight ? 'auto' : 'hidden';
+  };
+  const fitOnViewportChange = () => fitTextArea();
+  window.visualViewport?.addEventListener('resize', fitOnViewportChange);
+  field.addEventListener('scroll', () => { followingText = field.scrollHeight - field.clientHeight - field.scrollTop < 20; });
   const micState = new MutationObserver(() => {
     const active = micButton.classList.contains('recording') || micButton.classList.contains('reconnecting');
     micButton.setAttribute('aria-pressed', String(active));
@@ -168,15 +189,40 @@ export function mountQuickCapture({ root, shared = null, standalone = false, dic
     if (!draft || editedBeforeRestore) return;
     value = { ...value, ...draft, sharedUrl, fromShare: !!shared?.fromShare, captureId: draft.captureId || value.captureId, previewMetadata: value.previewMetadata };
     field.value = value.text || '';
+    lastKnownText = field.value;
+    fitTextArea();
     displayPhoto();
     showState('Draft restored');
   }).catch(() => showState('Draft recovery is unavailable'));
 
-  field.addEventListener('input', () => { editedBeforeRestore = true; update(); persist(); });
+  field.addEventListener('input', () => {
+    editedBeforeRestore = true;
+    rememberText();
+    lastKnownText = field.value;
+    fitTextArea();
+    if (followingText) field.scrollTop = field.scrollHeight;
+    update(); persist();
+  });
   root.addEventListener('click', async event => {
     const button = event.target.closest('button');
     if (!button || !root.contains(button)) return;
     const action = button.dataset.qcAction;
+    if (action === 'undo-text') {
+      const previous = editHistory.pop();
+      if (previous) { undoing = true; field.value = previous.text; lastKnownText = field.value; field.setSelectionRange(Math.min(previous.start, field.value.length), Math.min(previous.end, field.value.length)); undoing = false; fitTextArea(); update(); persist(); }
+      undoButton.disabled = !editHistory.length;
+      return;
+    }
+    if (action === 'delete-text') {
+      if (!field.value) return;
+      dictation?.stop();
+      field.value = '';
+      fitTextArea();
+      field.setSelectionRange(0, 0);
+      field.dispatchEvent(new Event('input', { bubbles: true }));
+      followingText = true;
+      return;
+    }
     if (action === 'cancel') {
       value.text = field.value;
       const hasContent = !!(value.text.trim() || value.image || value.sharedUrl || value.sharedTitle);
@@ -214,10 +260,13 @@ export function mountQuickCapture({ root, shared = null, standalone = false, dic
       value.text = field.value;
       if (!(value.text.trim() || value.image || value.sharedUrl || value.sharedTitle)) { toast('Add a note, photo or shared link before saving.'); return; }
       busy = true; update(); showState('Saving to this device…');
+      dictation?.stop();
       try {
         await onSave({ ...value, draftKey });
         await draftStore('delete', draftKey);
-        showState('Saved to Inbox');
+        showState('✓ Saved to Ideas Inbox');
+        saveButton.textContent = '✓ Saved to Ideas Inbox';
+        successCloseTimer = setTimeout(() => onClose(), 850);
       } catch (error) {
         busy = false; update(); persist(); showState('Not saved · your draft is still here');
         toast(error?.message || 'Could not save this capture. Your draft is still here.');
@@ -232,6 +281,7 @@ export function mountQuickCapture({ root, shared = null, standalone = false, dic
       displayPhoto(); persist(); showState('Photo ready · draft saved on this device');
     } catch (error) { toast(error.message); }
   });
+  fitTextArea();
   update();
-  return { destroy() { if (!busy && !discarding) flushDraft(); else clearTimeout(saveTimer); document.removeEventListener('visibilitychange', flushWhenHidden); window.removeEventListener('pagehide', flushDraft); micState.disconnect(); dictation?.dismiss(); if (imageUrl) URL.revokeObjectURL(imageUrl); } };
+  return { destroy() { clearTimeout(successCloseTimer); if (!busy && !discarding) flushDraft(); else clearTimeout(saveTimer); document.removeEventListener('visibilitychange', flushWhenHidden); window.removeEventListener('pagehide', flushDraft); window.visualViewport?.removeEventListener('resize', fitOnViewportChange); micState.disconnect(); dictation?.dismiss(); if (imageUrl) URL.revokeObjectURL(imageUrl); } };
 }
