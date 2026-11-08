@@ -89,5 +89,6 @@ export function createPackingController(api){
  }
  function submit(f,data){if(f.id==='pack-add-form'){const name=(data.name||'').trim();if(!name)return true;addItem(name,f.dataset.group,f.dataset.kind);}else if(f.id==='pack-quantity-form'){for(const [row,q] of Object.entries(data)){const stem=prefix()+row+':',n=Math.min(999,Math.max(1,Math.floor(Number(q))||1));entries()[stem+'quantity']=String(n);entries()[stem+'packed']=String(Math.min(n,Number(value(stem+'packed'))||0));}}else return false;save();closeModal();render();return true;}
  function changed(target){if(target.matches('[data-pack-group]')){groupBy=target.value;render();}else if(target.dataset.entry?.startsWith(prefix())&&/:(quantity|packed)$/.test(target.dataset.entry)){const stem=target.dataset.entry.replace(/(quantity|packed)$/,'');const n=Math.min(999,Math.max(1,Math.floor(Number(value(stem+'quantity')))||1));entries()[stem+'quantity']=String(n);entries()[stem+'packed']=String(Math.min(n,Math.max(0,Math.floor(Number(value(stem+'packed')))||0)));save();render();}else if(target.dataset.entry?.startsWith(prefix()))render();}
- return {render:renderPacking,handle,submit,changed};
+ return {render:renderPacking,handle,submit,changed,setView:value=>{if(value==='packing'||value==='departure')view=value;}};
 }
+

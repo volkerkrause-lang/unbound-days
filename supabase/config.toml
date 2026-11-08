@@ -7,3 +7,7 @@ verify_jwt = false
 
 [functions.google-connection]
 verify_jwt = false
+
+[functions.box-connection]
+verify_jwt = false
+
