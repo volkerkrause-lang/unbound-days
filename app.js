@@ -12,7 +12,7 @@ import * as Accounts from './accounts.js';
 import {mountAccounts} from './account-ui.js';
 import {scopeKey} from './account-sync.js';
 import * as Gym from './gym.js?v=0.4.17';
-import * as PackGo from './pack-go.js?v=0.4.19';
+import * as PackGo from './pack-go.js?v=0.4.20';
 import {createMatrix} from './matrix.js?v=0.4.17';
 import {dateKey,parseDate,addDays,monday,isoWeek,monthCells,eventOnDate,formatDate,pad,toICS} from './calendar.js?v=0.4.17';
 import * as Google from './google.js?v=0.4.18';
