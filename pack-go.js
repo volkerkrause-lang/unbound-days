@@ -102,7 +102,7 @@ export function createPackingController(api){
   };
   out+=activitySections.map(section=>'<details class="pack-activity-group" open><summary>'+esc(section[0])+'</summary><div class="pack-choice-grid">'+section[1].map(x=>choiceButton('activities',x[0],x[1],x[2],picked.includes(x[0])||(!picked.length&&x[0]==='essentials'))).join('')+'</div>'+section[1].filter(x=>activeActivities.includes(x[0])).map(x=>renderActivityItems(x[0])).join('')+'</details>').join('');
   out+='<button type="button" class="pack-add-topic" data-pack-add-topic><span aria-hidden="true">＋</span> Add your own topic</button>';
-  out+='</div></section><div class="pack-designer-actions"><button class="primary" data-pack-view="packing">Open my packing checklist</button><span>'+packingRows(entries(),form(),'item').filter(x=>x.included).length+' items currently included</span></div>';
+  out+='</section><div class="pack-designer-actions"><button class="primary" data-pack-view="packing">Open my packing checklist</button><span>'+packingRows(entries(),form(),'item').filter(x=>x.included).length+' items currently included</span></div>';
   out+='<details class="pack-legacy-tools"><summary>More list options</summary><div class="pack-row-actions"><button class="secondary" data-pack-suggest>Suggest clothing quantities</button><button class="secondary" data-pack-kit="cold">Add cold-weather kit</button><button class="secondary" data-pack-kit="swim">Add swimming kit</button><button class="secondary" data-pack-kit="music">Add cello kit</button></div><p class="planner-guide">Your saved items, personal kits and packing progress are kept.</p></details></div>';
   return out;
  }
