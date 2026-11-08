@@ -70,7 +70,7 @@ export function createPackingController(api){
   return '<button type="button" class="pack-choice '+(active?'is-selected':'')+'" data-pack-choice="'+group+'" data-pack-choice-value="'+key+'" aria-pressed="'+active+'"><span aria-hidden="true">'+icon+'</span><strong>'+esc(label)+'</strong></button>';
  }
  function renderDesigner(){
-  const p=prefix(),selected=key=>(value(p+key)||'').split(',').filter(Boolean);
+  const p=prefix(),selected=key=>(value(p+key)||'').split(',').filter(Boolean);let customTopics=[];try{customTopics=JSON.parse(value(p+'custom-topics')||'[]');if(!Array.isArray(customTopics))customTopics=[];}catch{}
   const departure=value(p+'departure'),back=value(p+'return');
   const nights=departure&&back&&back>=departure?Math.floor((Date.parse(back)-Date.parse(departure))/86400000):null;
   let out='<div class="pack-go pack-designer"><header class="pack-designer-heading"><span class="travel-eyebrow">PACKING, MADE PERSONAL</span><h2>Design your Packing List</h2><p>Choose your dates, who is going and what you will be doing. Tap items to add them.</p></header>';
@@ -86,26 +86,29 @@ export function createPackingController(api){
   const weather=[['hot','Hot','☀️'],['warm','Warm','🌤️'],['mild','Mild','🍃'],['cold','Cold','🧥'],['rain','Rain','🌧️'],['snow','Snow / winter','❄️']];
   out+='<section class="pack-design-section"><h3><span>4</span> What weather should we plan for?</h3><p class="planner-guide">Choose what you expect. This is not a live forecast.</p><div class="pack-choice-grid">'+weather.map(x=>choiceButton('weather',x[0],x[1],x[2],selected('weather').includes(x[0]))).join('')+'</div></section>';
   out+='<section class="pack-design-section"><h3><span>5</span> What will you be doing?</h3><p class="planner-guide">Choose an activity to open its suggested items.</p>';
+  const activitySections=packingActivitySections.map(section=>section[0]==='Work & specialist'?[section[0],[...section[1],...customTopics.map(topic=>[topic.id,topic.label,'🧩'])]]:section);
   const picked=selected('activities'),activeActivities=picked.length?picked:['essentials'];
-  out+=packingActivitySections.map((section,index)=>'<details class="pack-activity-group" '+(index===0?'open':'')+'><summary>'+esc(section[0])+'</summary><div class="pack-choice-grid">'+section[1].map(x=>choiceButton('activities',x[0],x[1],x[2],picked.includes(x[0])||(!picked.length&&x[0]==='essentials'))).join('')+'</div></details>').join('');
-  out+='<div class="pack-suggestions"><h3>Choose items for your activities</h3>';
-  out+=activeActivities.map(key=>{
-   const meta=packingActivitySections.flatMap(x=>x[1]).find(x=>x[0]===key);if(!meta)return '';
-   const related=(activityLibrary[key]||['activity']).map(group=>packingGroups.find(x=>x[0]===group)).filter(Boolean);
+  const activityMeta=activitySections.flatMap(section=>section[1]);
+  const renderActivityItems=key=>{
+   const meta=activityMeta.find(x=>x[0]===key);if(!meta)return '';
+   const custom=customTopics.find(topic=>topic.id===key);
+   const related=custom?[[custom.id,custom.label,custom.items]]:(activityLibrary[key]||['activity']).map(group=>packingGroups.find(x=>x[0]===group)).filter(Boolean);
    let panel='<details class="pack-suggestion-panel" open><summary><span>'+meta[2]+'</span> Items for '+esc(meta[1])+'</summary>';
    panel+=related.map(group=>'<section><h4>'+esc(group[1])+'</h4><div class="pack-item-choice-grid">'+group[2].map(name=>{
     const row=packingRows(entries(),form(),'item').find(x=>x.name.toLowerCase()===name.toLowerCase()),isOn=!!row?.included;
     return '<button type="button" class="pack-item-choice '+(isOn?'is-selected':'')+'" data-pack-select-item="'+esc(name)+'" data-pack-select-group="'+esc(group[0])+'" aria-pressed="'+isOn+'"><span aria-hidden="true">'+(isOn?'✓':'＋')+'</span>'+esc(name)+'</button>';
    }).join('')+'</div></section>').join('');
    return panel+'</details>';
-  }).join('');
+  };
+  out+=activitySections.map(section=>'<details class="pack-activity-group" open><summary>'+esc(section[0])+'</summary><div class="pack-choice-grid">'+section[1].map(x=>choiceButton('activities',x[0],x[1],x[2],picked.includes(x[0])||(!picked.length&&x[0]==='essentials'))).join('')+'</div>'+section[1].filter(x=>activeActivities.includes(x[0])).map(x=>renderActivityItems(x[0])).join('')+'</details>').join('');
+  out+='<button type="button" class="pack-add-topic" data-pack-add-topic><span aria-hidden="true">＋</span> Add your own topic</button>';
   out+='</div></section><div class="pack-designer-actions"><button class="primary" data-pack-view="packing">Open my packing checklist</button><span>'+packingRows(entries(),form(),'item').filter(x=>x.included).length+' items currently included</span></div>';
   out+='<details class="pack-legacy-tools"><summary>More list options</summary><div class="pack-row-actions"><button class="secondary" data-pack-suggest>Suggest clothing quantities</button><button class="secondary" data-pack-kit="cold">Add cold-weather kit</button><button class="secondary" data-pack-kit="swim">Add swimming kit</button><button class="secondary" data-pack-kit="music">Add cello kit</button></div><p class="planner-guide">Your saved items, personal kits and packing progress are kept.</p></details></div>';
   return out;
  }
 
  function renderPacking(){
-  const p=prefix(),kind=view==='departure'?'task':'item',groups=kind==='task'?departureGroups:packingGroups;
+  const p=prefix(),kind=view==='departure'?'task':'item',customTopics=(()=>{try{return JSON.parse(value(prefix()+'custom-topics')||'[]');}catch{return [];}})(),groups=kind==='task'?departureGroups:[...packingGroups,...customTopics.map(topic=>[topic.id,topic.label,topic.items])];
   const all=packingRows(entries(),form(),kind),included=all.filter(r=>r.included),done=included.filter(r=>r.packed===r.quantity).length;
   let visible=all.filter(r=>catalogue||r.included).filter(r=>catalogue||filter==='all'||filter==='remaining'&&r.packed<r.quantity||filter==='last'&&r.last&&r.packed<r.quantity||filter==='final'&&r.packed<r.quantity);
   const ordered=visible.sort((a,b)=>(Number(value(a.stem+'order'))||0)-(Number(value(b.stem+'order'))||0));
@@ -122,6 +125,7 @@ export function createPackingController(api){
   if(data.packChoice){const key=data.packChoice,k=p+key,items=(value(k)||'').split(',').filter(Boolean),choice=String(data.packChoiceValue||'');entries()[k]=items.includes(choice)?items.filter(x=>x!==choice).join(','):[...items,choice].join(',');save();render();return true;}
   if(data.packCount){const key=p+'traveller-'+data.packCount,next=Math.max(0,Math.min(12,(Number(value(key))||0)+Number(data.packCountDelta||0)));entries()[key]=String(next);save();render();return true;}
   if(data.packSelectItem){const name=String(data.packSelectItem),row=packingRows(entries(),form(),'item').find(x=>x.name.toLowerCase()===name.toLowerCase());if(row)entries()[row.stem+'included']=row.included?'no':'yes';else addItem(name,data.packSelectGroup||'activity');save();render();return true;}
+  if('packAddTopic'in data){openModal('Add your own activity',`<form id="pack-topic-form"><label>Activity name<input name="label" required maxlength="50" placeholder="e.g. Pottery workshop"></label><label>Suggested items <small>Optional · separate with commas or new lines</small><textarea name="items" rows="4" placeholder="Apron, sketchbook, pencils"></textarea></label><div class="modal-footer"><button type="button" class="secondary" data-action="close-modal">Cancel</button><button class="primary" type="submit">Add activity</button></div></form>`);return true;}
   if(data.packView){view=data.packView;filter='all';catalogue=false;render();return true;}
   if(data.packFilter){filter=data.packFilter;catalogue=false;render();return true;}
   if('packCatalogue'in data){catalogue=!catalogue;render();return true;}
@@ -136,7 +140,7 @@ export function createPackingController(api){
   if('packSuggest'in data){const start=value(p+'departure'),end=value(p+'return'),laundry=Math.floor(Number(value(p+'laundry')));const days=Math.floor((Date.parse(end)-Date.parse(start))/86400000)+1;if(!Number.isFinite(days)||days<1){toast('Choose valid departure and return dates first.');return true;}const n=Math.min(999,laundry>0?Math.min(days,laundry):days);const rows=packingRows(entries(),form(),'item').filter(r=>['Underwear','Socks','T-shirts'].includes(r.name));openModal('Suggested clothing quantities',`<p>${days} days${laundry>0?`, laundry every ${laundry} days`:''}. Review before applying; other items stay as you set them.</p><form id="pack-quantity-form">${rows.map(r=>`<label>${esc(r.name)}<input name="${r.id}" type="number" min="1" max="999" value="${n}" required></label>`).join('')}<div class="modal-footer"><button class="secondary" type="button" data-action="close-modal">Cancel</button><button class="primary" type="submit">Apply quantities</button></div></form>`);return true;}
   save();render();return true;
  }
- function submit(f,data){if(f.id==='pack-add-form'){const name=(data.name||'').trim();if(!name)return true;addItem(name,f.dataset.group,f.dataset.kind);}else if(f.id==='pack-quantity-form'){for(const [row,q] of Object.entries(data)){const stem=prefix()+row+':',n=Math.min(999,Math.max(1,Math.floor(Number(q))||1));entries()[stem+'quantity']=String(n);entries()[stem+'packed']=String(Math.min(n,Number(value(stem+'packed'))||0));}}else return false;save();closeModal();render();return true;}
+ function submit(f,data){if(f.id==='pack-topic-form'){const label=(data.label||'').trim();if(!label)return true;let custom=[];try{custom=JSON.parse(value(prefix()+'custom-topics')||'[]');}catch{}const items=(data.items||'').split(/[,;\\n]+/).map(x=>x.trim()).filter(Boolean);const id='custom-'+api.id();custom.push({id,label,items});entries()[prefix()+'custom-topics']=JSON.stringify(custom);const key=prefix()+'activities',selected=(value(key)||'').split(',').filter(Boolean);if(!selected.includes(id))selected.push(id);entries()[key]=selected.join(',');}else if(f.id==='pack-add-form'){const name=(data.name||'').trim();if(!name)return true;addItem(name,f.dataset.group,f.dataset.kind);}else if(f.id==='pack-quantity-form'){for(const [row,q] of Object.entries(data)){const stem=prefix()+row+':',n=Math.min(999,Math.max(1,Math.floor(Number(q))||1));entries()[stem+'quantity']=String(n);entries()[stem+'packed']=String(Math.min(n,Number(value(stem+'packed'))||0));}}else return false;save();closeModal();render();return true;}
  function changed(target){if(target.matches('[data-pack-group]')){groupBy=target.value;render();}else if(target.dataset.entry?.startsWith(prefix())&&/:(quantity|packed)$/.test(target.dataset.entry)){const stem=target.dataset.entry.replace(/(quantity|packed)$/,'');const n=Math.min(999,Math.max(1,Math.floor(Number(value(stem+'quantity')))||1));entries()[stem+'quantity']=String(n);entries()[stem+'packed']=String(Math.min(n,Math.max(0,Math.floor(Number(value(stem+'packed')))||0)));save();render();}else if(target.dataset.entry?.startsWith(prefix()))render();}
  return {render:renderPacking,handle,submit,changed,setView:value=>{if(value==='setup'||value==='packing'||value==='departure')view=value;}};
 }
