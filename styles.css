@@ -1518,10 +1518,10 @@ body>.weather-popover{position:fixed;inset:auto auto auto auto;z-index:10001;wid
  .ribbon{bottom:-32px;height:52px}
 }
 
-/* Give the iPad portrait cover enough clearance from the objects in the desk artwork. */
+/* Keep the notebook in the clear lower-left desk area in iPad portrait, leaving the mug and pen visible. */
 @media(min-width:768px) and (max-width:1200px) and (orientation:portrait){
- .cover-scene{overflow:hidden}
- .cover-book{width:min(68vw,680px);height:calc(min(68vw,680px)*.701);transform:translateY(0)}
+ .cover-scene{overflow:hidden;justify-content:flex-start;padding-left:5vw}
+ .cover-book{width:min(53vw,550px);height:calc(min(53vw,550px)*.701);transform:translateY(8dvh)}
 }
 
 /* Keep recording feedback visible but gentle, without obscuring the microphone artwork. */
