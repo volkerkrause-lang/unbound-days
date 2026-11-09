@@ -40,9 +40,11 @@ try{
   await page.mouse.move(ideaRect.x+40,ideaRect.y+50);await page.mouse.down();await page.mouse.move(ideaRect.x+140,ideaRect.y+100,{steps:8});await page.mouse.up();
   const ideaInk=await page.evaluate(()=>{const d=JSON.parse(localStorage.getItem('unbound-days-v1'));return Object.values(d.ink||{}).filter(x=>Array.isArray(x)&&x.some(s=>s.tool==='pen'));});
   assert.ok(ideaInk.length>0,'Idea ink persisted');
-  await page.locator('.idea-transcript summary').click();await page.locator('.idea-transcript textarea').fill('Clean converted note');
-  await page.getByRole('button',{name:/Structured note/}).click();
-  await page.locator('.idea-converted-editor').waitFor();assert.equal(await page.locator('.idea-converted-editor').inputValue(),'Clean converted note');await page.getByRole('button',{name:/Freehand note/}).click();await page.locator('#ink-canvas').waitFor();assert.ok(await page.evaluate(()=>Object.values(JSON.parse(localStorage.getItem('unbound-days-v1')).ink).some(paths=>paths.some(s=>s.tool==='pen'))),'Mode switch retains original ink');
+  await page.locator('[data-note-mode="text"]').click();
+  const convertedEditor=page.locator('.idea-converted-editor');await convertedEditor.waitFor();
+  await convertedEditor.fill('Typed note alongside the saved sketch');
+  assert.equal(await page.evaluate(()=>Object.values(JSON.parse(localStorage.getItem('unbound-days-v1')).ink).some(paths=>paths.some(s=>s.tool==='pen'))),true,'Switching to text mode retains original ink');
+  await page.locator('[data-action="idea-restore-ink"]').click();await page.locator('#ink-canvas').waitFor();
   await page.locator('.section-tabs [data-section="tasks"]').click();
   await page.locator('#task-quick input[name="title"]').focus();
   await page.getByRole('button',{name:'Pen',exact:true}).click();

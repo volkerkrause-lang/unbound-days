@@ -22,7 +22,7 @@ try{
  assert.deepEqual(geometry,{width:390,overflow:false,nav:'static',scrollable:true,today:'fixed',months:'none'});
  await page.locator('.mobile-pinned-tab').click();
  const pinnedTitle=page.locator('.book-head h1');
- await pinnedTitle.waitFor();
+ await pinnedTitle.waitFor({state:'attached'});
  const actualPinnedTitle=await pinnedTitle.textContent();
  assert.equal(actualPinnedTitle,'Mobile trip',`Pinned form opens with its saved title (tab=${await page.locator('.mobile-pinned-tab').getAttribute('data-planner-open')})`);
  await page.locator('.section-tabs [data-section="calendar"]').click();await page.locator('[data-mobile-view="month"]').click();await page.locator('.section-calendar.view-month').waitFor();

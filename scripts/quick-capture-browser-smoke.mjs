@@ -39,7 +39,7 @@ try{
  assert.equal(textMetrics.overflow,'auto');
  assert.ok(textMetrics.height<(await page.evaluate(()=>innerHeight))*.45,'long notes do not displace the capture controls');
  await editor.fill('A thought captured on mobile.');
- assert.notEqual(await page.evaluate(()=>document.activeElement?.getAttribute('data-qc-text')),'','transcription does not open the keyboard');
+ assert.equal(await page.evaluate(()=>document.activeElement?.matches('[data-qc-text]')||false),false,'transcription does not focus the text field or open the keyboard');
  await mic.click();
  assert.equal(await mic.getAttribute('aria-pressed'),'false');
  await page.locator('[data-qc-action="type"]').click();
