@@ -1685,3 +1685,8 @@ body.quick-capture-launch .quick-capture-closed a{display:inline-flex;align-item
   .cover-tab[data-section="goals"] { top: 32%; }
   .cover-tab[data-section="launchpad"] { top: 56%; }
 }
+
+/* Keep the portrait desk props clear beside the unchanged notebook size. */
+@media (min-width: 768px) and (max-width: 1200px) and (orientation: portrait) {
+  .cover-scene { padding-left: 2vw; }
+}
