@@ -54,8 +54,14 @@ try{
  let saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('unbound-days-v1')));
  let note=saved.notes.find(item=>item.quickCapture);
  assert.ok(note);assert.equal(note.quickCaptureInbox,true);assert.equal(saved.entries[`note:${note.id}`],'A thought captured on mobile.');
+ await page.getByRole('heading',{name:'Quick Capture closed',exact:true}).waitFor();
+ await page.getByRole('link',{name:'Open Unbound',exact:true}).click();
+ await page.locator('[data-action="open"]').click();
+ await page.locator('.section-tabs [data-section="launchpad"]').click();
+ await page.locator('.launchpad-layout').waitFor();
  await page.locator('.idea-collection-popover').waitFor();
- assert.equal(await page.locator('.idea-collection-popover').isVisible(),true,'the Inbox opens automatically when saved items exist');
+ assert.equal(await page.locator('.idea-collection-popover').isVisible(),true,'saved items are available from Inbox & Collections');
+ assert.equal(await page.locator('.idea-collection-popover').getByText('A thought captured on mobile.').count(),1,'the saved capture appears in the Inbox');
  await page.locator('.idea-collection-popover [data-action="idea-collections"]').click();
  assert.equal(saved.tasks.length,0);assert.equal(saved.events.length,0);
  await page.locator('.quick-add-button').click();
