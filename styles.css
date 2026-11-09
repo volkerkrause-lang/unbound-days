@@ -1652,7 +1652,7 @@ body.quick-capture-launch .quick-capture-closed a{display:inline-flex;align-item
     flex: 0 0 auto;
   }
   .cover-tab {
-    right: -clamp(34px, 9vw, 46px);
+    right: clamp(-46px, -9vw, -34px);
     width: clamp(34px, 9vw, 46px);
     height: clamp(58px, 9vh, 80px);
     font-size: clamp(10px, 2.7vw, 14px);
@@ -1660,7 +1660,7 @@ body.quick-capture-launch .quick-capture-closed a{display:inline-flex;align-item
   .cover-tab[data-section="calendar"] { top: 7%; }
   .cover-tab[data-section="goals"] { top: 32%; }
   .cover-tab[data-section="launchpad"] { top: 57%; }
-  .cover-tab:hover { right: -clamp(36px, 9.5vw, 49px); }
+  .cover-tab:hover { right: clamp(-49px, -9.5vw, -36px); }
 }
 @media (min-width: 768px) and (max-width: 1200px) and (orientation: portrait) {
   .cover-scene {
