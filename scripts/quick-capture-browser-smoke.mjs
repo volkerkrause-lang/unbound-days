@@ -24,6 +24,8 @@ try{
  assert.equal(await page.evaluate(()=>document.activeElement?.matches('[data-qc-text]')||false),false,'dictation does not focus the note field');
  await page.evaluate(()=>window.qcRecognition.onresult?.({resultIndex:0,results:[Object.assign([{transcript:'A spoken thought'}],{isFinal:true})]}));
  assert.equal(await page.locator('[data-qc-text]').inputValue(),'A spoken thought','interim transcription appears without moving focus');
+ await mic.click();
+ assert.equal(await mic.getAttribute('aria-pressed'),'false','second Dictate tap stops recording');
  const editor=page.locator('[data-qc-text]');
  await editor.fill('A corrected sentence.');
  await page.locator('[data-qc-action="undo-text"]').click();
@@ -39,8 +41,6 @@ try{
  assert.equal(textMetrics.overflow,'auto');
  assert.ok(textMetrics.height<(await page.evaluate(()=>innerHeight))*.45,'long notes do not displace the capture controls');
  await editor.fill('A thought captured on mobile.');
- await mic.click();
- assert.equal(await mic.getAttribute('aria-pressed'),'false');
  await page.locator('[data-qc-action="type"]').click();
  assert.equal(await page.evaluate(()=>document.activeElement?.matches('[data-qc-text]')||false),true,'Type explicitly focuses the note field');
  await mic.click();
