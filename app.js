@@ -12,7 +12,7 @@ import * as Accounts from './accounts.js';
 import {mountAccounts} from './account-ui.js';
 import {scopeKey} from './account-sync.js';
 import * as Gym from './gym.js?v=0.4.17';
-import * as PackGo from './pack-go.js?v=0.4.21';
+import * as PackGo from './pack-go.js?v=0.4.22';
 import {createMatrix} from './matrix.js?v=0.4.17';
 import {dateKey,parseDate,addDays,monday,isoWeek,monthCells,eventOnDate,formatDate,pad,toICS} from './calendar.js?v=0.4.17';
 import * as Google from './google.js?v=0.4.18';
@@ -26,7 +26,7 @@ import {drawInkStroke,normaliseStroke,selectedStrokeIndexes,selectionBounds,move
 import {isScheduled,isComplete,ritualProgress,currentStreak,toggleCompletion,weekdayLabels,rangeDates} from './rituals.js?v=0.4.0';
 import {mountQuickCapture,parseShareTarget,normaliseShareUrl,shareSource} from './quick-capture.js?v=0.1.6';
 import {saveCaptureIdea,fetchLinkPreview} from './link-preview.js?v=0.1.2';
-import * as TravelPlanner from './travel-planner.js?v=0.1.1';
+import * as TravelPlanner from './travel-planner.js?v=0.1.2';
 
 const captureQuery=new URLSearchParams(location.search);
 const shareSessionKey='unbound-save-to-ideas-intake';
