@@ -549,7 +549,18 @@ const matrix=createMatrix({getState:()=>state,getDate:()=>date,save,render,esc,i
 for(const n of state.notes){if(!n.idea){n.idea=true;n.ideaStatus='parked';}}
 closed=true;section='calendar';view='day';date=TODAY;
 Dropbox.finishAuth().then(async purpose=>{if(purpose){if(purpose==='backup'){state.settings.backupProvider='dropbox';save();await runCloudBackup(true);settings();}else toast('Dropbox connected. Reopen the booking attachment picker to upload your file.');}}).catch(e=>toast(e.message));Box.finishAuth().then(done=>{if(done){toast('Box connected. Reopen the booking attachment picker to upload your file.');}}).catch(e=>toast(e.message));if(storageError)document.querySelector('#save-status').textContent='Recovery needed · restore a backup';if(storageError)toast('Saved notebook could not be read. Restore a backup before adding new entries.');
-if('serviceWorker' in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('./sw.js').catch(()=>{});
+if('serviceWorker' in navigator&&location.protocol!=='file:'){
+ const updateKey='unbound-service-worker-refresh-v1.8.85';
+ navigator.serviceWorker.addEventListener('controllerchange',()=>{
+  if(sessionStorage.getItem(updateKey))return;
+  if(document.activeElement?.matches('input,textarea,[contenteditable=true]')){toast('An update is ready. Finish editing, then reopen Unbound to apply it.');return;}
+  sessionStorage.setItem(updateKey,'1');location.reload();
+ },{once:true});
+ navigator.serviceWorker.register('./sw.js').then(registration=>{
+  if(registration.waiting)registration.waiting.postMessage({type:'SKIP_WAITING'});
+  registration.addEventListener('updatefound',()=>{const worker=registration.installing;if(worker)worker.addEventListener('statechange',()=>{if(worker.state==='installed'&&navigator.serviceWorker.controller)worker.postMessage({type:'SKIP_WAITING'});});});
+ }).catch(()=>{});
+}
 
 
 function writingFields(root){return [...root.querySelectorAll('textarea,input:not([type]),input[type="text"],input[type="search"]')].filter(f=>!f.disabled&&!f.readOnly&&!f.hasAttribute('data-no-writing-tools')&&!f.closest('[inert]'));}
