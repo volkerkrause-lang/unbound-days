@@ -1710,3 +1710,69 @@ body.quick-capture-launch .quick-capture-closed a{display:inline-flex;align-item
 .travel-duration-control input{width:60px!important;text-align:center}
 .travel-date-choice>small{color:#81796e;font-size:11px}
 @media(max-width:700px){.pack-section{padding-inline:8px}.pack-row{min-height:38px}.pack-row>.habit-check{min-width:34px;min-height:34px;width:34px;height:34px}.travel-duration-control button{width:40px;height:40px}}
+
+/* Phone portrait frame: keep account controls, cover tabs and ribbons on-screen. */
+@media (max-width: 767px) and (orientation: portrait) {
+  html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
+  .app-bar {
+    width: 100%; height: 56px !important; min-height: 56px !important;
+    padding: 0 10px !important; gap: 4px !important; overflow: visible !important;
+    background: rgba(35, 29, 25, .88) !important; color: #fff !important;
+    border-bottom: 1px solid rgba(255, 255, 255, .22) !important;
+  }
+  .brand-stack {
+    flex: 0 1 auto !important; min-width: 0; max-width: calc(100vw - 190px);
+    flex-direction: row !important; align-items: center !important; gap: 0 !important;
+  }
+  .brand { min-width: 0; flex: 0 1 auto; gap: 4px !important; font-size: 16px !important; letter-spacing: .25px; white-space: nowrap; }
+  .brand-symbol { flex: 0 0 auto; font-size: 24px !important; line-height: 23px !important; }
+  .brand .beta { display: none !important; }
+  .app-bar .home-button {
+    position: absolute !important; left: 12px !important; top: 34px !important;
+    margin: 0 !important; min-height: 0 !important; height: auto !important;
+    padding: 0 !important; border: 0 !important; border-radius: 0 !important;
+    background: transparent !important; box-shadow: none !important;
+    color: #fff !important; font-size: 9px !important; line-height: 1 !important;
+    text-decoration: underline; white-space: nowrap;
+  }
+  .bar-actions {
+    flex: 1 1 auto !important; min-width: 0 !important; max-width: calc(100vw - 145px);
+    margin-left: auto !important; gap: 1px !important; justify-content: flex-end;
+  }
+  .account-buttons { flex: 0 1 auto !important; min-width: 0; flex-wrap: nowrap !important; gap: 1px !important; }
+  .app-bar .account-buttons .text-action {
+    flex: 0 1 auto; min-width: 0; max-width: 66px; min-height: 30px !important;
+    padding: 3px 4px !important; font-size: 10px !important; line-height: 1 !important;
+    white-space: nowrap !important; overflow: hidden; text-overflow: ellipsis;
+  }
+  .app-bar [data-action="search"], .app-bar [data-action="settings"] {
+    flex: 0 0 32px; width: 32px !important; min-width: 32px !important;
+    height: 34px !important; min-height: 34px !important; padding: 0 !important;
+  }
+  .app-bar [data-action="gallery"], .app-bar #save-status { display: none !important; }
+  #app { width: 100%; max-width: 100%; min-height: calc(100dvh - 56px) !important; padding: 0 10px 18px !important; overflow-x: clip; }
+  .cover-scene {
+    width: 100%; height: calc(100dvh - 74px) !important; min-height: 0 !important;
+    padding: 4px 38px 12px 8px; overflow: visible !important;
+    align-items: center; justify-content: center;
+  }
+  .cover-book {
+    flex: 0 0 auto; width: min(64vw, 430px) !important;
+    height: min(56dvh, 480px) !important; min-height: min(300px, 42dvh) !important;
+    margin: 0 !important; transform: translateX(-10px) !important;
+  }
+  .cover-tab { right: -22px !important; z-index: 4; }
+  .cover-tab[data-section="calendar"] { top: 8% !important; }
+  .cover-tab[data-section="goals"] { top: 34% !important; }
+  .cover-tab[data-section="launchpad"] { top: 60% !important; }
+  .cover-tab:hover, .cover-tab:focus-visible { right: -22px !important; }
+  .cover-controls { top: 5px !important; right: 8px !important; left: 8px; justify-content: flex-end; gap: 5px; flex-wrap: nowrap; }
+  .cover-controls button { min-height: 32px; padding: 5px 8px; font-size: 10px; white-space: nowrap; }
+  .cover-year { font-size: clamp(48px, 13vw, 74px) !important; letter-spacing: 4px !important; }
+  .cover-book > .named-ribbons.cover-bookmarks {
+    position: absolute; left: 10px; bottom: -38px; max-width: calc(100% - 42px);
+    margin: 0; padding: 0; gap: 3px; z-index: 5;
+  }
+  .cover-book > .named-ribbons.cover-bookmarks .fabric-ribbon { width: 30px; height: 42px; min-height: 42px; }
+  .cover-book > .named-ribbons.cover-bookmarks .ribbon-add { min-height: 28px; padding: 2px 6px; font-size: 11px; white-space: nowrap; }
+}
