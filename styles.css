@@ -1518,6 +1518,12 @@ body>.weather-popover{position:fixed;inset:auto auto auto auto;z-index:10001;wid
  .ribbon{bottom:-32px;height:52px}
 }
 
+/* Give the iPad portrait cover enough clearance from the objects in the desk artwork. */
+@media(min-width:768px) and (max-width:1200px) and (orientation:portrait){
+ .cover-scene{overflow:hidden}
+ .cover-book{width:min(68vw,680px);height:calc(min(68vw,680px)*.701);transform:translateY(0)}
+}
+
 /* Keep recording feedback visible but gentle, without obscuring the microphone artwork. */
 .quick-capture-mic.recording,body.quick-capture-launch .quick-capture-mic.recording{border-color:#b98279;background:radial-gradient(circle at 42% 28%,#fff8f4,#f1d9d4 70%,#e5c2bc);color:#634b45;box-shadow:0 0 0 4px #bd766b22,0 7px 19px #8d514122,inset 0 2px 6px #fff9;animation:qc-recording-soft 1.8s ease-in-out infinite}
 .quick-capture-mic.recording .vintage-mic,body.quick-capture-launch .quick-capture-mic.recording .vintage-mic{filter:drop-shadow(0 2px 3px #46331860)}
