@@ -9,3 +9,23 @@ test('packing views, custom additions and check actions share the existing strin
 test('the designer separates default essentials from activities and keeps overlapping activity suggestions unique',()=>{const entries={'form:trip:type':'pack-go'};initialisePacking(entries,'trip');let saved=0;const controller=createPackingController({entries:()=>entries,form:()=> 'trip',esc:s=>String(s),save:()=>saved++,render:()=>{},id:()=> 'new',openModal:()=>{},closeModal:()=>{},toast:()=>{},select:()=>{}});const html=controller.render();for(const label of ['Every Trip Essentials','What will you be doing?','Sightseeing','Going out','International travel'])assert.ok(html.includes(label),label);assert.equal(entries['form:trip:pack:activities'],'essentials,clothing,toiletries,electronics,documents');controller.handle({packChoice:'activities',packChoiceValue:'beach'});controller.handle({packSelectItem:'Sun cream',packSelectGroup:'beach'});controller.handle({packSelectItem:'Sun cream',packSelectGroup:'water'});const matches=packingRows(entries,'trip','item').filter(r=>r.name==='Sun cream');assert.equal(matches.length,1);assert.equal(matches[0].included,true);controller.handle({packView:'packing'});assert.ok(controller.render().includes('pack-inline-add'));assert.ok(controller.render().includes('pack-category-icon'));assert.ok(saved>0);});
 
 test('inline custom entries remain category-specific and are removed without changing templates',()=>{const entries={'form:trip:type':'pack-go'};initialisePacking(entries,'trip');const controller=createPackingController({entries:()=>entries,form:()=> 'trip',esc:s=>String(s),save:()=>{},render:()=>{},id:()=> 'one',openModal:()=>{},closeModal:()=>{},toast:()=>{},select:()=>{}});controller.setView('packing');controller.submit({id:'pack-inline-add',dataset:{group:'wash',kind:'item'}},{name:'Face serum'});let item=packingRows(entries,'trip','item').find(r=>r.name==='Face serum');assert.ok(item);assert.equal(item.group,'wash');assert.equal(item.id,'item-custom-one');entries[item.stem+'packed']='1';duplicatePacking(entries,'trip','copy');assert.equal(entries['form:copy:pack:'+item.id+':name'],'Face serum');assert.equal(entries['form:copy:pack:'+item.id+':packed'],'0');controller.handle({packDelete:item.id});assert.equal(packingRows(entries,'trip','item').some(r=>r.name==='Face serum'),false);assert.equal(packingRows(entries,'copy','item').some(r=>r.name==='Face serum'),true);});
+
+test('My Suitcases save included item details and reuse resets progress without changing the template',async()=>{
+ const {saveSuitcase,applySuitcase,suitcaseTemplates}=await import('../pack-go.js');
+ const entries={'form:source:type':'pack-go'};initialisePacking(entries,'source');
+ entries['form:source:pack:item-clothes-0:quantity']='4';entries['form:source:pack:item-clothes-0:packed']='2';entries['form:source:pack:item-clothes-0:bag']='cabin';
+ const saved=saveSuitcase(entries,'source',{name:'Weekend Away',colour:'tan',icon:'🧳'});
+ assert.equal(saved.items[0].quantity,4);assert.equal(saved.items[0].bag,'cabin');
+ const snapshot=JSON.stringify(suitcaseTemplates(entries));applySuitcase(entries,saved,'new-trip');
+ assert.equal(entries['form:new-trip:pack:item-suitcase-'+saved.id+'-0:packed'],'0');
+ assert.equal(entries['form:new-trip:pack:item-suitcase-'+saved.id+'-0:quantity'],'4');
+ assert.equal(entries['form:new-trip:pack:item-suitcase-'+saved.id+'-0:bag'],'cabin');
+ assert.equal(JSON.stringify(suitcaseTemplates(entries)),snapshot);
+});
+
+test('My Suitcases reject blank names or empty packing lists',async()=>{
+ const {saveSuitcase}=await import('../pack-go.js');const entries={};initialisePacking(entries,'empty');for(const row of Object.keys(entries).filter(k=>k.startsWith('form:empty:pack:item-')&&k.endsWith(':included')))entries[row]='no';
+ assert.throws(()=>saveSuitcase(entries,'empty',{name:'Empty'}),/at least one item/i);
+ entries['form:empty:pack:item-clothes-0:included']='yes';
+ assert.throws(()=>saveSuitcase(entries,'empty',{name:'   '}),/name your suitcase/i);
+});
