@@ -1636,3 +1636,52 @@ body.quick-capture-launch .quick-capture-closed a{display:inline-flex;align-item
 @media(max-width:700px){.pack-sections{grid-template-columns:1fr;gap:9px}.pack-section{padding:0 9px 7px}.pack-row{min-height:40px}.pack-row>.habit-check{min-width:34px;min-height:34px;width:34px;height:34px}.pack-edit>summary{min-width:34px;min-height:34px}.pack-inline-add input{min-height:38px!important}.pack-inline-add button{min-height:38px;padding-inline:8px}.pack-choice-art{width:40px;height:40px;border-radius:13px;font-size:26px!important}.pack-choice{min-height:82px}.pack-design-section>h3{font-size:18px}}
 /* Travel maps, weather and My Suitcases */
 .travel-quick-links{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:10px 0 16px;padding:10px 12px;border-radius:9px;background:#eef1e8;color:#566950;font:13px var(--ui)}.travel-quick-links a,.travel-weather-summary a{color:#4c6859;text-decoration:underline;text-underline-offset:3px}.travel-weather-summary{display:grid;gap:8px;margin:0 0 14px;padding:12px 14px;border:1px solid #d7dfd2;border-radius:10px;background:linear-gradient(120deg,#eef3ea,#f8f5ea);font:13px var(--ui)}.travel-weather-summary small{color:#77796d}.travel-weather-days{display:flex;gap:8px;overflow-x:auto;padding:3px 0}.travel-weather-days span{display:grid;gap:3px;min-width:76px;padding:8px;border-radius:7px;background:#ffffffa8;text-align:center}.travel-weather-days b{font-size:12px}.travel-weather-days small{font-size:10px}.travel-saved-places{display:grid;gap:7px;margin-top:16px;padding-top:12px;border-top:1px solid #ded8c9}.travel-saved-places>h4{margin:0}.travel-saved-places>article{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:9px;border-radius:7px;background:#faf8f0}.travel-saved-places>article span{flex:1;min-width:140px}.travel-saved-places>article small{color:#79766b}.travel-saved-places a{color:#536b57}.travel-flight-summary{display:grid;gap:4px;margin:8px 0;padding:9px;border-radius:7px;background:#f5f1e7;font:12px var(--ui)}.travel-flight-summary small{color:#65685d}.travel-flight-summary a{color:#556c59}.pack-suitcase-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:10px}.pack-suitcase-card{position:relative;display:grid;grid-template-columns:42px 1fr;gap:4px 9px;align-items:center;padding:12px;border:1px solid #a28f7348;border-radius:10px;background:linear-gradient(145deg,#fffdf7,#eee7da);box-shadow:0 4px 12px #48351c14}.pack-suitcase-card>span:first-child{grid-row:span 2;font-size:31px;filter:drop-shadow(1px 3px 2px #39291d40)}.pack-suitcase-card strong,.pack-suitcase-card small{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pack-suitcase-card small{font:11px var(--ui);color:#747268}.pack-suitcase-card button{grid-column:2;justify-self:start;padding:5px 8px;border:1px solid #a28f7350;border-radius:12px;background:#fffaf1;font:11px var(--ui)}.pack-suitcase-card button[data-pack-suitcase-delete]{position:absolute;right:6px;top:6px;grid-column:auto;border:0;background:transparent;font-size:17px}.suitcase-tan{background:linear-gradient(145deg,#faf0dc,#ead2a8)}.suitcase-blue{background:linear-gradient(145deg,#e7f0f5,#c8dbe4)}.suitcase-business{background:linear-gradient(145deg,#e9e8e4,#cbc9c2)}.suitcase-green{background:linear-gradient(145deg,#edf1e4,#ced8b8)}@media(max-width:700px){.pack-suitcase-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.pack-suitcase-card{padding:9px}.travel-quick-links{align-items:flex-start}.travel-weather-days{margin-inline:-3px}}
+
+/* Portrait start page: frame the leather planner like the supplied reference. */
+@media (max-width: 767px) and (orientation: portrait) {
+  .cover-scene {
+    justify-content: flex-start;
+    padding-left: 4vw;
+    padding-right: 0;
+  }
+  .cover-book {
+    width: min(68vw, 500px);
+    height: min(62dvh, 570px);
+    min-height: min(320px, 48dvh);
+    transform: none;
+    flex: 0 0 auto;
+  }
+  .cover-tab {
+    right: -clamp(34px, 9vw, 46px);
+    width: clamp(34px, 9vw, 46px);
+    height: clamp(58px, 9vh, 80px);
+    font-size: clamp(10px, 2.7vw, 14px);
+  }
+  .cover-tab[data-section="calendar"] { top: 7%; }
+  .cover-tab[data-section="goals"] { top: 32%; }
+  .cover-tab[data-section="launchpad"] { top: 57%; }
+  .cover-tab:hover { right: -clamp(36px, 9.5vw, 49px); }
+}
+@media (min-width: 768px) and (max-width: 1200px) and (orientation: portrait) {
+  .cover-scene {
+    justify-content: flex-start;
+    padding-left: 5vw;
+    padding-right: 0;
+  }
+  .cover-book {
+    width: min(64vw, 760px);
+    height: min(62dvh, 960px);
+    min-height: 0;
+    transform: none;
+    flex: 0 0 auto;
+  }
+  .cover-tab {
+    right: clamp(-78px, -6.8vw, -52px);
+    width: clamp(52px, 6.8vw, 78px);
+    height: clamp(74px, 9vh, 105px);
+    font-size: clamp(14px, 1.5vw, 17px);
+  }
+  .cover-tab[data-section="calendar"] { top: 8%; }
+  .cover-tab[data-section="goals"] { top: 32%; }
+  .cover-tab[data-section="launchpad"] { top: 56%; }
+}
