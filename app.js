@@ -550,8 +550,11 @@ for(const n of state.notes){if(!n.idea){n.idea=true;n.ideaStatus='parked';}}
 closed=true;section='calendar';view='day';date=TODAY;
 Dropbox.finishAuth().then(async purpose=>{if(purpose){if(purpose==='backup'){state.settings.backupProvider='dropbox';save();await runCloudBackup(true);settings();}else toast('Dropbox connected. Reopen the booking attachment picker to upload your file.');}}).catch(e=>toast(e.message));Box.finishAuth().then(done=>{if(done){toast('Box connected. Reopen the booking attachment picker to upload your file.');}}).catch(e=>toast(e.message));if(storageError)document.querySelector('#save-status').textContent='Recovery needed · restore a backup';if(storageError)toast('Saved notebook could not be read. Restore a backup before adding new entries.');
 if('serviceWorker' in navigator&&location.protocol!=='file:'){
- const updateKey='unbound-service-worker-refresh-v1.8.85';
- navigator.serviceWorker.addEventListener('controllerchange',()=>{
+ const updateKey='unbound-service-worker-refresh-v1.8.87';
+ // A first install taking control is not an update: reloading here interrupts
+ // startup and can discard work in progress. Refresh only when an existing
+ // controller is replaced by an updated worker.
+ if(navigator.serviceWorker.controller)navigator.serviceWorker.addEventListener('controllerchange',()=>{
   if(sessionStorage.getItem(updateKey))return;
   if(document.activeElement?.matches('input,textarea,[contenteditable=true]')){toast('An update is ready. Finish editing, then reopen Unbound to apply it.');return;}
   sessionStorage.setItem(updateKey,'1');location.reload();
