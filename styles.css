@@ -1757,9 +1757,10 @@ body.quick-capture-launch .quick-capture-closed a{display:inline-flex;align-item
     align-items: center; justify-content: center;
   }
   .cover-book {
-    flex: 0 0 auto; width: min(64vw, 430px) !important;
-    height: min(56dvh, 480px) !important; min-height: min(300px, 42dvh) !important;
-    margin: 0 !important; transform: translateX(-10px) !important;
+    flex: 0 0 auto; width: min(66vw, 430px) !important;
+    height: min(calc(min(66vw, 430px) * 1.28), calc(100dvh - 230px)) !important;
+    min-height: 0 !important; aspect-ratio: 1 / 1.28;
+    margin: 0 !important; transform: none !important;
   }
   .cover-tab { right: -22px !important; z-index: 4; }
   .cover-tab[data-section="calendar"] { top: 8% !important; }
@@ -1775,4 +1776,14 @@ body.quick-capture-launch .quick-capture-closed a{display:inline-flex;align-item
   }
   .cover-book > .named-ribbons.cover-bookmarks .fabric-ribbon { width: 30px; height: 42px; min-height: 42px; }
   .cover-book > .named-ribbons.cover-bookmarks .ribbon-add { min-height: 28px; padding: 2px 6px; font-size: 11px; white-space: nowrap; }
+}
+
+/* The phone start page must use the same portrait proportions as the notebook art. */
+@media (max-width: 767px) and (orientation: portrait), (max-device-width: 767px) and (orientation: portrait) and (pointer: coarse) {
+  .app-bar { flex-wrap: nowrap !important; }
+  .app-bar .account-buttons { flex-wrap: nowrap !important; white-space: nowrap; }
+  .app-bar .account-buttons .text-action { max-width: 66px !important; overflow: hidden; text-overflow: ellipsis; }
+  .book-shell > .month-tabs { display: none !important; }
+  .book-shell > .bookmark-today { position: fixed !important; top: calc(112px + env(safe-area-inset-top)) !important; right: 0 !important; left: auto !important; }
+  .book-shell > .section-tabs { position: static !important; display: flex !important; width: 100%; max-width: 100%; flex-wrap: nowrap !important; overflow-x: auto !important; }
 }
