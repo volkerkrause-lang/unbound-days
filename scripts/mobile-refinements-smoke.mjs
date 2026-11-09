@@ -28,6 +28,7 @@ try{
  await page.locator('[data-template-new-folder]').click();await page.locator('[name="name"]').fill('Work');await page.locator('#template-library-form [type="submit"]').click();
  await page.locator('.folder-art').waitFor();await page.screenshot({path:`test-results/refinements-${name}-folders.png`,fullPage:true});
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+ await page.locator('[data-planner-manage-back]').click();
  await page.locator('#planner-search').fill('holiday');await page.locator('[data-planner-template="holiday"]').click();
  await page.locator('#planner-create [type="submit"]').click();await page.locator('.planner-table').waitFor();assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
  await page.screenshot({path:`test-results/refinements-${name}-form.png`,fullPage:true});

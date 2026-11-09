@@ -37,7 +37,7 @@ try{
  const textMetrics=await editor.evaluate(el=>({height:el.getBoundingClientRect().height,scrollHeight:el.scrollHeight,overflow:getComputedStyle(el).overflowY}));
  assert.ok(textMetrics.scrollHeight>textMetrics.height,'long notes scroll inside the writing area');
  assert.equal(textMetrics.overflow,'auto');
- assert.ok(textMetrics.height<innerHeight*.45,'long notes do not displace the capture controls');
+ assert.ok(textMetrics.height<(await page.evaluate(()=>innerHeight))*.45,'long notes do not displace the capture controls');
  await editor.fill('A thought captured on mobile.');
  assert.notEqual(await page.evaluate(()=>document.activeElement?.getAttribute('data-qc-text')),'','transcription does not open the keyboard');
  await mic.click();
