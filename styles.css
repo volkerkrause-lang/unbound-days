@@ -1560,3 +1560,18 @@ body.quick-capture-launch .quick-capture-closed a{display:inline-flex;align-item
 .planner-choice>button strong{display:block;font:600 22px var(--serif);color:var(--ink)}
 .planner-choice>button>span:last-child{display:block;font:15px/1.55 var(--ui);color:#62635d}
 @media(max-width:600px){.planner-choice{grid-template-columns:1fr;gap:12px;margin:16px auto}.planner-choice>button{min-height:0;padding:18px 20px;gap:7px;border-radius:14px}.planner-choice>button strong{font-size:20px}.planner-choice>button>span:last-child{font-size:14px}}
+
+/* Keep To-do quick-add controls compact: the illustration is an icon, not a grid column. */
+.todo-view .task-entry-panel{grid-template-columns:38px minmax(0,1fr) auto;align-items:center;gap:8px 12px}
+.todo-view .task-entry-icon,.todo-view .ritual-entry-icon{grid-column:1;grid-row:1;width:36px;height:36px;display:grid;place-items:center;font-size:24px;line-height:1}
+.todo-view .task-entry-icon svg{display:block;width:34px;height:34px}
+.todo-view .task-entry-panel>input[name=title]{grid-column:2;grid-row:1;width:100%;min-width:0}
+.todo-view .task-entry-action{grid-column:3;grid-row:1}
+.todo-view .task-entry-panel>.task-destination-hint,.todo-view .task-entry-panel>.ritual-storage-hint{grid-column:1/-1;grid-row:2}
+@media(max-width:650px){
+ .todo-view .task-entry-panel{grid-template-columns:32px minmax(0,1fr) auto;padding:10px;gap:7px 9px}
+ .todo-view .task-entry-icon,.todo-view .ritual-entry-icon{width:30px;height:30px;font-size:21px}
+ .todo-view .task-entry-icon svg{width:30px;height:30px}
+ .todo-view .task-entry-panel .task-entry-action{grid-column:3;grid-row:1}
+ .todo-view .task-entry-panel>.task-destination-hint,.todo-view .task-entry-panel>.ritual-storage-hint{grid-column:1/-1;grid-row:2}
+}
