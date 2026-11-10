@@ -75,7 +75,7 @@ test('country research uses stable country codes and records recently viewed des
  assert.match(planner.render(),/Lonely Planet/);assert.match(planner.render(),/Google Flights/);
 });
 
-test('saved research is private notebook state and supports status updates',async()=>{
+test('country search submission opens research for the selected country',async()=>{\n const {planner}=setup();\n await planner.submit({id:'travel-country-search',dataset:{}},{country:'Italy'});\n assert.match(planner.render(),/Explore Italy/);\n});\n\ntest('saved research is private notebook state and supports status updates',async()=>{
  const {planner,state}=setup();await planner.handle({travelCountry:'IT'});
  await planner.submit({id:'travel-research-form',dataset:{researchId:'',countryCode:'IT'}},{title:'A place to stay',url:'https://example.com/stay',category:'Accommodation',notes:'Ask about late check-in'});
  const item=state.travel.researchItems[0];assert.equal(item.countryCode,'IT');assert.equal(item.status,'Interested');
