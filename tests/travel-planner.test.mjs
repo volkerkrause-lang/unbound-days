@@ -62,3 +62,29 @@ test('multi-page confirmations offer distinct booking entries and suppress dupli
  ];
  const entries=parseDistinctBookingPages(pages);assert.equal(entries.length,2);assert.equal(entries[0].fields.reference,'AA1234');assert.equal(entries[1].fields.reference,'BB5678');
 });
+
+test('Travel Planner starts with country search and keeps the existing trips visible',()=>{
+ const {planner}=setup(),html=planner.render();
+ assert.match(html,/Where would you like to go\?/);assert.match(html,/travel-country-list/);
+ assert.match(html,/Explore Destinations/);assert.match(html,/My Trips/);
+});
+
+test('country research uses stable country codes and records recently viewed destinations',async()=>{
+ const {planner,state}=setup();await planner.handle({travelCountry:'IT'});
+ assert.match(planner.render(),/Explore Italy/);assert.deepEqual(state.travel.recentCountries,['IT']);
+ assert.match(planner.render(),/Lonely Planet/);assert.match(planner.render(),/Google Flights/);
+});
+
+test('saved research is private notebook state and supports status updates',async()=>{
+ const {planner,state}=setup();await planner.handle({travelCountry:'IT'});
+ await planner.submit({id:'travel-research-form',dataset:{researchId:'',countryCode:'IT'}},{title:'A place to stay',url:'https://example.com/stay',category:'Accommodation',notes:'Ask about late check-in'});
+ const item=state.travel.researchItems[0];assert.equal(item.countryCode,'IT');assert.equal(item.status,'Interested');
+ await planner.handle({travelResearchStatus:item.id,value:'Shortlisted'});assert.equal(item.status,'Shortlisted');
+});
+
+test('an opened trip remains selected while notebook sync temporarily restores its record',async()=>{
+ const {planner,state}=setup();state.travel.trips=[];await planner.handle({travelOpen:'trip-1'});
+ assert.equal(planner.getSelected(),'trip-1');assert.match(planner.render(),/Restoring your saved trip/);
+ state.travel.trips.push({id:'trip-1',name:'Rome',destination:'Rome',sections:{}});
+ assert.match(planner.render(),/Rome/);assert.equal(planner.getSelected(),'trip-1');
+});
