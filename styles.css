@@ -1532,7 +1532,6 @@ body.quick-capture-launch .quick-capture-closed a{display:inline-flex;align-item
   .app-bar .account-buttons .text-action { max-width: 66px !important; overflow: hidden; text-overflow: ellipsis; }
   .book-shell > .month-tabs { display: none !important; }
   .book-shell > .bookmark-today { position: fixed !important; top: calc(112px + env(safe-area-inset-top)) !important; right: 0 !important; left: auto !important; }
-  .book-shell > .section-tabs { position: static !important; display: flex !important; width: 100%; max-width: 100%; flex-wrap: nowrap !important; overflow-x: auto !important; }
 }
 
 /* Compact travel booking upload and map affordances. */
