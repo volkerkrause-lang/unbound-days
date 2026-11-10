@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {create,ensure} from '../travel-planner.js';
-import {parseBookingText} from '../travel-document-parser.js';
+import {parseBookingText,parseDistinctBookingPages} from '../travel-document-parser.js';
 
 function setup(){
  const state={travel:ensure({trips:[{id:'trip-1',name:'Rome',destination:'Rome',sections:{},currency:'GBP'}],bookings:[],checklists:[{id:'before-1',tripId:'trip-1',title:'Before Rome',kind:'before',formKey:'before-form'}],ideaLinks:[],budgetEntries:[],attachments:[]}),entries:{}};
@@ -51,4 +51,14 @@ test('document parser handles labelled accommodation and restaurant bookings',()
 test('document parser recognises train operator, route and service number',()=>{
  const result=parseBookingText('Train ticket\nOperator: Trenitalia\nTrain number: FR 9560\nDeparture station: Roma Termini\nArrival station: Firenze S. M. Novella\nDate: 2026-07-04\nDeparture time: 10:15\nArrival time: 11:46');
  assert.equal(result.type,'Train');assert.equal(result.fields.name,'Trenitalia');assert.equal(result.fields.departureLocation,'Roma Termini');assert.equal(result.fields.arrivalLocation,'Firenze S. M. Novella');assert.equal(result.fields.time,'10:15');assert.equal(result.fields.endTime,'11:46');
+});
+
+
+test('multi-page confirmations offer distinct booking entries and suppress duplicate pages',()=>{
+ const pages=[
+  {text:'Flight confirmation\nAirline: Example Air\nFrom: London Heathrow\nTo: Rome Fiumicino\nDate: 2026-07-10\nDeparture time: 08:00\nBooking reference: AA1234'},
+  {text:'Flight confirmation\nAirline: Example Air\nFrom: Rome Fiumicino\nTo: London Heathrow\nDate: 2026-07-15\nDeparture time: 16:30\nBooking reference: BB5678'},
+  {text:'Duplicate copy\nAirline: Example Air\nFrom: London Heathrow\nTo: Rome Fiumicino\nDate: 2026-07-10\nDeparture time: 08:00\nBooking reference: AA1234'}
+ ];
+ const entries=parseDistinctBookingPages(pages);assert.equal(entries.length,2);assert.equal(entries[0].fields.reference,'AA1234');assert.equal(entries[1].fields.reference,'BB5678');
 });

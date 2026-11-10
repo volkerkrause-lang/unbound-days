@@ -1,6 +1,6 @@
 import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist/build/pdf.mjs';
 import { createWorker } from 'tesseract.js';
-import { parseBookingText } from './travel-document-parser.js';
+import { parseBookingText, parseDistinctBookingPages } from './travel-document-parser.js';
 
 GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
 let ocrWorker;
@@ -38,16 +38,21 @@ export async function extractBookingDocument(file, onProgress = () => {}) {
       pages.push({ page, text: pageText }); totalText += pageText;
       onProgress({ phase: 'reading', page: number, pages: pdf.numPages });
     }
-    if (totalText.replace(/\s/g, '').length > 80) return parseBookingText(pages.map(x => x.text).join('\n'));
-    let text = '';
+    if (totalText.replace(/\s/g, '').length > 80) {
+      const result = parseBookingText(pages.map(x => x.text).join('\n'));
+      const candidates = parseDistinctBookingPages(pages);
+      if (candidates.length > 1) result.candidates = candidates;
+      return result;
+    }
+    let text = ''; const ocrPages = [];
     for (let i = 0; i < pages.length; i++) {
       const page = pages[i].page, viewport = page.getViewport({ scale: 1.8 });
       const canvas = document.createElement('canvas'); canvas.width = Math.ceil(viewport.width); canvas.height = Math.ceil(viewport.height);
       await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
-      text += `\n${await recognize(canvas)}`; canvas.width = 0; canvas.height = 0;
+      const pageText = await recognize(canvas); text += `\n${pageText}`; ocrPages.push({ text: pageText }); canvas.width = 0; canvas.height = 0;
       onProgress({ phase: 'ocr', page: i + 1, pages: pages.length });
     }
-    return parseBookingText(text);
+    const result = parseBookingText(text); const candidates = parseDistinctBookingPages(ocrPages); if (candidates.length > 1) result.candidates = candidates; return result;
   }
   const text = await recognize(file);
   return parseBookingText(text);

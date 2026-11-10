@@ -70,3 +70,14 @@ export function parseBookingText(rawText) {
   return { type, fields, textLength: text.trim().length, multiSegmentHint: type === 'Flight' && (text.match(/\bflight\s*(?:(?:number|no\.?|#)\s*)?[:#-]?\s*[A-Z]{2}\s?\d{1,4}\b/gi) || []).length > 1 };
 }
 
+export function parseDistinctBookingPages(pages) {
+  const candidates = pages.map(page => parseBookingText(page.text)).filter(result => result.type && result.textLength > 45);
+  const seen = new Set();
+  return candidates.filter(result => {
+    const f = result.fields;
+    const key = f.reference ? `${result.type}:${f.reference.toLowerCase()}` : `${result.type}:${f.date}:${f.name}:${f.departureLocation}:${f.arrivalLocation}:${f.location}`.toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key); return true;
+  });
+}
+
