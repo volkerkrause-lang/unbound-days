@@ -21,7 +21,7 @@ test('booking form has no required booking name or timezone and offers route and
  const html=fixture.modal.html;
  assert.doesNotMatch(html,/Booking name|Time zone/);
  assert.match(html,/name="departureLocation"/);assert.match(html,/name="arrivalLocation"/);
- assert.match(html,/application\/pdf,image\/jpeg,image\/png/);assert.match(html,/Reservation reference/);
+ assert.match(html,/application\/pdf/);assert.match(html,/\.jpg,.jpeg,.png/);assert.match(html,/Reservation reference/);assert.match(html,/travel-booking-file-status/);
 });
 
 test('booking titles are generated from type and route without a user-entered title',async()=>{

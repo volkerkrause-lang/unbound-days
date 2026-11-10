@@ -24,10 +24,13 @@ async function recognize(image) {
 }
 
 export async function extractBookingDocument(file, onProgress = () => {}) {
-  if (!file || (!file.type.startsWith('image/') && file.type !== 'application/pdf')) throw new Error('Choose a PDF or image document.');
+  const extension = String(file?.name || '').split('.').pop().toLowerCase();
+  const isPdf = file?.type === 'application/pdf' || extension === 'pdf';
+  const isImage = file?.type?.startsWith('image/') || ['jpg','jpeg','png','webp','gif','bmp','tif','tiff'].includes(extension);
+  if (!file || (!isImage && !isPdf)) throw new Error('Choose a PDF, JPEG, PNG or other supported image document.');
   if (file.size > 25 * 1024 * 1024) throw new Error('Choose a document smaller than 25 MB.');
   let pages = [];
-  if (file.type === 'application/pdf') {
+  if (isPdf) {
     const pdf = await getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
     if (pdf.numPages > 10) throw new Error('For safety and speed, process PDFs with 10 pages or fewer.');
     let totalText = '';
