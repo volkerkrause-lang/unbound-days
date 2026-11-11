@@ -30,7 +30,7 @@ export function createTemplateLibrary({entries,save,render,id,esc,openModal,clos
  const path=f=>{const names=[],seen=new Set();while(f&&!seen.has(f)){seen.add(f);const r=find(f,'folder');if(!r)break;names.unshift(r.name);f=r.parent;}return names.join(' / ');};
  const destinations=(selected='',exclude='')=>`<option value="">My Forms</option>${folders().filter(f=>!exclude||!folderDescendants(entries(),exclude).has(f.id)).map(f=>`<option value="${esc(f.id)}" ${selected===f.id?'selected':''}>${esc(path(f.id))}</option>`).join('')}`;
  const form=(title,operation,key,body)=>openModal(title,`<form id="template-library-form" data-operation="${operation}" data-id="${esc(key||'')}">${body}<div id="form-error" class="error-text" role="alert"></div><div class="modal-footer"><button type="button" class="secondary" data-action="close-modal">Cancel</button><button class="primary" type="submit">Save</button></div></form>`);
- const nameFields=(r={})=>`<label>Name<input name="name" maxlength="120" required value="${esc(r.name||'')}" autofocus></label><label>Description (optional)<textarea name="description" maxlength="1000">${esc(r.description||'')}</textarea></label><label>Folder<select name="parent">${destinations(r.parent??folder)}</select></label>`;
+ const nameFields=(r={})=>`<label>Name<input name="name" maxlength="120" required value="${esc(r.name||'')}"</label><label>Description (optional)<textarea name="description" maxlength="1000">${esc(r.description||'')}</textarea></label><label>Folder<select name="parent">${destinations(r.parent??folder)}</select></label>`;
  function html(){
   if(folder&&!find(folder,'folder'))folder='';
   const matches=templates().filter(t=>query?(t.name+' '+(t.description||'')).toLowerCase().includes(query.toLowerCase()):(t.parent||'')===folder);
@@ -43,7 +43,7 @@ export function createTemplateLibrary({entries,save,render,id,esc,openModal,clos
   if('templateSave'in data){const key=current();form('Save as Template','save',key,nameFields({name:entries()[`form:${key}:title`]||'My form'}));return true;}
   if(data.templateUpdate){const r=find(data.templateUpdate);if(r)form('Update reusable template','update',r.id,`<p>This replaces the template layout with this sheet’s layout. Existing filled sheets remain unchanged.</p>${nameFields(r)}<label><input type="checkbox" name="confirmed" required> Replace the saved template</label>`);return true;}
   if('templateSaveSheet'in data){builder.finish(current());save();render();toast('Sheet saved. Check the notebook save status for backup progress.');return true;}
-  if('templateFolder'in data){folder=data.templateFolder;query='';render();return true;}
+  if('templateFolder'in data){folder=data.templateFolder;query='';refreshResults();return true;}
   if('templateNewFolder'in data){form('New Folder','folder-new','',`<label>Folder name<input name="name" maxlength="120" required autofocus></label><label>Colour<input type="color" name="colour" value="${['#718b80','#8a7894','#a58351','#68889c'][folders().length%4]}"></label><label>Parent folder<select name="parent">${destinations(folder)}</select></label>`);return true;}
   for(const [field,kind,op] of [['templateFolderRename','folder','rename'],['templateFolderMove','folder','move'],['templateFolderDelete','folder','delete'],['templateRename','template','rename'],['templateMove','template','move'],['templateDelete','template','delete']]){
    if(!(field in data))continue;const r=find(data[field],kind);if(!r)return true;
@@ -69,8 +69,9 @@ export function createTemplateLibrary({entries,save,render,id,esc,openModal,clos
    else putRecord(entries(),{...r,...data},kind);
   }
   if(op==='update')builder.finish(current());
-  save();closeModal();render();toast('Saved.');return true;
+  save();closeModal();if(op==='folder-new'){refreshResults();}else render();toast('Saved.');return true;
  }
- function input(target){if(target.id!=='my-template-search')return;query=target.value;const root=document.querySelector('#my-template-results');if(root){const holder=document.createElement('div');holder.innerHTML=html();root.innerHTML=holder.querySelector('#my-template-results').innerHTML;}}
+ function refreshResults(){const root=document.querySelector('#my-template-results'),library=root?.closest('.my-template-library');if(!root||!library)return;const holder=document.createElement('div');holder.innerHTML=html();const next=holder.querySelector('.my-template-library');if(!next)return;const toolbar=library.querySelector('.planner-toolbar'),nextToolbar=next.querySelector('.planner-toolbar');if(toolbar&&nextToolbar)toolbar.replaceChildren(...nextToolbar.childNodes);const nextResults=next.querySelector('#my-template-results');if(nextResults)root.replaceChildren(...nextResults.childNodes);}
+ function input(target){if(target.id!=='my-template-search')return;query=target.value;refreshResults();}
  return {html,handle,submit,input,reset:()=>{folder='';query='';}};
 }
