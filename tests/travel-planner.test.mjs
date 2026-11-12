@@ -94,3 +94,18 @@ test('an opened trip remains selected while notebook sync temporarily restores i
  state.travel.trips.push({id:'trip-1',name:'Rome',destination:'Rome',sections:{}});
  assert.match(planner.render(),/Rome/);assert.equal(planner.getSelected(),'trip-1');
 });
+
+test('country filter uses the planner instance and restores countries when cleared',()=>{
+ const {planner}=setup();
+ const countries=[{dataset:{travelCountry:'IT'},hidden:false},{dataset:{travelCountry:'FR'},hidden:false}];
+ const previous=globalThis.document;
+ globalThis.document={querySelectorAll:()=>countries};
+ try{
+  const field={matches:selector=>selector==='[data-country-filter]',value:'Italy'};
+  planner.input(field);
+  assert.equal(countries[0].hidden,false);
+  assert.equal(countries[1].hidden,true);
+  field.value='';planner.input(field);
+  assert.ok(countries.every(country=>!country.hidden));
+ }finally{if(previous===undefined)delete globalThis.document;else globalThis.document=previous;}
+});

@@ -19,12 +19,10 @@ jobs:
       - run: npm test
       - run: npm run build
       - name: Install browser for responsive checks
-        if: startsWith(github.ref, 'refs/heads/development/')
         timeout-minutes: 5
         run: npx playwright install chromium
       - name: Verify browser regressions independently
         timeout-minutes: 20
-        if: startsWith(github.ref, 'refs/heads/development/')
         run: |
           node server.mjs &
           failed=0
@@ -61,7 +59,7 @@ jobs:
           run_check "Notebook stability desktop" env UNBOUND_DEVICE=desktop node scripts/notebook-stability-smoke.mjs
           exit "$failed"
       - name: Save mobile browser result
-        if: always() && startsWith(github.ref, 'refs/heads/development/')
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: classic-clean-mobile-browser
