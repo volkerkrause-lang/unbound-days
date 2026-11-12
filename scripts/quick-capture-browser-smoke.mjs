@@ -108,8 +108,10 @@ try{
  await page.locator('[data-action="open"]').click();
  await page.locator('[data-section="launchpad"]').click();
  await page.getByRole('button',{name:'Close Saved Ideas',exact:true}).click();
- assert.equal(await page.locator('.idea-inbox-card').count(),12,'all saved links remain visible after reopening the app');
- assert.equal(await page.locator('.idea-inbox-card').filter({hasText:'Bookmark 9'}).count(),1);
+ assert.equal(await page.locator('.idea-inbox-card').count(),13,'the text capture and all 12 shared links remain visible after reopening');
+ assert.equal(await page.locator('.idea-inbox-card').filter({hasText:'A thought captured on mobile.'}).count(),1);
+ assert.equal(await page.locator('.idea-inbox-card').filter({hasText:'Shared article'}).count(),2);
+ for(let i=0;i<10;i++)assert.equal(await page.locator('.idea-inbox-card').filter({hasText:`Bookmark ${i}`}).count(),1,`Bookmark ${i} remains visible`);
  await page.locator('.idea-inbox-card').filter({hasText:'Bookmark 9'}).locator('[data-action="idea-organise"]').click();
  await page.locator('#idea-organise [name=collectionId]').selectOption('new');
  await page.locator('#idea-organise [name=collectionName]').fill('Videos to Watch');
