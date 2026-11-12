@@ -1,0 +1,33 @@
+name: Verify mobile notebook cover
+on:
+  pull_request:
+    branches: ['development/**']
+    paths:
+      - 'styles.css'
+      - 'sw.js'
+      - 'scripts/mobile-cover-smoke.mjs'
+      - '.github/workflows/mobile-cover.yml'
+permissions:
+  contents: read
+jobs:
+  mobile-cover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Start local preview
+        run: node server.mjs &
+      - name: Measure phone cover and bookmarks
+        run: node scripts/mobile-cover-smoke.mjs
+      - name: Save phone screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-cover-review
+          path: test-results/mobile-cover.png
