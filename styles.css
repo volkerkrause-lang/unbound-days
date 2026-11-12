@@ -1767,15 +1767,15 @@ body.quick-capture-launch .quick-capture-closed a{display:inline-flex;align-item
     align-items: center; justify-content: center;
   }
   .cover-book {
-    flex: 0 0 auto; width: min(66vw, 430px) !important;
-    height: min(calc(min(66vw, 430px) * 1.28), calc(100dvh - 230px)) !important;
+    flex: 0 0 auto; width: min(76vw, 430px) !important;
+    height: min(calc(min(76vw, 430px) * 1.28), calc(100dvh - 230px)) !important;
     min-height: 0 !important; aspect-ratio: 1 / 1.28;
     margin: 0 !important; transform: none !important;
   }
   .cover-tab { right: -22px !important; z-index: 4; }
   .cover-tab[data-section="calendar"] { top: 8% !important; }
   .cover-tab[data-section="goals"] { top: 34% !important; }
-  .cover-tab[data-section="launchpad"] { top: 60% !important; }
+  .cover-tab[data-section="tasks"] { top: 60% !important; }
   .cover-tab:hover, .cover-tab:focus-visible { right: -22px !important; }
   .cover-controls { top: 5px !important; right: 8px !important; left: 8px; justify-content: flex-end; gap: 5px; flex-wrap: nowrap; }
   .cover-controls button { min-height: 32px; padding: 5px 8px; font-size: 10px; white-space: nowrap; }
