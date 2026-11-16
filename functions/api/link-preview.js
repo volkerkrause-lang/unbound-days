@@ -35,7 +35,7 @@ export function isPublicIp(host) {
   }
   return true;
 }
-function safeUrl(value) {
+export function safeUrl(value) {
   try {
     const u = new URL(value);
     if (!['http:', 'https:'].includes(u.protocol) || u.username || u.password || !isPublicIp(u.hostname)) return null;
@@ -76,7 +76,7 @@ export function parseMetadata(html, finalUrl) {
     contentType: /video/iu.test(meta['og:type'] || '') || /^(?:player|video)/iu.test(meta['twitter:card'] || '') ? 'video' : 'webpage',
   };
 }
-async function isPublicTarget(url, signal) {
+export async function isPublicTarget(url, signal) {
   if (/^\d{1,3}(?:\.\d{1,3}){3}$/u.test(url.hostname) || url.hostname.includes(':')) return isPublicIp(url.hostname);
   const addresses = [];
   for (const type of ['A', 'AAAA']) {
@@ -90,7 +90,7 @@ async function isPublicTarget(url, signal) {
   }
   return addresses.length > 0 && addresses.every(isPublicIp);
 }
-async function readLimited(response) {
+export async function readLimited(response) {
   if (!response.body) return '';
   const reader = response.body.getReader();
   const chunks = []; let size = 0;
