@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {moneyToMinor,moneyFromMinor,monthTotals,csvForMonth} from '../budget-planner.js';
+import {moneyToMinor,moneyFromMinor,monthTotals,csvForMonth,createBudgetPlanner} from '../budget-planner.js';
 
 test('money conversion uses integer minor units and rounds by entered pence',()=>{
  assert.equal(moneyToMinor('22.80'),2280);
@@ -34,4 +34,22 @@ test('transfers are excluded from cash expenditure while savings and debt are se
 test('CSV output quotes values safely',()=>{
  const csv=csvForMonth({categories:[{name:'Home, bills',items:[{name:'Mum "support"',planned:17200,actual:0,dueDate:'',status:'planned',frequency:'Monthly',flow:'cash',notes:''}]}]});
  assert.match(csv,/"Home, bills","Mum ""support""",/);
+});
+
+test('September starter budget preserves written subtotals and calculates from individual lines',()=>{
+ const bag={};let writes=0;
+ const planner=createBudgetPlanner({entries:()=>bag,form:()=>'starter',save:()=>writes++,render:()=>{},esc:value=>String(value),toast:()=>{},schedule:()=>{}});
+ planner.initialise();
+ const data=JSON.parse(bag['budget:starter:data']),month=data.months[data.active];
+ const totals=monthTotals(month);
+ assert.equal(data.active,'2026-09');
+ assert.equal(month.name,'September 2026 — My Budget');
+ assert.equal(totals.income,524000);
+ assert.equal(totals.planned,423880);
+ assert.equal(totals.remaining,100120);
+ assert.equal(month.sourceFigures.categorySubtotals['Utilities'],15100);
+ assert.equal(month.sourceFigures.calculatedFromHandwrittenSubtotals,100300);
+ assert.equal(month.sourceFigures.finalBalance,100200);
+ assert.equal(writes,1);
+ assert.match(planner.render(),/Check the handwritten figures/);
 });
