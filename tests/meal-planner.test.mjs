@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildShoppingRows, parseRecipeIngredient } from '../meal-planner.js';
+import { buildShoppingRows, createMealPlanner, parseRecipeIngredient } from '../meal-planner.js';
 
 test('parses common metric, kitchen and fractional ingredient quantities', () => {
   assert.deepEqual(parseRecipeIngredient('1 ½ cups flour'), {raw:'1 ½ cups flour',amount:1.5,unit:'cups',food:'flour'});
@@ -21,4 +21,18 @@ test('does not request ingredients listed in the kitchen', () => {
   const recipes=[{id:'r1',yield:2,ingredients:[parseRecipeIngredient('200 g pasta'),parseRecipeIngredient('1 onion')]}];
   const rows=buildShoppingRows([{recipeId:'r1',portions:2}],recipes,['pasta']);
   assert.deepEqual(rows.map(row=>row.food),['onion']);
+});
+
+test('the four meal planner tabs change the active view and rerender', async () => {
+  const originalDocument=globalThis.document;globalThis.document={addEventListener(){}};
+  try{
+    const state={entries:{}};let renders=0,saves=0;
+    const planner=createMealPlanner({getState:()=>state,save:()=>saves++,render:()=>renders++,esc:String,makeId:()=>`id-${saves}`,toast:()=>{}});
+    for(const view of ['cookbook','week','kitchen','shopping']){
+      assert.equal(await planner.handle({mpView:view}),true);
+      assert.equal(JSON.parse(state.entries['meal-planner:data']).view,view);
+    }
+    assert.equal(renders,4);
+    assert.equal(saves,4);
+  }finally{globalThis.document=originalDocument;}
 });
