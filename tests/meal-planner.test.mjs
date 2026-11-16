@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildShoppingRows, createMealPlanner, parseRecipeIngredient } from '../meal-planner.js';
+import { buildShoppingRows, createMealPlanner, isDuplicateRecipe, parseRecipeIngredient } from '../meal-planner.js';
 
 test('parses common metric, kitchen and fractional ingredient quantities', () => {
   assert.deepEqual(parseRecipeIngredient('1 ½ cups flour'), {raw:'1 ½ cups flour',amount:1.5,unit:'cups',food:'flour'});
@@ -35,4 +35,11 @@ test('the four meal planner tabs change the active view and rerender', async () 
     assert.equal(renders,4);
     assert.equal(saves,4);
   }finally{globalThis.document=originalDocument;}
+});
+
+test('only the same titled recipe at the same page is reported as a duplicate', () => {
+  const first={title:'Roast tomato pasta',sourceUrl:'https://recipes.example/pasta?utm_source=newsletter'};
+  assert.equal(isDuplicateRecipe(first,{title:'Roast tomato pasta',sourceUrl:'https://recipes.example/pasta#ingredients'}),true);
+  assert.equal(isDuplicateRecipe(first,{title:'Lemon chickpea stew',sourceUrl:'https://recipes.example/pasta'}),false);
+  assert.equal(isDuplicateRecipe(first,{title:'Roast tomato pasta',sourceUrl:'https://recipes.example/similar'}),false);
 });
