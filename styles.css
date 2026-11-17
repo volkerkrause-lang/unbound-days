@@ -426,6 +426,21 @@ body:has(dialog[open]) #app .shared-write-tools{visibility:hidden}
 /* Planning Tools: one catalogue, grouped by everyday subjects. */
 .planner-catalogue-title{font:20px var(--serif);margin:0 0 16px}
 .planner-category-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.planner-cards .planner-card{display:flex;flex-direction:column;align-items:flex-start;gap:0;min-height:190px;padding:16px 10px;text-decoration:none}
+.planner-cards .planner-card strong{margin:0 0 7px}
+.planner-cards .planner-card>span:not(.planner-choice-icon){font:15px/1.5 var(--ui);color:#686d62}
+.planner-cards .planner-card small{font:13px/1.4 var(--ui);color:#656c61;margin-top:auto;padding-top:10px}
+.planner-cards .planner-choice-icon{display:grid;place-items:center;width:58px;height:58px;flex:0 0 58px;margin:0 0 12px;border:1px solid #526c8930;border-radius:17px;background:#e2edf6;color:#304b63;font-size:30px;line-height:1;box-shadow:inset 0 1px 2px #fff9}
+.planner-cards .tool-icon-time{background:#f3eee1;border-color:#a4834a35;color:#695537}
+.planner-cards .tool-icon-tasks{background:#e9eee2;border-color:#718b8038;color:#52674f}
+.planner-cards .tool-icon-travel{background:#e2edf6;border-color:#6484a13d;color:#3e607e}
+.planner-cards .tool-icon-money{background:#f6eddb;border-color:#b38d3c38;color:#826529}
+.planner-cards .tool-icon-home{background:#f5e9dc;border-color:#9a674138;color:#78563d}
+.planner-cards .tool-icon-personal{background:#efe8f1;border-color:#8b71933b;color:#67546e}
+.planner-cards .tool-icon-work{background:#e9edf2;border-color:#68819a3b;color:#4d6379}
+.planner-cards .tool-icon-health{background:#e7f0e8;border-color:#66896a3b;color:#4e6c52}
+.planner-cards .tool-icon-events{background:#f7e8e7;border-color:#a45e6338;color:#824c50}
+.planner-cards .planner-card:hover .planner-choice-icon{transform:translateY(-1px);box-shadow:0 3px 8px #493c2b18}
 .planner-category-card{display:flex;flex-direction:column;gap:8px;text-align:left;border:1px solid var(--line);border-radius:4px;padding:16px;background:transparent;min-height:145px}
 .planner-category-card:hover{background:#e8eddf66;border-color:#8a927f}
 .planner-category-card strong{font:600 24px/1.2 var(--hand)}
