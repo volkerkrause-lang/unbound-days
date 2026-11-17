@@ -23,3 +23,5 @@
  body.desk-enabled:not(.desk-custom) .cover-scene{justify-content:flex-start;padding-inline:clamp(12px,2vw,24px);background-size:auto 100%!important;background-position:76% center!important;overflow:visible}
  body.desk-enabled:not(.desk-custom) .cover-book{width:min(870px,55vw);height:min(610px,52dvh);flex:none;transform:none!important}
 }
+
+@media print{@page{size:A4;margin:8mm}}
