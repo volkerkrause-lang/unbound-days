@@ -30,7 +30,7 @@ import * as TravelPlanner from './travel-planner.js?v=0.1.8';
 import * as TravelDocument from './travel-extractor.js?v=0.1.2';
 import * as MealPlanner from './meal-planner.js?v=0.1.1';
 import {createBudgetPlanner} from './budget-planner.js?v=0.1.1';
-import {createMovingPlanner} from './moving-planner.js?v=0.1.0';
+import {createMovingPlanner} from './moving-planner.js?v=0.1.1';
 
 const captureQuery=new URLSearchParams(location.search);
 const shareSessionKey='unbound-save-to-ideas-intake';

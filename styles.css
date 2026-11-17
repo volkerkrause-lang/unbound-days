@@ -1883,3 +1883,11 @@ body.quick-capture-launch .quick-capture-closed a{display:inline-flex;align-item
 .pack-review-category .pack-row{min-height:34px}
 @media(max-width:700px){.pack-review-grid{grid-template-columns:1fr}}
 @media(max-width:700px){.pack-person-tab,.pack-person-type{padding:8px 12px;font-size:12px}.pack-person-tabs{margin-inline:-2px}.pack-person-types{gap:6px}}
+
+/* The portrait desk reserves its right edge for the photographed cup and pen.
+   This applies to the closed cover and the open notebook alike. */
+@media (min-width:768px) and (max-width:1200px) and (orientation:portrait){
+ body.desk-enabled:not(.desk-custom) .cover-scene{justify-content:flex-start;align-items:center;padding:0 0 0 2vw;overflow:visible}
+ body.desk-enabled:not(.desk-custom) .cover-book{width:min(58vw,650px);height:min(calc(min(58vw,650px) * 1.2),calc(100dvh - 165px));margin:0;flex:none;transform:none}
+ body.desk-enabled:not(.desk-custom) .book-shell{width:64vw;max-width:650px;margin-left:0;margin-right:auto}
+}

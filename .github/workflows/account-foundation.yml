@@ -59,6 +59,7 @@ jobs:
           run_check "Mobile refinements" node scripts/mobile-refinements-smoke.mjs
           run_check "Voice recorder" node scripts/voice-recorder-smoke.mjs
           run_check "Notebook stability desktop" env UNBOUND_DEVICE=desktop node scripts/notebook-stability-smoke.mjs
+          run_check "Moving notebook iPad spacing" node scripts/moving-ipad-smoke.mjs
           exit "$failed"
       - name: Save mobile browser result
         if: always() && startsWith(github.ref, 'refs/heads/development/')

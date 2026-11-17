@@ -18,10 +18,18 @@
 
 .move-tip>a{font-size:12px;color:#426684;text-decoration-thickness:1px;text-underline-offset:3px;white-space:nowrap}
 @media(max-width:650px){.move-tip>a{margin-left:32px}}
-/* Keep the desk's coffee and pen in a reserved right-side column on portrait iPads. */
-@media (min-width:768px) and (max-width:1100px) and (orientation:portrait){
- body.desk-enabled:not(.desk-custom) .cover-scene{justify-content:flex-start;padding-inline:clamp(12px,2vw,24px);background-size:auto 100%!important;background-position:76% center!important;overflow:visible}
- body.desk-enabled:not(.desk-custom) .cover-book{width:min(870px,55vw);height:min(610px,52dvh);flex:none;transform:none!important}
-}
-
 @media print{@page{size:A4;margin:8mm}}
+
+/* One coloured-pencil illustration, cropped into the notebook's two hero spots. */
+.move-doodle,.move-van{background-image:url('./assets/moving-pencil-scene.webp');background-repeat:no-repeat;background-size:300% auto}
+.move-doodle{height:88px;background-position:left center}
+.move-van{height:96px;background-position:right center}
+.move-welcome{background:#f6e9db;border:1px solid #c9917840}
+.move-shortcut:nth-child(6n+1){background:#f9ede5}.move-shortcut:nth-child(6n+2){background:#ecf1e9}.move-shortcut:nth-child(6n+3){background:#edf2f7}.move-shortcut:nth-child(6n+4){background:#faf2dc}.move-shortcut:nth-child(6n+5){background:#f2eaf5}.move-shortcut:nth-child(6n+6){background:#f8eaf0}
+.move-shortcut:hover,.move-nav button:hover{border-color:#806b5199;transform:translateY(-1px)}
+.move-phase .move-task-main{flex:1;min-width:150px}.move-phase .move-task-main input{width:100%;border:0;border-bottom:1px dashed #a8a08b;border-radius:0;background:transparent;padding:3px 2px;font-weight:600}.move-phase .move-task-main small{display:block}
+.move-phase>summary small{font:12px var(--ui,system-ui,sans-serif);color:#716f64}
+@media(max-width:650px){.move-doodle{height:58px}.move-van{height:70px}.move-phase .move-task-main{flex-basis:calc(100% - 40px)}}
+.move-day-entry{display:flex;align-items:center;gap:10px;border-bottom:1px solid #806f551d}.move-day-entry .move-task-row{flex:1;border:0}.move-day-entry input[type=time]{width:115px;flex:none}
+@media(max-width:420px){.move-day-entry{flex-wrap:wrap;padding-bottom:5px}.move-day-entry input[type=time]{margin-left:32px}}
+.move-room-progress{margin:0;color:#68735e;font-size:12px}.move-room input[type=color]{width:58px;height:40px;padding:3px;cursor:pointer}
