@@ -69,30 +69,23 @@ test('moving budget links to the household budget without duplicating move costs
   assert.equal(opened,1);
 });
 
-test('each section link changes the route and opens its matching content',()=>{
+test('every section button opens its matching content immediately',()=>{
   const c=setup();
   c.planner.render();
   c.planner.handle('generate');
-  const previousLocation=globalThis.location;
-  globalThis.location={hash:''};
   const sections=[['my-move','Next on your list'],['timeline','Your moving timeline'],['rooms','Rooms & sorting'],['packing','Packing & box inventory'],['moving-day','Moving-day command centre'],['settle-in','Settle in gently'],['more','Services & address changes']];
-  try {
-    for(const [target,heading] of sections){
-      const link={dataset:{moveSection:target},closest:selector=>selector==='[data-moving-root]'?{}:null};
-      let stopped=false;
-      c.handlers.click({target:{closest:()=>link},stopImmediatePropagation:()=>{stopped=true;}});
-      assert.equal(stopped,false,'section links must be allowed to change the URL hash');
-      globalThis.location.hash=`#moving-planner-${target}`;
-      c.handlers.hashchange();
-      const state=JSON.parse(c.entries['form:move-one:moving-planner:v2']);
-      assert.equal(state.section,target,`${target} is saved as the active section`);
-      assert.match(c.planner.render(),new RegExp(heading.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\\\$&')));
-    }
-    c.planner.handle('section','my-move');
-    assert.doesNotMatch(c.planner.render(),/move-shortcut|move-welcome/);
-  } finally {
-    if(previousLocation===undefined)delete globalThis.location;else globalThis.location=previousLocation;
+  for(const [target,heading] of sections){
+    const button={dataset:{moveSection:target},closest:selector=>selector==='[data-moving-root]'?{}:null};
+    let stopped=false,prevented=false;
+    c.handlers.click({target:{closest:()=>button},preventDefault:()=>{prevented=true;},stopImmediatePropagation:()=>{stopped=true;}});
+    const state=JSON.parse(c.entries['form:move-one:moving-planner:v2']);
+    assert.equal(state.section,target,`${target} is saved as the active section`);
+    assert.match(c.planner.render(),new RegExp(heading.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\\\$&')));
+    assert.equal(stopped,true,`${target} click is handled`);
+    assert.equal(prevented,true,`${target} button does not trigger browser navigation`);
   }
+  c.planner.handle('section','my-move');
+  assert.doesNotMatch(c.planner.render(),/move-shortcut|move-welcome/);
 });
 
 test('timeline keeps unscheduled and out-of-window tasks visible and preserves their order',()=>{
