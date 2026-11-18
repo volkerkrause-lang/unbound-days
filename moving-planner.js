@@ -43,12 +43,12 @@ const shift = (key, days) => { const d=parse(key); if(!d)return ''; d.setUTCDate
 const fmt = key => {const d=parse(key);return d?new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'}).format(d):'Choose a date';};
 const daysUntil = key => {const d=parse(key);return d?Math.ceil((d-Date.UTC(new Date().getUTCFullYear(),new Date().getUTCMonth(),new Date().getUTCDate()))/86400000):null;};
 
-export function createMovingPlanner({entries,form,save,render,openTask,openEvent,openBudget,toast}) {
+export function createMovingPlanner({entries,form,save,render:renderApp,openTask,openEvent,openBudget,toast}) {
   const storageKey=()=>`form:${form()}:moving-planner:v2`;
   const fresh=()=>({version:2,setup:{moveType:'',origin:'',destination:'',moveDate:'',removals:'undecided',household:'',rooms:''},section:'my-move',tasks:[],rooms:[],boxes:[],services:SERVICE_ITEMS.map(([name,id,url])=>({id,name,url,status:'not-started',contact:'',date:'',notes:''})),budget:BUDGET_ITEMS.map((name,i)=>({id:`budget-${i}`,name,estimate:'',actual:'',paid:'',notes:''})),firstNight:FIRST_NIGHT.map((name,i)=>({id:`kit-${i}`,name,done:false})),dayTasks:DAY_TASKS.map((name,i)=>({id:`day-${i}`,name,done:false})),declutter:[],tipsSeen:0,showLabels:false});
   const read=()=>{try{const parsed=JSON.parse(entries()[storageKey()]||'null');return parsed?.version===2?{...fresh(),...parsed,setup:{...fresh().setup,...parsed.setup}}:null;}catch{return null;}};
   let data=read();
-  const write=(rerender=false)=>{if(!data)return;entries()[storageKey()]=JSON.stringify(data);save();if(rerender)render();};
+  const write=(rerender=false)=>{if(!data)return;entries()[storageKey()]=JSON.stringify(data);save();if(rerender)renderApp();};
   const ensure=()=>{if(!data){data=fresh();}return data;};
   const taskLabel=task=>`${task.title}${task.dueDate?` · ${fmt(task.dueDate)}`:''}`;
   function generate(){
