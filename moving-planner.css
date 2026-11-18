@@ -33,3 +33,5 @@
 .move-day-entry{display:flex;align-items:center;gap:10px;border-bottom:1px solid #806f551d}.move-day-entry .move-task-row{flex:1;border:0}.move-day-entry input[type=time]{width:115px;flex:none}
 @media(max-width:420px){.move-day-entry{flex-wrap:wrap;padding-bottom:5px}.move-day-entry input[type=time]{margin-left:32px}}
 .move-room-progress{margin:0;color:#68735e;font-size:12px}.move-room input[type=color]{width:58px;height:40px;padding:3px;cursor:pointer}
+
+.move-nav a{display:flex;align-items:center;justify-content:center;gap:7px;min-height:43px;padding:7px;border:1px solid #76674d29;border-radius:12px 11px 13px 9px;background:linear-gradient(176deg,#fffdf9,#f7f0e2);box-shadow:1px 2px 2px #46352110;font-size:13px;text-decoration:none;color:inherit}.move-nav a:nth-child(1),.move-nav a:nth-child(4){border-radius:10px 15px 9px 14px}.move-nav a.active{background:#e7eee6;border-color:#81917c}.move-nav a span:first-child{font-size:19px}.move-nav a:focus-visible{outline:3px solid #648ab0;outline-offset:2px}@media(max-width:650px){.move-nav a{justify-content:flex-start;min-height:46px;padding:7px}}
