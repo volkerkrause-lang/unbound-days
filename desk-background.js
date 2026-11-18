@@ -13,7 +13,7 @@ const style=document.createElement('style');
 style.textContent=`
 body.desk-enabled{background:#dfc49d!important;background-image:url('a_clean_warmly_lit_top_down_angled_overhead_stil.png')!important;background-size:cover!important;background-position:var(--desk-position,50% 50%)!important;background-attachment:fixed!important}
 body.desk-custom{background-image:var(--desk-image)!important;background-size:cover!important;background-position:var(--desk-position,50% 50%)!important}
-@media (min-width:768px) and (max-width:1200px) and (orientation:portrait){body.desk-enabled:not(.desk-custom){background-size:auto 100dvh!important;background-position:76% center!important}}
+@media (min-width:768px) and (max-width:1200px) and (min-height:900px){body.desk-enabled:not(.desk-custom){background-size:auto 100dvh!important;background-position:76% center!important}}
 body.desk-enabled:before{content:'';position:fixed;inset:0;pointer-events:none;background:linear-gradient(115deg,#fff9e62b,transparent 48%,#63401a16);z-index:0}
 body.desk-enabled #app{isolation:isolate}
 body.desk-enabled .desk-button{touch-action:manipulation}

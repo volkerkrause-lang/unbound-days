@@ -21,7 +21,7 @@ try {
     if(name.startsWith('ipad')){
       // The photograph is 1536 × 1024. The cup begins at x≈1120 in that image.
       const cupLeft=1120*height/1024-(1.5*height-width)*.76;
-      assert.match(closed.position,/76%/,`${name}: portrait crop`);
+      assert.match(closed.position,/76%/,`${name}: portrait crop (computed ${closed.position})`);
       assert.ok(closed.right+8<cupLeft,`${name}: closed cover and tabs must clear cup (${closed.right} < ${cupLeft})`);
     }
     if(name==='ipad')await page.screenshot({path:'test-results/moving-ipad-closed.png'});
