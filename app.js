@@ -751,7 +751,10 @@ function plannerPrevious(record,count){const t=record.template,hasOld=t.sections
 function plannerNew(type){const t=plannerTemplates.find(t=>t.id===type);if(!t)return;if(type==='meal-week'){plannerManagingForms=false;plannerPinned=false;plannerPage=null;plannerMode='meals';section='goals';closed=false;render();return;}plannerManagingForms=false;plannerPage=id();const now=new Date().toISOString();state.entries[plannerKey('type')]=type;state.entries[plannerKey('title')]=t.title;state.entries[plannerKey('rows')]='4';state.entries[plannerKey('edited')]=now;state.entries[plannerKey('accessed')]=now;if(type==='pack-go')PackGo.initialisePacking(state.entries,plannerPage);save();plannerMode='forms';section='goals';closed=false;render();}
 function plannerClick(data){
  if(plannerRecords().find(r=>r.key===plannerPage)?.template.id==='household-budget'&&getBudgetPlanner().handle(data))return true;
- if(plannerRecords().find(r=>r.key===plannerPage)?.template.id==='moving-planner'&&Object.keys(data).some(key=>key.startsWith('move')))return getMovingPlanner().handle(data.moveAction,data.moveValue??data.moveId);
+ if(plannerRecords().find(r=>r.key===plannerPage)?.template.id==='moving-planner'){
+  if(data.moveSection)return getMovingPlanner().handle('section',data.moveSection);
+  if(Object.keys(data).some(key=>key.startsWith('move')))return getMovingPlanner().handle(data.moveAction,data.moveValue??data.moveId);
+ }
  if(plannerMode==='meals'&&Object.keys(data).some(key=>key.startsWith('mp')))return mealPlanner.handle(data).catch(err=>toast(err.message));
  if(typeof plannerMode!=='undefined'&&plannerMode==='travel'&&Object.keys(data).some(key=>key.startsWith('travel')))return getTravelPlanner().handle(data).catch(err=>toast(err.message));
  if(Object.keys(data).some(key=>key.startsWith('template'))){try{return templateLibrary.handle(data);}catch(err){toast(err.message);return true;}}
