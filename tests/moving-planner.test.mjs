@@ -69,6 +69,16 @@ test('moving budget links to the household budget without duplicating move costs
   assert.equal(opened,1);
 });
 
+test('section buttons pass their target section through the delegated click handler',()=>{
+  const c=setup();
+  c.planner.render();
+  let stopped=false;
+  const button={dataset:{moveAction:'section',moveValue:'more'},closest:selector=>selector==='[data-moving-root]'?{}:null};
+  c.handlers.click({target:{closest:()=>button},stopImmediatePropagation:()=>{stopped=true;}});
+  assert.equal(JSON.parse(c.entries['form:move-one:moving-planner:v2']).section,'more');
+  assert.equal(stopped,true);
+});
+
 test('timeline keeps unscheduled and out-of-window tasks visible and preserves their order',()=>{
   const c=setup();c.planner.render();
   c.planner.changed(field({moveField:'setup.moveDate'},'2027-06-20'));
