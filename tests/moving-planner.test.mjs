@@ -3,11 +3,11 @@ import assert from 'node:assert/strict';
 import {createMovingPlanner} from '../moving-planner.js';
 
 const field=(dataset,value)=>({closest:()=>true,matches:selector=>selector==='[data-move-field]'&&!!dataset.moveField,dataset,value});
-function setup(entries={}){
+function setup(entries={},options={}){
   const handlers={};
   globalThis.document={addEventListener:(name,fn)=>{handlers[name]=fn;},removeEventListener:()=>{}};
   let saves=0,renders=0;
-  const planner=createMovingPlanner({entries:()=>entries,form:()=> 'move-one',save:()=>saves++,render:()=>renders++,toast:()=>{}});
+  const planner=createMovingPlanner({entries:()=>entries,form:()=> 'move-one',save:()=>saves++,render:()=>renders++,toast:()=>{},...options});
   return {entries,planner,handlers,saves:()=>saves,renders:()=>renders};
 }
 
@@ -55,6 +55,18 @@ test('budget figures calculate deterministically and checklists persist',()=>{
   c.planner.toggle('kit','kit-0');
   data=JSON.parse(c.entries['form:move-one:moving-planner:v2']);
   assert.equal(data.firstNight[0].done,true);
+});
+
+test('moving budget links to the household budget without duplicating move costs',()=>{
+  let opened=0;
+  const c=setup({}, {openBudget:()=>opened++});
+  c.planner.render();
+  c.planner.handle('section','more');
+  const html=c.planner.render();
+  assert.match(html,/Open Budget Planner/);
+  assert.match(html,/never duplicated/);
+  c.planner.handle('open-budget');
+  assert.equal(opened,1);
 });
 
 test('timeline keeps unscheduled and out-of-window tasks visible and preserves their order',()=>{
