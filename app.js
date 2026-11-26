@@ -29,7 +29,7 @@ import {saveCaptureIdea,fetchLinkPreview} from './link-preview.js?v=0.1.2';
 import * as TravelPlanner from './travel-planner.js?v=0.1.8';
 import * as TravelDocument from './travel-extractor.js?v=0.1.2';
 import * as MealPlanner from './meal-planner.js?v=0.1.1';
-import {createBudgetPlanner} from './budget-planner.js?v=0.2.3';
+import {createBudgetPlanner} from './budget-planner.js?v=0.2.4';
 import {createMovingPlanner} from './moving-planner.js?v=0.1.4';
 
 const captureQuery=new URLSearchParams(location.search);

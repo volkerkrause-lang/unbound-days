@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {moneyToMinor,moneyFromMinor,monthTotals,csvForMonth,createBudgetPlanner,recurrenceApplies} from '../budget-planner.js';
+import {moneyToMinor,moneyFromMinor,monthTotals,cashflowTimeline,csvForMonth,createBudgetPlanner,recurrenceApplies} from '../budget-planner.js';
 
 test('money conversion uses integer minor units and rounds by entered pence',()=>{
  assert.equal(moneyToMinor('22.80'),2280);
@@ -70,6 +70,24 @@ test('savings reduce available money but are not counted as expenditure',()=>{
  assert.equal(totals.planned,50000);assert.equal(totals.savings,30000);assert.equal(totals.remaining,120000);assert.equal(totals.actualCashflow,140000);
 });
 
+test('cash-flow timeline includes opening balance, dated income and fixed costs, and flags missing days',()=>{
+ const timeline=cashflowTimeline({openingBalance:10000,categories:[
+  {name:'Income',kind:'income',items:[{name:'Salary',planned:200000,dueDay:25}]},
+  {name:'Fixed commitments',kind:'expense',items:[{name:'Rent',planned:80000,fixed:true,dueDay:1},{name:'Water',planned:5000,fixed:true,dueDate:'2026-11-12'}]},
+  {name:'Other',kind:'expense',items:[{name:'Flexible spending',planned:40000,fixed:false},{name:'Council tax',planned:10000,fixed:true}]}
+ ]},'2026-11');
+ assert.deepEqual(timeline.rows.map(x=>x.day),[1,12,25]);
+ assert.equal(timeline.rows[0].balance,-70000,'balance includes the opening amount and bills paid by this date');
+ assert.equal(timeline.rows[0].futureCosts,5000,'later fixed costs remain visible');
+ assert.equal(timeline.rows[0].projectedEnd,125000,'forecast includes later income and fixed costs');
+ assert.equal(timeline.monthEnd,125000);
+ assert.equal(timeline.unscheduledCosts,10000);
+ assert.equal(timeline.unscheduled.length,1);
+ const explicitlyUnscheduled=cashflowTimeline({categories:[{name:'Fixed',kind:'expense',items:[{name:'Old dated bill',planned:7000,fixed:true,dueDate:'2026-11-05',dueDay:null,dueDayOverridden:true}]}]},'2026-11');
+ assert.equal(explicitlyUnscheduled.rows.length,0,'clearing the day overrides a legacy full-date value');
+ assert.equal(explicitlyUnscheduled.unscheduledCosts,7000);
+});
+
 test('monthly summary separates fixed commitments, flexible spending, savings and the unallocated balance',()=>{
  const totals=monthTotals({categories:[
   {kind:'income',items:[{planned:300000}]},
@@ -131,16 +149,32 @@ test('planned and actual edits are written back to the notebook before the app s
  }finally{if(previousDocument===undefined)delete globalThis.document;else globalThis.document=previousDocument;}
 });
 
-test('the simple, breakdown, trends and payments views persist; detailed is no longer offered',()=>{
+test('the simple, cash-flow, breakdown, trends and payments views persist; detailed is no longer offered',()=>{
  const data={version:1,active:'2026-11',months:{'2026-11':{name:'November 2026',categories:[{id:'income',name:'Income',kind:'income',items:[{id:'salary',name:'Salary',planned:200000,actual:null,frequency:'Monthly',flow:'cash'}]},{id:'bills',name:'Bills',kind:'expense',items:[{id:'rent',name:'Rent',planned:90000,actual:null,dueDate:'2026-11-30',status:'planned',frequency:'Monthly',flow:'cash',fixed:true}]}]}},goals:[]};
  let redraws=0;const bag={'budget:views:data':JSON.stringify(data)},planner=createBudgetPlanner({entries:()=>bag,form:()=>'views',save:()=>{},render:()=>redraws++,toast:()=>{}});
  assert.doesNotMatch(planner.render(),/data-budget-view="detailed"/);
- for(const [view,marker] of [['simple','data-budget-item-name="rent"'],['breakdown','budget-breakdown'],['trends','budget-trends'],['payments','budget-payments']]){
+ for(const [view,marker] of [['simple','data-budget-item-name="rent"'],['cashflow','budget-cashflow'],['breakdown','budget-breakdown'],['trends','budget-trends'],['payments','budget-payments']]){
   planner.handle({budgetAction:'select-view',budgetView:view});
   assert.equal(JSON.parse(bag['budget:views:data']).months['2026-11'].view,view);
-  assert.equal(redraws,(['simple','breakdown','trends','payments'].indexOf(view)+1),'each view change must redraw the app');
+  assert.equal(redraws,(['simple','cashflow','breakdown','trends','payments'].indexOf(view)+1),'each view change must redraw the app');
   assert.match(planner.render(),new RegExp(marker));
  }
+});
+
+test('cash-flow view shows scheduled bills, future balance and a clear route to add payment days',()=>{
+ const data={version:1,active:'2026-11',months:{'2026-11':{name:'November 2026',view:'cashflow',openingBalance:5000,categories:[{id:'income',name:'Income',kind:'income',items:[{id:'salary',name:'Salary',planned:200000,dueDay:25}]},{id:'bills',name:'Fixed commitments',kind:'expense',items:[{id:'rent',name:'Rent',planned:90000,fixed:true,dueDay:1},{id:'water',name:'Water',planned:5000,fixed:true}]}]}},goals:[]};
+ const bag={'budget:cashflow:data':JSON.stringify(data)},planner=createBudgetPlanner({entries:()=>bag,form:()=>'cashflow',save:()=>{},render:()=>{},toast:()=>{}});
+ const html=planner.render();
+ assert.match(html,/Cash flow through November 2026/);
+ assert.match(html,/Balance after this day/);
+ assert.match(html,/Fixed costs still due/);
+ assert.match(html,/Projected after scheduled bills/);
+ assert.match(html,/Water/);
+ assert.match(html,/data-budget-action="set-payment-days"/);
+ assert.match(html,/Starting balance/);
+ planner.handle({budgetAction:'set-payment-days'});
+ assert.match(planner.render(),/data-budget-field="dueDay"/);
+ assert.equal(JSON.parse(bag['budget:cashflow:data']).months['2026-11'].view,'simple');
 });
 
 test('budget edits survive leaving and reopening the planner',()=>{

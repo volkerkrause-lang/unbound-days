@@ -115,3 +115,46 @@
 @media(max-width:600px){.budget-title-actions{flex-wrap:wrap;justify-content:flex-end}.budget-save-state{width:100%;text-align:right}.budget-summary>div{min-height:76px}}
 @media(max-width:500px){.budget-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.budget-summary>div:nth-child(3){grid-column:1/-1}.budget-summary-available strong{font-size:1.45rem}}
 @media print{.budget-save-state,.budget-save-button{display:none!important}}
+
+/* Cash-flow calendar: coloured, at-a-glance balance after each scheduled date. */
+.budget-pay-day{display:grid;gap:.18rem;min-width:0;color:#655e54;font-size:.68rem}
+.budget-pay-day input{width:100%;min-width:52px;padding:.48rem .25rem;border:1px solid #d8cebe;border-radius:8px;background:#fffdf9;text-align:center;font:inherit;font-size:.9rem}
+.budget-planner.is-editing .budget-line:has(.budget-pay-day){grid-template-columns:minmax(110px,1.35fr) minmax(82px,.65fr) minmax(78px,.45fr) auto}
+.budget-cashflow{grid-column:1/-1;min-width:0}
+.budget-cashflow-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;padding:1rem 1.1rem;border:1px solid #d9e5dd;border-radius:17px;background:linear-gradient(120deg,#edf6ef 0%,#eff5fb 55%,#faf0df 100%)}
+.budget-cashflow-heading h3{margin:0;color:#365843;font-size:1.3rem}
+.budget-cashflow-heading p{max-width:650px;margin:.35rem 0 0;color:#645f58;line-height:1.45}
+.budget-opening-balance{display:grid;gap:.2rem;min-width:145px;color:#52624f;font-size:.8rem;font-weight:650}
+.budget-opening-balance>span{font-size:.72rem;font-weight:400;color:#776f65}
+.budget-cashflow-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7rem;margin:.75rem 0}
+.budget-cashflow-summary>div{display:grid;gap:.3rem;padding:.9rem 1rem;border:1px solid transparent;border-radius:14px}
+.budget-cashflow-summary span{font-size:.78rem;color:#625e57}
+.budget-cashflow-summary strong{font-size:clamp(1.2rem,2.5vw,1.7rem);font-variant-numeric:tabular-nums;color:#334239}
+.budget-cashflow-income{background:linear-gradient(145deg,#f0f8ed,#e2f0df);border-color:#d0e1cb!important}
+.budget-cashflow-costs{background:linear-gradient(145deg,#fcf0ec,#f5e0db);border-color:#ead1ca!important}
+.budget-cashflow-end{background:linear-gradient(145deg,#edf4fb,#dfeaf6);border-color:#ceddec!important}
+.budget-cashflow-warning{display:grid;grid-template-columns:1fr auto;gap:.35rem .8rem;align-items:center;margin:.7rem 0;padding:.8rem 1rem;border:1px solid #ead5a8;border-radius:12px;background:#fff8e8;color:#635438}
+.budget-cashflow-warning p{margin:.18rem 0 0;font-size:.82rem}
+.budget-cashflow-warning>button{padding:.55rem .75rem;border:1px solid #d7bd84;border-radius:9px;background:#fffdf8;color:#635438;cursor:pointer}
+.budget-cashflow-warning details{grid-column:1/-1;padding-top:.3rem}
+.budget-cashflow-warning summary{cursor:pointer;font-size:.82rem}
+.budget-cashflow-warning ul{display:grid;gap:.3rem;margin:.5rem 0 0;padding:0;list-style:none}
+.budget-cashflow-warning li{display:grid;grid-template-columns:1fr auto auto;gap:.8rem;align-items:center;padding:.45rem;border-top:1px solid #f0e4c9}
+.budget-cashflow-warning li small{color:#86734d}
+.budget-cashflow-steps{display:grid;gap:.55rem;margin:.8rem 0;padding:0;list-style:none;counter-reset:cashflow}
+.budget-cashflow-step{display:grid;grid-template-columns:minmax(90px,.55fr) minmax(150px,1.35fr) repeat(3,minmax(115px,.8fr));gap:.65rem;align-items:center;padding:.72rem .8rem;border:1px solid #e5dfd4;border-left:4px solid #7ca27d;border-radius:13px;background:linear-gradient(100deg,#fffdf8,#f7f8f2);box-shadow:0 2px 8px #4638210a}
+.budget-cashflow-date{display:grid;gap:.12rem;color:#46634a;font-weight:700}
+.budget-cashflow-date small{font-weight:400;color:#81796f}
+.budget-cashflow-events{display:grid;gap:.22rem}
+.budget-cashflow-event{display:flex;justify-content:space-between;gap:.4rem;padding:.27rem .45rem;border-radius:7px;font-size:.84rem}
+.budget-cashflow-event--income{background:#e8f3e5;color:#3e6d45}
+.budget-cashflow-event--cost{background:#f8e9e5;color:#8d5049}
+.budget-cashflow-metric{display:grid;gap:.15rem;padding-left:.55rem;border-left:1px solid #e8e1d7}
+.budget-cashflow-metric small{font-size:.68rem;line-height:1.2;color:#746c61}
+.budget-cashflow-metric strong{font-size:1rem;font-variant-numeric:tabular-nums;color:#344b3c;white-space:nowrap}
+.budget-cashflow-metric strong.over{color:#a64b38}
+.budget-cashflow-projection{padding:.45rem .55rem;border:0;border-radius:9px;background:#edf4ed}
+.budget-cashflow-empty{padding:1.1rem;border:1px dashed #cfc6b7;border-radius:13px;background:#fbfaf5;color:#6d665b;text-align:center}
+@media(max-width:850px){.budget-planner.is-editing .budget-line:has(.budget-pay-day){grid-template-columns:minmax(100px,1fr) minmax(80px,.7fr) minmax(70px,.55fr)}.budget-planner.is-editing .budget-line:has(.budget-pay-day) .budget-row-actions{grid-column:1/-1}.budget-cashflow-step{grid-template-columns:minmax(80px,.45fr) minmax(130px,1fr) repeat(3,minmax(100px,.75fr));gap:.45rem;padding:.6rem}}
+@media(max-width:650px){.budget-cashflow-heading{flex-direction:column}.budget-opening-balance{width:100%;max-width:220px}.budget-cashflow-summary{gap:.4rem}.budget-cashflow-summary>div{padding:.65rem}.budget-cashflow-summary span{font-size:.7rem}.budget-cashflow-summary strong{font-size:1.1rem}.budget-cashflow-step{grid-template-columns:1fr 1fr;gap:.45rem}.budget-cashflow-events{grid-column:1/-1;grid-row:2}.budget-cashflow-date{grid-column:1/-1;grid-row:1;display:flex;justify-content:space-between;align-items:center;padding-bottom:.35rem;border-bottom:1px solid #e8e1d7}.budget-cashflow-metric{border-left:0;padding:.35rem .45rem;background:#f6f5ef;border-radius:8px}.budget-cashflow-projection{background:#eaf3e9}.budget-cashflow-warning{grid-template-columns:1fr}.budget-cashflow-warning details{grid-column:auto}.budget-planner.is-editing .budget-line:has(.budget-pay-day){grid-template-columns:minmax(100px,1fr) minmax(80px,.7fr)}.budget-planner.is-editing .budget-pay-day{grid-column:1/-1;grid-template-columns:1fr 80px;align-items:center}}
+@media print{.budget-cashflow-heading,.budget-cashflow-summary>div,.budget-cashflow-step{break-inside:avoid}}
