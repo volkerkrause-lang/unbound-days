@@ -70,6 +70,23 @@ test('savings reduce available money but are not counted as expenditure',()=>{
  assert.equal(totals.planned,50000);assert.equal(totals.savings,30000);assert.equal(totals.remaining,120000);assert.equal(totals.actualCashflow,140000);
 });
 
+test('monthly summary separates fixed commitments, flexible spending, savings and the unallocated balance',()=>{
+ const totals=monthTotals({categories:[
+  {kind:'income',items:[{planned:300000}]},
+  {kind:'expense',items:[{planned:120000,fixed:true,flow:'cash'},{planned:50000,fixed:false,flow:'cash'},{planned:20000,flow:'savings'},{planned:10000,flow:'transfer'}]}
+ ]});
+ assert.equal(totals.income,300000);
+ assert.equal(totals.fixed,120000);
+ assert.equal(totals.availableToAllocate,180000);
+ assert.equal(totals.variable,50000);
+ assert.equal(totals.savings,20000);
+ assert.equal(totals.remaining,110000);
+ assert.equal(totals.unallocated,110000);
+ assert.equal(totals.planned,170000,'transfers and savings are not counted as expenses');
+ assert.equal(monthTotals({categories:[{kind:'income',items:[{planned:0}]},{kind:'expense',items:[{planned:0,fixed:true}]}]}).remaining,0);
+ assert.equal(monthTotals({categories:[{kind:'income',items:[{planned:10000}]},{kind:'expense',items:[{planned:10000,fixed:true},{planned:5000}]}]}).remaining,-5000);
+});
+
 test('new actual values remain blank until entered and CSV distinguishes missing from zero',()=>{
  const csv=csvForMonth({categories:[{name:'Income',kind:'income',items:[{name:'Salary',planned:100000,actual:null,status:'planned',frequency:'Monthly',flow:'cash'}]},{name:'Bills',kind:'expense',items:[{name:'Water',planned:5000,actual:0,actualEntered:true,status:'paid',frequency:'Monthly',flow:'cash'}]}]},'2026-11');
  assert.match(csv,/"2026-11","Income","Salary","1000\.00","",""/);assert.match(csv,/"Water","50\.00","0\.00","50\.00"/);
@@ -120,4 +137,58 @@ test('all five view selections persist and render their selected view',()=>{
   assert.equal(redraws,(['simple','detailed','breakdown','trends','payments'].indexOf(view)+1),'each view change must redraw the app');
   assert.match(planner.render(),new RegExp(marker));
  }
+});
+
+test('new months start with empty planning sections and no prefilled suggestion collection',()=>{
+ const bag={'budget:new-month:data':JSON.stringify({version:1,active:'2026-11',months:{'2026-11':{name:'November',categories:[]}},goals:[]})},planner=createBudgetPlanner({entries:()=>bag,form:()=>'new-month',save:()=>{},render:()=>{},toast:()=>{}});
+ planner.changed({dataset:{budgetActiveMonth:'2026-12'},value:'2026-12'});
+ const month=JSON.parse(bag['budget:new-month:data']).months['2026-12'];
+ assert.deepEqual(month.categories.map(c=>c.name),['Income','Fixed commitments','Variable spending','Savings']);
+ assert.ok(month.categories.every(c=>c.items.length===0));
+ const html=planner.render();
+ assert.match(html,/Available money plan/);
+ assert.match(html,/\+ Add entry/);
+ assert.doesNotMatch(html,/suggested item|preselected collection|\+ Custom item/);
+});
+
+test('adding an entry creates one blank row and reordering preserves its data',()=>{
+ const data={version:1,active:'2026-11',months:{'2026-11':{name:'November',categories:[{id:'flex',name:'Variable spending',kind:'expense',items:[{id:'a',name:'Groceries',planned:25000,frequency:'One-off',flow:'cash'},{id:'b',name:'Transport',planned:8000,frequency:'One-off',flow:'cash'}]}]}},goals:[]};
+ const bag={'budget:edit:data':JSON.stringify(data)},planner=createBudgetPlanner({entries:()=>bag,form:()=>'edit',save:()=>{},render:()=>{},toast:()=>{}});
+ planner.handle({budgetAction:'add-item',budgetCategory:'flex'});
+ let month=JSON.parse(bag['budget:edit:data']).months['2026-11'];
+ assert.equal(month.categories[0].items.length,3);
+ assert.equal(month.categories[0].items[2].name,'');
+ assert.equal(month.categories[0].items[2].planned,0);
+ planner.handle({budgetAction:'up',budgetItem:'b'});
+ month=JSON.parse(bag['budget:edit:data']).months['2026-11'];
+ assert.deepEqual(month.categories[0].items.map(i=>i.id),['b','a',month.categories[0].items[2].id]);
+ assert.equal(month.categories[0].items.find(i=>i.id==='b').planned,8000);
+});
+
+test('a copied month gets independent entries and does not change its historical source',()=>{
+ const source={name:'November 2026',categories:[{id:'bills',name:'Fixed commitments',kind:'expense',items:[{id:'rent',name:'Rent',planned:100000,actual:98000,actualEntered:true,dueDate:'2026-11-01',status:'paid',frequency:'Monthly',flow:'cash',fixed:true}]}]};
+ const bag={'budget:copy:data':JSON.stringify({version:1,active:'2026-11',months:{'2026-11':structuredClone(source)},goals:[]})};
+ const originalPrompt=globalThis.prompt,originalConfirm=globalThis.confirm;let prompts=['2026-12','recurring only'];
+ globalThis.prompt=()=>prompts.shift()??'';globalThis.confirm=()=>true;
+ try{
+  const planner=createBudgetPlanner({entries:()=>bag,form:()=>'copy',save:()=>{},render:()=>{},toast:()=>{}});
+  planner.handle({budgetAction:'copy'});
+  const data=JSON.parse(bag['budget:copy:data']),copied=data.months['2026-12'].categories[0].items[0];
+  assert.equal(data.active,'2026-12');
+  assert.equal(copied.name,'Rent');
+  assert.equal(copied.planned,100000);
+  assert.equal(copied.actual,null);
+  assert.equal(copied.status,'planned');
+  assert.notEqual(copied.id,'rent');
+  assert.equal(data.months['2026-11'].categories[0].items[0].actual,98000);
+ }finally{if(originalPrompt===undefined)delete globalThis.prompt;else globalThis.prompt=originalPrompt;if(originalConfirm===undefined)delete globalThis.confirm;else globalThis.confirm=originalConfirm;}
+});
+
+test('invalid budget JSON is preserved and shown without overwriting it',()=>{
+ const raw='{not valid budget data';const bag={'budget:corrupt:data':raw};let writes=0;
+ const planner=createBudgetPlanner({entries:()=>bag,form:()=>'corrupt',save:()=>writes++,render:()=>{},toast:()=>{}});
+ planner.initialise();
+ assert.equal(bag['budget:corrupt:data'],raw);
+ assert.match(planner.render(),/could not be read/);
+ assert.equal(writes,0);
 });
