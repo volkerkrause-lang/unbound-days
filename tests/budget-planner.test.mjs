@@ -1,12 +1,21 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {moneyToMinor,moneyFromMinor,monthTotals,csvForMonth,createBudgetPlanner} from '../budget-planner.js';
+import {moneyToMinor,moneyFromMinor,monthTotals,csvForMonth,createBudgetPlanner,recurrenceApplies} from '../budget-planner.js';
 
 test('money conversion uses integer minor units and rounds by entered pence',()=>{
  assert.equal(moneyToMinor('22.80'),2280);
  assert.equal(moneyToMinor('1,234.56'),123456);
  assert.equal(moneyToMinor(''),0);
  assert.equal(moneyFromMinor(1003),'10.03');
+});
+test('recurring entries honor start/end dates and frequency intervals',()=>{
+ const quarterly={frequency:'Quarterly',recurringStartMonth:'2026-09'};
+ assert.equal(recurrenceApplies(quarterly,'2026-09','2026-08'),true);
+ assert.equal(recurrenceApplies(quarterly,'2026-10','2026-09'),false);
+ assert.equal(recurrenceApplies(quarterly,'2026-12','2026-11'),true);
+ assert.equal(recurrenceApplies({frequency:'Monthly',startDate:'2026-11-15',endDate:'2027-01-01'},'2026-10'),false);
+ assert.equal(recurrenceApplies({frequency:'Monthly',startDate:'2026-11-15',endDate:'2027-01-01'},'2027-02'),false);
+ assert.equal(recurrenceApplies({frequency:'One-off'},'2026-11'),false);
 });
 test('starter handwritten categories reconcile from their original subtotals without duplication',()=>{
  const month={categories:[
