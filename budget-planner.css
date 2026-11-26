@@ -37,6 +37,38 @@
 .budget-title{align-items:center}
 @media(max-width:650px){.budget-view-control{align-items:center;flex-direction:row}.budget-view-switch{width:auto}.budget-view-switch button{flex:initial}}
 
+.budget-month-label{margin:.1rem 0;color:#766e65;font:1.05rem var(--hand)}
+.budget-current-view{padding:.45rem .75rem;border-radius:20px;background:#edf2e9;color:#526a50;font-size:.85rem;text-transform:capitalize}
+.budget-allocation{margin:.4rem 0 .8rem;padding:.6rem .8rem;background:#fffdf8;border:1px solid #e4d9c8;border-radius:10px}
+.budget-allocation>div{height:9px;overflow:hidden;border-radius:9px;background:#e7e0d5}
+.budget-allocation i{display:block;width:min(100%,calc(var(--allocation-expenses) + var(--allocation-savings)));height:100%;background:linear-gradient(90deg,#91a988 0 var(--allocation-expenses),#c99a62 var(--allocation-expenses) calc(var(--allocation-expenses) + var(--allocation-savings)),#e7e0d5 calc(var(--allocation-expenses) + var(--allocation-savings)) 100%)}
+.budget-allocation small{display:block;margin-top:.35rem}
+.budget-tools{margin:.45rem 0}.budget-tools summary span{float:right;color:#72685c;font-weight:400;text-transform:capitalize}
+.budget-tools .budget-toolbar{align-items:flex-end}
+.budget-undo{position:sticky;top:0;z-index:3;display:flex;justify-content:space-between;align-items:center;padding:.55rem .8rem;margin:.6rem 0;background:#384c3a;color:#fff;border-radius:9px;box-shadow:0 3px 12px #30281f33}
+.budget-undo button{padding:.3rem .7rem;border:1px solid #ffffff88;border-radius:7px;color:#fff}
+.budget-difference{font-size:.82rem;text-align:right;font-variant-numeric:tabular-nums}.budget-difference.favourable{color:#47734a}.budget-difference.unfavourable{color:#a34e42}.budget-difference.unknown{color:#8c8377}
+.budget-due-status{display:flex;flex-wrap:wrap;gap:.25rem;min-width:0}.budget-due-status>*{flex:1;min-width:85px}
+.budget-breakdown{display:grid;grid-template-columns:minmax(170px,.7fr) minmax(0,1.3fr);gap:1.5rem;align-items:center}
+.budget-donut{width:min(100%,240px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;margin:auto;background:conic-gradient(var(--donut));position:relative}
+.budget-donut:before{content:"";position:absolute;inset:20%;border-radius:50%;background:#fffdf8}.budget-donut>span{z-index:1;text-align:center;font-weight:700}.budget-donut small{display:block;font-size:.72rem;color:#766e65;font-weight:400}
+.budget-breakdown ul{list-style:none;padding:0;margin:0}.budget-breakdown li{display:grid;grid-template-columns:12px minmax(80px,1fr) auto auto auto;gap:.5rem;align-items:center;padding:.55rem 0;border-bottom:1px solid #e6dfd3}.budget-breakdown li>span{width:11px;height:11px;border-radius:50%;background:var(--swatch)}.budget-breakdown li small{color:#776f65}.budget-breakdown li button,.budget-payments button{border:1px solid #ded3c2;border-radius:7px;padding:.35rem .55rem;background:#fffdf8}
+.budget-table-scroll{overflow-x:auto}.budget-trends table{width:100%;min-width:560px;border-collapse:collapse}.budget-trends th,.budget-trends td{text-align:right;padding:.65rem;border-bottom:1px solid #e2dbcf;white-space:nowrap}.budget-trends th:first-child{text-align:left}
+.budget-payments article{display:grid;grid-template-columns:minmax(130px,1fr) auto auto auto;gap:.7rem;align-items:center;padding:.7rem;border-bottom:1px solid #e2dbcf}.budget-payments article small{display:block;color:#776f65}.payment-status{text-transform:capitalize;color:#58745b;font-size:.85rem}
+.budget-planner:has(.actual) .budget-line{grid-template-columns:minmax(110px,1.2fr) minmax(80px,.7fr) minmax(85px,.7fr) minmax(75px,.6fr) minmax(125px,1fr) auto}
+@media(max-width:850px){.budget-breakdown{grid-template-columns:1fr}.budget-donut{width:min(48vw,220px)}.budget-planner:has(.actual) .budget-line{grid-template-columns:repeat(2,minmax(0,1fr))}.budget-due-status{grid-column:1/-1}.budget-difference{text-align:left}.budget-payments article{grid-template-columns:minmax(0,1fr) auto}.budget-payments article>*:nth-child(3),.budget-payments article>*:nth-child(4){grid-column:auto}}
+@media print{.budget-tools,.budget-current-view,.budget-undo{display:none!important}.budget-planner{font-size:10pt}.budget-summary{grid-template-columns:repeat(4,1fr)}.budget-allocation{break-inside:avoid}}
+
+/* The open notebook gets extra width on a portrait iPad; the closed cover stays untouched. */
+@media (min-width:768px) and (max-width:1100px) and (orientation:portrait){
+ body:has(.book-shell) .book-shell{width:calc(100% + 5vw);max-width:none;margin-left:-2.5vw;margin-right:0;padding-right:48px}
+ body:has(.book-shell) .book-shell>.book{padding-left:26px;padding-right:30px}
+ body:has(.book-shell) .calendar-layout{grid-template-columns:minmax(0,1fr) 190px;gap:16px}
+ body:has(.book-shell) .calendar-table td{height:clamp(68px,8.5dvh,105px)}
+ body.desk-enabled:has(.book-shell):not(.desk-custom){background-position:82% center!important}
+}
+@media (max-width:650px){.budget-breakdown li{grid-template-columns:12px minmax(60px,1fr) auto auto}.budget-breakdown li button{grid-column:2/-1;justify-self:start}.budget-payments article{gap:.4rem}.budget-payments article button{grid-column:1/-1;justify-self:end}}
+
 .planner-card .planner-choice-icon{display:grid;place-items:center;width:2.65rem;height:2.65rem;margin:0 0 .55rem;border-radius:14px;background:linear-gradient(145deg,#e9f1e5,#dce8d7);color:#3e6645;font:700 1.4rem/1 var(--ui);box-shadow:inset 0 0 0 1px #c8d9c4}
 .planner-card[data-planner-choice=travel] .planner-choice-icon{background:linear-gradient(145deg,#e6f1f8,#d9e9f2);color:#356781;box-shadow:inset 0 0 0 1px #c5dce8}
 .planner-card[data-planner-template=pack-go] .planner-choice-icon{background:linear-gradient(145deg,#fff2d8,#f4e3bc);color:#8a6526;box-shadow:inset 0 0 0 1px #e8d3a5}
