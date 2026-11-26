@@ -77,11 +77,13 @@ test('new actual values remain blank until entered and CSV distinguishes missing
 
 test('deleting an entry updates totals and Undo restores all saved entry fields',()=>{
  const original={version:1,active:'2026-11',months:{'2026-11':{name:'November 2026 Budget',categories:[{id:'bills',name:'Bills',kind:'expense',items:[{id:'rent',name:'Rent',planned:125000,actual:123000,dueDate:'2026-11-01',status:'paid',frequency:'Monthly',flow:'cash',notes:'standing order',fixed:true}]}]}},goals:[]};
- const bag={'budget:test:data':JSON.stringify(original)},planner=createBudgetPlanner({entries:()=>bag,form:()=>'test',save:()=>{},render:()=>{},toast:()=>{}});
+ let redraws=0;const bag={'budget:test:data':JSON.stringify(original)},planner=createBudgetPlanner({entries:()=>bag,form:()=>'test',save:()=>{},render:()=>redraws++,toast:()=>{}});
  planner.handle({budgetAction:'remove',budgetItem:'rent'});
  assert.equal(monthTotals(JSON.parse(bag['budget:test:data']).months['2026-11']).planned,0);
+ assert.equal(redraws,1,'delete must redraw the app immediately');
  assert.match(planner.render(),/data-budget-action="undo-delete"/);
  planner.handle({budgetAction:'undo-delete'});
+ assert.equal(redraws,2,'undo must redraw the app immediately');
  assert.deepEqual(JSON.parse(bag['budget:test:data']).months['2026-11'].categories[0].items[0],original.months['2026-11'].categories[0].items[0]);
 });
 
@@ -111,10 +113,11 @@ test('planned and actual edits are written back to the notebook before the app s
 
 test('all five view selections persist and render their selected view',()=>{
  const data={version:1,active:'2026-11',months:{'2026-11':{name:'November 2026',categories:[{id:'income',name:'Income',kind:'income',items:[{id:'salary',name:'Salary',planned:200000,actual:null,frequency:'Monthly',flow:'cash'}]},{id:'bills',name:'Bills',kind:'expense',items:[{id:'rent',name:'Rent',planned:90000,actual:null,dueDate:'2026-11-30',status:'planned',frequency:'Monthly',flow:'cash',fixed:true}]}]}},goals:[]};
- const bag={'budget:views:data':JSON.stringify(data)},planner=createBudgetPlanner({entries:()=>bag,form:()=>'views',save:()=>{},render:()=>{},toast:()=>{}});
+ let redraws=0;const bag={'budget:views:data':JSON.stringify(data)},planner=createBudgetPlanner({entries:()=>bag,form:()=>'views',save:()=>{},render:()=>redraws++,toast:()=>{}});
  for(const [view,marker] of [['simple','data-budget-item-name="rent"'],['detailed','data-budget-field="actual"'],['breakdown','budget-breakdown'],['trends','budget-trends'],['payments','budget-payments']]){
   planner.handle({budgetAction:'select-view',budgetView:view});
   assert.equal(JSON.parse(bag['budget:views:data']).months['2026-11'].view,view);
+  assert.equal(redraws,(['simple','detailed','breakdown','trends','payments'].indexOf(view)+1),'each view change must redraw the app');
   assert.match(planner.render(),new RegExp(marker));
  }
 });
