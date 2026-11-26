@@ -91,3 +91,30 @@ test('legacy default zero actuals display as missing until explicitly entered as
  planner.changed({dataset:{budgetItem:'water',budgetField:'actual'},value:'0'});
  assert.match(planner.render(),/value="0\.00" placeholder="Not entered"/);assert.doesNotMatch(planner.render(),/Actual not fully entered/);
 });
+
+test('planned and actual edits are written back to the notebook before the app save runs',()=>{
+ const previousDocument=globalThis.document;globalThis.document={querySelector:()=>null};
+ const bag={},planner=createBudgetPlanner({entries:()=>bag,form:()=>'input-save',save:()=>{},render:()=>{},toast:()=>{}});
+ try{
+  planner.initialise();
+  const month=JSON.parse(bag['budget:input-save:data']).months['2026-09'];
+  const salary=month.categories[0].items[0];
+  planner.input({dataset:{budgetItem:salary.id,budgetField:'planned'},value:'6100.50'});
+  let saved=JSON.parse(bag['budget:input-save:data']);
+  assert.equal(saved.months['2026-09'].categories[0].items[0].planned,610050);
+  planner.input({dataset:{budgetItem:salary.id,budgetField:'actual'},value:'6000'});
+  saved=JSON.parse(bag['budget:input-save:data']);
+  assert.equal(saved.months['2026-09'].categories[0].items[0].actual,600000);
+  assert.equal(saved.months['2026-09'].categories[0].items[0].actualEntered,true);
+ }finally{if(previousDocument===undefined)delete globalThis.document;else globalThis.document=previousDocument;}
+});
+
+test('all five view selections persist and render their selected view',()=>{
+ const data={version:1,active:'2026-11',months:{'2026-11':{name:'November 2026',categories:[{id:'income',name:'Income',kind:'income',items:[{id:'salary',name:'Salary',planned:200000,actual:null,frequency:'Monthly',flow:'cash'}]},{id:'bills',name:'Bills',kind:'expense',items:[{id:'rent',name:'Rent',planned:90000,actual:null,dueDate:'2026-11-30',status:'planned',frequency:'Monthly',flow:'cash',fixed:true}]}]}},goals:[]};
+ const bag={'budget:views:data':JSON.stringify(data)},planner=createBudgetPlanner({entries:()=>bag,form:()=>'views',save:()=>{},render:()=>{},toast:()=>{}});
+ for(const [view,marker] of [['simple','data-budget-item-name="rent"'],['detailed','data-budget-field="actual"'],['breakdown','budget-breakdown'],['trends','budget-trends'],['payments','budget-payments']]){
+  planner.handle({budgetAction:'select-view',budgetView:view});
+  assert.equal(JSON.parse(bag['budget:views:data']).months['2026-11'].view,view);
+  assert.match(planner.render(),new RegExp(marker));
+ }
+});

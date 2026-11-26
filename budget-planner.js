@@ -127,7 +127,7 @@ export function createBudgetPlanner({entries,form,save,render,esc,toast,schedule
   const field=el.dataset.budgetField,iid=el.dataset.budgetItem;if(!iid||!['planned','actual'].includes(field))return;
   const d=read(),m=d.months[d.active];let found;
   for(const c of m.categories){found=c.items.find(i=>i.id===iid);if(found)break;}
-  if(!found)return;found[field]=moneyToMinor(el.value);const t=monthTotals(m);
+  if(!found)return;found[field]=field==='actual'&&el.value===''?null:moneyToMinor(el.value);if(field==='actual')found.actualEntered=el.value!=='';persist(d);const t=monthTotals(m);
   const values={remaining:fmt(t.remaining),income:fmt(t.income),planned:fmt(t.planned),cashflow:fmt(t.actualIncome-t.actual)};
   for(const [name,value] of Object.entries(values)){const node=document.querySelector('[data-budget-summary="'+name+'"]');if(node)node.textContent=value;}
   for(const c of m.categories){const node=document.querySelector('[data-budget-category-total="'+c.id+'"]');if(node)node.textContent=fmt(c.items.reduce((n,i)=>n+Number(i.planned||0),0));}
