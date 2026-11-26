@@ -101,3 +101,17 @@
 @media(max-width:850px){.budget-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.budget-plan-categories{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:500px){.budget-summary{gap:.45rem}.budget-summary>div{min-width:0;padding:.6rem}.budget-summary span{font-size:.78rem}.budget-summary strong{font-size:1.2rem;overflow-wrap:anywhere}.budget-title-actions{gap:.3rem}.budget-edit-toggle{padding:.4rem .55rem}.budget-plan-heading h3{font-size:1.12rem}}
 @media(max-width:400px){.budget-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.budget-title{align-items:flex-start}.budget-current-view{display:none}}
+
+/* Simplified budget summary and save controls */
+.budget-summary{grid-template-columns:repeat(3,minmax(0,1fr))}
+.budget-summary>div{min-height:84px;justify-content:center}
+.budget-summary>div:nth-child(3){background:linear-gradient(145deg,#eef6fb,#e0edf5);border-color:#c8dce9}
+.budget-summary-available strong{font-size:clamp(1.5rem,3.3vw,2.1rem)}
+.budget-allocation i{width:min(100%,var(--allocation-fixed));background:linear-gradient(90deg,#91a988,#6f8b73)}
+.budget-save-state{font-size:.75rem;color:#58745b;white-space:nowrap}
+.budget-save-button{min-height:40px;padding:.45rem .8rem;border:1px solid #c8d8c3;border-radius:10px;background:#edf4ec;color:#365d3c;font:inherit;font-size:.86rem;cursor:pointer}
+.budget-save-button:hover{background:#e1efdf}
+@media(max-width:850px){.budget-summary{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){.budget-title-actions{flex-wrap:wrap;justify-content:flex-end}.budget-save-state{width:100%;text-align:right}.budget-summary>div{min-height:76px}}
+@media(max-width:500px){.budget-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.budget-summary>div:nth-child(3){grid-column:1/-1}.budget-summary-available strong{font-size:1.45rem}}
+@media print{.budget-save-state,.budget-save-button{display:none!important}}

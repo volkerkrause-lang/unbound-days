@@ -61,7 +61,7 @@ test('September starter budget preserves written subtotals and calculates from i
  assert.equal(month.sourceFigures.finalBalance,100200);
  assert.equal(writes,1);
  assert.match(planner.render(),/Manage Budget/);
- assert.match(planner.render(),/Budget Views/);
+ assert.match(planner.render(),/More views/);
  assert.doesNotMatch(planner.render(),/Monthly Review|Subscriptions<|Check the handwritten figures|Month &amp; tools/);
 });
 
@@ -104,11 +104,14 @@ test('deleting an entry updates totals and Undo restores all saved entry fields'
  assert.deepEqual(JSON.parse(bag['budget:test:data']).months['2026-11'].categories[0].items[0],original.months['2026-11'].categories[0].items[0]);
 });
 
-test('legacy default zero actuals display as missing until explicitly entered as zero',()=>{
+test('legacy detailed view opens in the simple view and preserves old entry data',()=>{
  const data={version:1,active:'2026-11',months:{'2026-11':{name:'November',view:'detailed',categories:[{id:'b',name:'Bills',kind:'expense',items:[{id:'water',name:'Water',planned:5000,actual:0,status:'planned',frequency:'Monthly',flow:'cash'}]}]}},goals:[]},bag={'budget:test:data':JSON.stringify(data)},planner=createBudgetPlanner({entries:()=>bag,form:()=>'test',save:()=>{},render:()=>{},toast:()=>{}});
- assert.match(planner.render(),/placeholder="Not entered"/);assert.match(planner.render(),/Actual not fully entered/);
- planner.changed({dataset:{budgetItem:'water',budgetField:'actual'},value:'0'});
- assert.match(planner.render(),/value="0\.00" placeholder="Not entered"/);assert.doesNotMatch(planner.render(),/Actual not fully entered/);
+ const html=planner.render();
+ assert.match(html,/data-budget-item-name="water"/);
+ assert.doesNotMatch(html,/data-budget-view="detailed"|data-budget-field="actual"/);
+ const saved=JSON.parse(bag['budget:test:data']);
+ assert.equal(saved.months['2026-11'].view,'simple');
+ assert.equal(saved.months['2026-11'].categories[0].items[0].actual,0,'legacy actual data is retained');
 });
 
 test('planned and actual edits are written back to the notebook before the app save runs',()=>{
@@ -128,15 +131,42 @@ test('planned and actual edits are written back to the notebook before the app s
  }finally{if(previousDocument===undefined)delete globalThis.document;else globalThis.document=previousDocument;}
 });
 
-test('all five view selections persist and render their selected view',()=>{
+test('the simple, breakdown, trends and payments views persist; detailed is no longer offered',()=>{
  const data={version:1,active:'2026-11',months:{'2026-11':{name:'November 2026',categories:[{id:'income',name:'Income',kind:'income',items:[{id:'salary',name:'Salary',planned:200000,actual:null,frequency:'Monthly',flow:'cash'}]},{id:'bills',name:'Bills',kind:'expense',items:[{id:'rent',name:'Rent',planned:90000,actual:null,dueDate:'2026-11-30',status:'planned',frequency:'Monthly',flow:'cash',fixed:true}]}]}},goals:[]};
  let redraws=0;const bag={'budget:views:data':JSON.stringify(data)},planner=createBudgetPlanner({entries:()=>bag,form:()=>'views',save:()=>{},render:()=>redraws++,toast:()=>{}});
- for(const [view,marker] of [['simple','data-budget-item-name="rent"'],['detailed','data-budget-field="actual"'],['breakdown','budget-breakdown'],['trends','budget-trends'],['payments','budget-payments']]){
+ assert.doesNotMatch(planner.render(),/data-budget-view="detailed"/);
+ for(const [view,marker] of [['simple','data-budget-item-name="rent"'],['breakdown','budget-breakdown'],['trends','budget-trends'],['payments','budget-payments']]){
   planner.handle({budgetAction:'select-view',budgetView:view});
   assert.equal(JSON.parse(bag['budget:views:data']).months['2026-11'].view,view);
-  assert.equal(redraws,(['simple','detailed','breakdown','trends','payments'].indexOf(view)+1),'each view change must redraw the app');
+  assert.equal(redraws,(['simple','breakdown','trends','payments'].indexOf(view)+1),'each view change must redraw the app');
   assert.match(planner.render(),new RegExp(marker));
  }
+});
+
+test('budget edits survive leaving and reopening the planner',()=>{
+ const previousDocument=globalThis.document;globalThis.document={querySelector:()=>null};
+ try{const bag={},save=()=>true,first=createBudgetPlanner({entries:()=>bag,form:()=>'persistent',save,render:()=>{},toast:()=>{}});
+  first.initialise();
+  const salary=JSON.parse(bag['budget:persistent:data']).months['2026-09'].categories[0].items[0];
+  first.input({dataset:{budgetItem:salary.id,budgetField:'planned'},value:'6100.50'});
+  const reopened=createBudgetPlanner({entries:()=>bag,form:()=>'persistent',save,render:()=>{},toast:()=>{}});
+  assert.match(reopened.render(),/value="6100\.50"/);
+  assert.equal(JSON.parse(bag['budget:persistent:data']).months['2026-09'].categories[0].items[0].planned,610050);
+ }finally{if(previousDocument===undefined)delete globalThis.document;else globalThis.document=previousDocument;}
+});
+
+test('a rejected notebook save rolls the budget back instead of showing an unsaved edit as saved',()=>{
+ const previousDocument=globalThis.document;globalThis.document={querySelector:()=>null};
+ try{const bag={},messages=[];let allowSave=true;const planner=createBudgetPlanner({entries:()=>bag,form:()=>'blocked',save:()=>allowSave,render:()=>{},toast:m=>messages.push(m)});
+  planner.initialise();
+  allowSave=false;
+  const before=bag['budget:blocked:data'],salary=JSON.parse(before).months['2026-09'].categories[0].items[0];
+  planner.input({dataset:{budgetItem:salary.id,budgetField:'planned'},value:'9999'});
+  assert.equal(bag['budget:blocked:data'],before);
+  assert.equal(messages.length,1);
+  planner.handle({budgetAction:'save'});
+  assert.equal(messages.length,1,'repeated failures do not spam the user');
+ }finally{if(previousDocument===undefined)delete globalThis.document;else globalThis.document=previousDocument;}
 });
 
 test('new months start with empty planning sections and no prefilled suggestion collection',()=>{
@@ -146,7 +176,7 @@ test('new months start with empty planning sections and no prefilled suggestion 
  assert.deepEqual(month.categories.map(c=>c.name),['Income','Fixed commitments','Variable spending','Savings']);
  assert.ok(month.categories.every(c=>c.items.length===0));
  const html=planner.render();
- assert.match(html,/Available money plan/);
+ assert.match(html,/Flexible spending/);
  assert.match(html,/\+ Add entry/);
  assert.doesNotMatch(html,/suggested item|preselected collection|\+ Custom item/);
 });

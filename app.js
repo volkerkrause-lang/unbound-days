@@ -29,7 +29,7 @@ import {saveCaptureIdea,fetchLinkPreview} from './link-preview.js?v=0.1.2';
 import * as TravelPlanner from './travel-planner.js?v=0.1.8';
 import * as TravelDocument from './travel-extractor.js?v=0.1.2';
 import * as MealPlanner from './meal-planner.js?v=0.1.1';
-import {createBudgetPlanner} from './budget-planner.js?v=0.2.2';
+import {createBudgetPlanner} from './budget-planner.js?v=0.2.3';
 import {createMovingPlanner} from './moving-planner.js?v=0.1.4';
 
 const captureQuery=new URLSearchParams(location.search);
@@ -86,15 +86,15 @@ function toast(message){if(/Google.*(quota|rate.?limit)|too many requests/i.test
 function snapshot(){try{const records=JSON.parse(localStorage.getItem(HISTORY)||'[]');records.unshift({time:new Date().toISOString(),data:state});localStorage.setItem(HISTORY,JSON.stringify(records.slice(0,5)));lastSnapshot=Date.now();}catch{}}
 let taskSyncTimer,taskSyncSaving=false,taskSyncStatus="Reconnect Google in Settings to synchronise tasks";
 function save(){
-  if(accountLocked)return;
+  if(accountLocked)return false;
   for(const t of state.tasks)if(!t.googleTask&&!t.taskOriginDevice&&String(t.listId||'').startsWith('gt:'))t.taskOriginDevice=deviceId;
   const anchors=new Set();for(const t of state.tasks){if(t.matrixWeek&&t.anchorActive&&!t.done&&!t.deleted&&t.effort==='high'&&t.importance==='high'){if(anchors.has(t.matrixWeek))t.anchorActive=false;else anchors.add(t.matrixWeek);}}
-  if(storageCorrupt||externalChange){storageError=true;document.querySelector('#save-status').textContent='Changes need recovery';toast(externalChange?'Another tab changed this notebook. Export any unsaved writing, then reload.':'Saved data needs recovery. Restore a backup before saving.');return;}
+  if(storageCorrupt||externalChange){storageError=true;document.querySelector('#save-status').textContent='Changes need recovery';toast(externalChange?'Another tab changed this notebook. Export any unsaved writing, then reload.':'Saved data needs recovery. Restore a backup before saving.');return false;}
   state.savedAt=new Date().toISOString();const data=structuredClone(state),generation=++saveGeneration;let localOK=false;
   try{localStorage.setItem(KEY,JSON.stringify(data));storageError=false;localOK=true;if(Date.now()-lastSnapshot>300000)snapshot();}catch{storageError=true;}
   document.querySelector('#save-status').textContent=localOK?'Saved on this device':'Saving recovery copy…';
   mirrorQueue=mirrorQueue.catch(()=>{}).then(()=>writeMirror(data,KEY)).then(()=>{if(generation===saveGeneration){storageError=false;updateSaveStatus();}}).catch(()=>{if(!localOK&&generation===saveGeneration){storageError=true;document.querySelector('#save-status').textContent='Not saved — export a backup';toast('Storage unavailable. Export your notebook now.');}});
-  cloudDirty=true;queueCloudBackup();accountManager?.queue();const taskFingerprint=JSON.stringify(state.tasks);if(taskFingerprint!==save.taskFingerprint&&!taskSyncSaving&&Google.tasksConnected()){clearTimeout(taskSyncTimer);taskSyncTimer=setTimeout(()=>syncTasks().catch(e=>toast(e.message)),1200);}save.taskFingerprint=taskFingerprint;
+  cloudDirty=true;queueCloudBackup();accountManager?.queue();const taskFingerprint=JSON.stringify(state.tasks);if(taskFingerprint!==save.taskFingerprint&&!taskSyncSaving&&Google.tasksConnected()){clearTimeout(taskSyncTimer);taskSyncTimer=setTimeout(()=>syncTasks().catch(e=>toast(e.message)),1200);}save.taskFingerprint=taskFingerprint;return localOK;
 }
 function cloudProvider(){return state.settings.backupProvider==='dropbox'?Dropbox:Google;}
 function cloudConnected(){return state.settings.backupProvider==='dropbox'?Dropbox.connected():Google.backupConnected();}
