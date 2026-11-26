@@ -29,7 +29,7 @@ import {saveCaptureIdea,fetchLinkPreview} from './link-preview.js?v=0.1.2';
 import * as TravelPlanner from './travel-planner.js?v=0.1.8';
 import * as TravelDocument from './travel-extractor.js?v=0.1.2';
 import * as MealPlanner from './meal-planner.js?v=0.1.1';
-import {createBudgetPlanner} from './budget-planner.js?v=0.2.4';
+import {createBudgetPlanner} from './budget-planner.js?v=0.2.5';
 import {createMovingPlanner} from './moving-planner.js?v=0.1.4';
 
 const captureQuery=new URLSearchParams(location.search);
@@ -107,6 +107,7 @@ function updateSaveStatus(){
  const headerText=storageError?'Recovery needed':externalChange?'Reload needed':formDirty?'Draft not saved':syncConflict||cloudFailure||/retry needed|conflict/i.test(accountText)?'Sync needs attention':!navigator.onLine?'Offline · saved locally':cloudBusy||cloudDirty||/pending|checking|retrying/i.test(accountText)?'Saved locally':'Saved';
  const saveStatus=document.querySelector('#save-status');if(saveStatus)saveStatus.textContent=headerText;
  document.querySelectorAll('[data-saving-status]').forEach(x=>x.textContent=text);
+ const budgetSyncStatus=document.querySelector('[data-budget-save-state]');if(budgetSyncStatus)budgetSyncStatus.textContent=Accounts.user&&accountManager?accountManager.cloudStatus():'Saved on this device · log in to sync';
  const backupStatus=document.querySelector('#backup-status');if(backupStatus)backupStatus.textContent='Notebook backup: '+(cloudConnected()?cloudStatus:'Disconnected — choose a backup account');
  const accountStatus=document.querySelector('#account-backup-status');if(accountStatus)accountStatus.textContent='Account sync: '+(accountText||'Not signed in');
 }
@@ -711,7 +712,7 @@ const mealPlanner=MealPlanner.createMealPlanner({getState:()=>state,save,render,
 let travelPlannerInstance;function getTravelPlanner(){return travelPlannerInstance||(travelPlannerInstance=TravelPlanner.create({getState:()=>state,save,render,openModal,closeModal,toast,ideas:()=>state.notes||[],packing,google:Google,cloud:{Google,Dropbox,Box},extractor:TravelDocument.extractBookingDocument}));}
 document.addEventListener('change',e=>{if(plannerRecords().find(r=>r.key===plannerPage)?.template.id==='pack-go')packing.changed(e.target);});
 document.addEventListener('change',e=>{if(plannerRecords().find(r=>r.key===plannerPage)?.template.id==='custom')customBuilder.changed(e.target);if(plannerRecords().find(r=>r.key===plannerPage)?.template.id==='household-budget')getBudgetPlanner().changed(e.target);});
-let budgetPlannerInstance;function getBudgetPlanner(){if(!budgetPlannerInstance){budgetPlannerInstance=createBudgetPlanner({entries:()=>state.entries,form:()=>plannerPage,save,render,esc,toast,schedule:({title,date:targetDate,source})=>{const linked=source&&entry(source+':calendar-event');if(linked){if(findEvent(linked)){eventForm(linked);return;}toast('The linked event is not available. Refresh Calendar before creating another.');return;}eventForm();const f=document.querySelector('#event-form');if(source)f.dataset.planningSource=source;f.querySelector('[name=title]').value=title||'Payment due';f.querySelector('[name=date]').value=targetDate;f.querySelector('[name=endDate]').value=targetDate;f.querySelector('[name=notes]').value='Created from Budget Planner.';}});budgetPlannerInstance.initialise();}return budgetPlannerInstance;}
+let budgetPlannerInstance;function getBudgetPlanner(){if(!budgetPlannerInstance){budgetPlannerInstance=createBudgetPlanner({entries:()=>state.entries,form:()=>plannerPage,save,render,esc,toast,openModal,closeModal,cloudStatus:()=>Accounts.user&&accountManager?accountManager.cloudStatus():null,schedule:({title,date:targetDate,source})=>{const linked=source&&entry(source+':calendar-event');if(linked){if(findEvent(linked)){eventForm(linked);return;}toast('The linked event is not available. Refresh Calendar before creating another.');return;}eventForm();const f=document.querySelector('#event-form');if(source)f.dataset.planningSource=source;f.querySelector('[name=title]').value=title||'Payment due';f.querySelector('[name=date]').value=targetDate;f.querySelector('[name=endDate]').value=targetDate;f.querySelector('[name=notes]').value='Created from Budget Planner.';}});budgetPlannerInstance.initialise();}return budgetPlannerInstance;}
 let movingPlannerInstance;function getMovingPlanner(){return movingPlannerInstance||(movingPlannerInstance=createMovingPlanner({entries:()=>state.entries,form:()=>plannerPage,save,render,toast,openTask:taskForm,openEvent:eventForm,openBudget:()=>{const record=plannerRecords().find(r=>r.template.id==='household-budget'&&!r.archived);if(record){plannerPage=record.key;section='goals';closed=false;plannerManagingForms=false;plannerMode='forms';render();}else plannerNew('household-budget');}}));}
 function renderPlanner(){
  if(typeof plannerMode!=='undefined'&&plannerMode==='travel')return getTravelPlanner().render();
