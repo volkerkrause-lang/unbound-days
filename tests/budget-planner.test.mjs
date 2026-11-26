@@ -62,7 +62,7 @@ test('savings reduce available money but are not counted as expenditure',()=>{
 });
 
 test('new actual values remain blank until entered and CSV distinguishes missing from zero',()=>{
- const csv=csvForMonth({categories:[{name:'Income',kind:'income',items:[{name:'Salary',planned:100000,actual:null,status:'planned',frequency:'Monthly',flow:'cash'}]},{name:'Bills',kind:'expense',items:[{name:'Water',planned:5000,actual:0,status:'paid',frequency:'Monthly',flow:'cash'}]}]},'2026-11');
+ const csv=csvForMonth({categories:[{name:'Income',kind:'income',items:[{name:'Salary',planned:100000,actual:null,status:'planned',frequency:'Monthly',flow:'cash'}]},{name:'Bills',kind:'expense',items:[{name:'Water',planned:5000,actual:0,actualEntered:true,status:'paid',frequency:'Monthly',flow:'cash'}]}]},'2026-11');
  assert.match(csv,/"2026-11","Income","Salary","1000\.00","",""/);assert.match(csv,/"Water","50\.00","0\.00","50\.00"/);
 });
 
@@ -74,4 +74,11 @@ test('deleting an entry updates totals and Undo restores all saved entry fields'
  assert.match(planner.render(),/data-budget-action="undo-delete"/);
  planner.handle({budgetAction:'undo-delete'});
  assert.deepEqual(JSON.parse(bag['budget:test:data']).months['2026-11'].categories[0].items[0],original.months['2026-11'].categories[0].items[0]);
+});
+
+test('legacy default zero actuals display as missing until explicitly entered as zero',()=>{
+ const data={version:1,active:'2026-11',months:{'2026-11':{name:'November',view:'detailed',categories:[{id:'b',name:'Bills',kind:'expense',items:[{id:'water',name:'Water',planned:5000,actual:0,status:'planned',frequency:'Monthly',flow:'cash'}]}]}},goals:[]},bag={'budget:test:data':JSON.stringify(data)},planner=createBudgetPlanner({entries:()=>bag,form:()=>'test',save:()=>{},render:()=>{},toast:()=>{}});
+ assert.match(planner.render(),/placeholder="Not entered"/);assert.match(planner.render(),/Actual not fully entered/);
+ planner.changed({dataset:{budgetItem:'water',budgetField:'actual'},value:'0'});
+ assert.match(planner.render(),/value="0\.00" placeholder="Not entered"/);assert.doesNotMatch(planner.render(),/Actual not fully entered/);
 });
